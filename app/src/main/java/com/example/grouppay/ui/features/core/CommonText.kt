@@ -3,6 +3,7 @@ package com.example.grouppay.ui.features.core
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -18,12 +19,13 @@ fun CommonText(
     text: String = "Common text",
     fontSize: TextUnit = 14.sp,
     fontStyle: FontStyle = FontStyle.Normal,
-    fontWeight: FontWeight = FontWeight.W500
+    fontWeight: FontWeight = FontWeight.W500,
+    textColor: Color = colorResource(id = R.color.text_color)
 ) {
     Text(
         text = text,
         modifier = modifier,
-        color = colorResource(id = R.color.text_color),
+        color = textColor,
         fontSize = fontSize,
         fontWeight = fontWeight,
         fontStyle = fontStyle

@@ -9,9 +9,9 @@ import org.mongodb.kbson.ObjectId
 class Contribution : RealmObject {
 
     @PrimaryKey
-    val _id: ObjectId = ObjectId()
+    var _id: ObjectId = ObjectId()
     var paidBy: Splitter? = null
-    val remainingSplitters: RealmList<Splitter> = realmListOf()
+    var remainingSplitters: RealmList<Splitter> = realmListOf()
     var group: GroupInfo? = null
 
 }

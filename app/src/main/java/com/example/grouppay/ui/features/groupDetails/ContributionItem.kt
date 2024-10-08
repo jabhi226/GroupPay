@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grouppay.R
+import com.example.grouppay.domain.Contribution
 import com.example.grouppay.ui.features.core.CommonText
 
 @Preview
@@ -40,9 +41,9 @@ fun ContributionItem(modifier: Modifier = Modifier, contribution: Contribution =
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
-            CommonText(text = "Payer Name: ${contribution.payerName}", fontSize = 20.sp)
+            CommonText(text = "Payer Name: ${contribution.paidBy?.userName}", fontSize = 20.sp)
             Spacer(modifier = Modifier.height(10.dp))
-            CommonText(text = "Amount Paid: ₹ ${contribution.totalPaidAmount}", fontSize = 22.sp)
+            CommonText(text = "Amount Paid: ₹ ${contribution.paidBy?.amountOwed}", fontSize = 22.sp)
             Spacer(modifier = Modifier.height(4.dp))
             CommonText(text = "Owers:", fontSize = 16.sp, fontStyle = FontStyle.Italic)
             Spacer(modifier = Modifier.height(4.dp))
@@ -51,7 +52,7 @@ fun ContributionItem(modifier: Modifier = Modifier, contribution: Contribution =
                 modifier = modifier
                     .fillMaxSize()
             ) {
-                items(contribution.owers) {
+                items(contribution.remainingSplitters) {
                     Ower(modifier = modifier, user = it)
                 }
             }

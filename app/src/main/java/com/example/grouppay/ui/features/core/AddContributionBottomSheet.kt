@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import com.example.grouppay.ui.features.groups.AutocompleteTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,9 +37,8 @@ fun AddContributionBottomSheet(
             scrimColor = Color.Black.copy(alpha = .5f),
         ) {
 
-            // Implement the custom layout here ...
             AutocompleteTextField(suggestions = listOf())
-            CommonOutlinedButton(text = mText.value) {
+            CommonOutlinedTextField(text = mText.value) {
                 mText.value = it
             }
 

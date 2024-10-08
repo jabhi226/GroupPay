@@ -19,7 +19,7 @@ import com.example.grouppay.ui.features.core.CommonText
 
 @Preview
 @Composable
-fun Ower(modifier: Modifier = Modifier, user: Splitter = getContros()[0].owers[0]) {
+fun Ower(modifier: Modifier = Modifier, user: Splitter = getContros()[0].remainingSplitters[0]) {
     Box(
         modifier = modifier.background(
             color = colorResource(id = R.color.background_light_color),

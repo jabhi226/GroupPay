@@ -11,7 +11,7 @@ import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import org.koin.core.module.dsl.viewModel
 
-val realmModule = module {
+val appModule = module {
     single {
 
         val config = RealmConfiguration.Builder(

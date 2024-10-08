@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.kapt)
+    alias(libs.plugins.io.realm.kotlin)
 }
 
 apply {
@@ -74,7 +75,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.library.base)
+    implementation(libs.library.sync)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.realm.gradle.plugin)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.koin.androidx.compose)
 

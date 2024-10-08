@@ -1,4 +1,4 @@
-package com.example.grouppay.ui.features.core
+package com.example.grouppay.ui.features.groups
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.grouppay.domain.Splitter
+import com.example.grouppay.ui.features.core.CommonText
 
 @Composable
 fun AutocompleteTextField(modifier: Modifier = Modifier, suggestions: List<Splitter>) {
