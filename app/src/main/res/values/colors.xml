@@ -9,9 +9,10 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="text_color">#FF212121</color>
+    <color name="light_text_color">#494953</color>
     <color name="background_color">#CDC1FF</color>
     <color name="background_light_color">#F5EFFF</color>
-    <color name="accent_color">#E5D9F2</color>
+    <color name="accent_color">#BF382A</color>
 
 
 </resources>

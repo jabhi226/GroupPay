@@ -19,12 +19,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grouppay.R
 import com.example.grouppay.ui.features.core.CommonText
-import com.example.grouppay.domain.GroupInfo
+import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
+import org.mongodb.kbson.BsonObjectId
 
+@Preview
 @Composable
 fun GroupItem(
     modifier: Modifier = Modifier,
-    group: GroupInfo,
+    group: GroupWithTotalExpense =
+        GroupWithTotalExpense(
+            BsonObjectId(),
+            "Karjat trip",
+            3,
+            100.0
+        ),
     navigateToGroup: () -> Unit = {}
 ) {
     Box(
@@ -41,21 +49,24 @@ fun GroupItem(
                 modifier = Modifier,
                 text = group.groupName,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.W700
+                fontWeight = FontWeight.W600
             )
             Spacer(modifier = Modifier.height(16.dp))
             CommonText(
                 modifier = Modifier,
-                text = "Total Amount Spend",
-                fontSize = 18.sp,
-                fontStyle = FontStyle.Italic
+                text = "Total Amount Spend ₹${group.totalAmountSpent}",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.W500,
+                textColor = colorResource(R.color.accent_color)
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             CommonText(
                 modifier = Modifier,
-                text = "₹ ${group.contributions.sumOf { it.paidBy?.amountOwed ?: 0.0 }}",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.W700
+                text = "Total Members: ${group.totalMembers}",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.W500,
+                fontStyle = FontStyle.Italic,
+                textColor = colorResource(R.color.light_text_color)
             )
         }
     }

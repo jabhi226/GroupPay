@@ -14,12 +14,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grouppay.R
-import com.example.grouppay.domain.Splitter
+import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.features.core.CommonText
 
 @Preview
 @Composable
-fun Ower(modifier: Modifier = Modifier, user: Splitter = getContros()[0].remainingSplitters[0]) {
+fun Ower(modifier: Modifier = Modifier, user: Participant = getContros()[0].remainingParticipants[0]) {
     Box(
         modifier = modifier.background(
             color = colorResource(id = R.color.background_light_color),
@@ -28,12 +28,12 @@ fun Ower(modifier: Modifier = Modifier, user: Splitter = getContros()[0].remaini
     ) {
         Column(modifier = modifier.padding(8.dp)) {
             CommonText(
-                text = "Name: ${user.userName}",
+                text = "Name: ${user.name}",
                 fontSize = 16.sp,
                 fontStyle = FontStyle.Italic
             )
             CommonText(
-                text = "Amount Owns: ₹ ${user.amountBorrowed}",
+                text = "Amount Owns: ₹ ${user.amountBorrowedFromGroup}",
                 fontWeight = FontWeight.W700,
                 fontSize = 16.sp,
             )

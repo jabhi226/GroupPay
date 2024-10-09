@@ -1,4 +1,4 @@
-package com.example.grouppay
+package com.example.grouppay.app
 
 import android.app.Application
 import com.example.grouppay.di.appModule

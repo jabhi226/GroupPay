@@ -2,11 +2,10 @@ package com.example.grouppay.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.grouppay.domain.Group
 import com.example.grouppay.ui.repo.GroupRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.mongodb.kbson.ObjectId
 
 class GroupViewModel(
     private val repository: GroupRepository
@@ -14,10 +13,12 @@ class GroupViewModel(
 
     val groupList = repository.getGroupList()
 
-    fun saveNewGroup() {
+    fun saveNewGroup(group: Group) {
         viewModelScope.launch {
-            repository.saveNewGroup()
+            repository.saveNewGroup(group)
         }
     }
+
+    fun getGroupInformation(_id: ObjectId) = repository.getGroupInformation(_id)
 
 }

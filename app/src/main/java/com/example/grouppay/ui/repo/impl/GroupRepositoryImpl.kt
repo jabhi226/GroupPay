@@ -1,8 +1,8 @@
 package com.example.grouppay.ui.repo.impl
 
-import com.example.grouppay.domain.Contribution
-import com.example.grouppay.domain.GroupInfo
-import com.example.grouppay.domain.Splitter
+import com.example.grouppay.domain.Group
+import com.example.grouppay.domain.Participant
+import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import com.example.grouppay.ui.repo.GroupRepository
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
@@ -13,35 +13,46 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.mongodb.kbson.ObjectId
 
 class GroupRepositoryImpl(
     private val realm: Realm
 ) : GroupRepository {
-    override fun getGroupList(): Flow<List<GroupInfo>> {
+    override fun getGroupList(): Flow<List<GroupWithTotalExpense>> {
+
         return realm
-            .query<GroupInfo>()
+            .query<Group>()
             .asFlow()
             .map { results ->
-                results.list.toList()
+                results.list.map {
+                    GroupWithTotalExpense(
+                        it._id,
+                        it.name,
+                        it.participants.size,
+                        it.expenses.sumOf { contribution ->
+                            contribution.paidBy?.amountOwedFromGroup ?: 0.0
+                        }
+                    )
+                }
             }
     }
 
-    override suspend fun saveNewGroup() {
+    override fun getGroupInformation(_id: ObjectId): Group {
+        return realm.query<Group>("_id=$0", _id).find().first()
+    }
+
+    override suspend fun saveNewGroup(group: Group) {
         withContext(Dispatchers.IO) {
             realm.write {
-                val group = GroupInfo().apply {
-                    groupName = "Office group test"
-                    groupMembers = getSplitters()
-                }
                 copyToRealm(group, updatePolicy = UpdatePolicy.ALL)
             }
         }
     }
 
-    private fun getSplitters(): RealmList<Splitter> {
+    private fun getSplitters(): RealmList<Participant> {
         return listOf("Abhishek", "Suraj").map {
-            Splitter().apply {
-                userName = it
+            Participant().apply {
+                name = it
             }
         }.toRealmList()
     }

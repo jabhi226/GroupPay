@@ -12,11 +12,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.grouppay.domain.Splitter
+import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.features.core.CommonText
 
 @Composable
-fun AutocompleteTextField(modifier: Modifier = Modifier, suggestions: List<Splitter>) {
+fun AutocompleteTextField(modifier: Modifier = Modifier, suggestions: List<Participant>) {
 
     var text by remember { mutableStateOf("") }
     var filteredSuggestions by remember { mutableStateOf(suggestions) }
@@ -28,7 +28,7 @@ fun AutocompleteTextField(modifier: Modifier = Modifier, suggestions: List<Split
             onValueChange = { input ->
                 text = input
                 filteredSuggestions = suggestions.filter {
-                    it.userName.contains(input, ignoreCase = true)
+                    it.name.contains(input, ignoreCase = true)
                 }
                 showSuggestions = filteredSuggestions.isNotEmpty()
             },
@@ -40,7 +40,7 @@ fun AutocompleteTextField(modifier: Modifier = Modifier, suggestions: List<Split
             Column(modifier = Modifier.fillMaxWidth()) {
                 filteredSuggestions.forEach { suggestion ->
                     SuggestionItem(suggestion) {
-                        text = suggestion.userName
+                        text = suggestion.name
                         showSuggestions = false
                     }
                 }
@@ -50,9 +50,9 @@ fun AutocompleteTextField(modifier: Modifier = Modifier, suggestions: List<Split
 }
 
 @Composable
-fun SuggestionItem(suggestion: Splitter, onClick: () -> Unit) {
+fun SuggestionItem(suggestion: Participant, onClick: () -> Unit) {
     CommonText(
-        text = suggestion.userName,
+        text = suggestion.name,
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)

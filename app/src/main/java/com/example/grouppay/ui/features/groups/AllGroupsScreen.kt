@@ -10,8 +10,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,10 +18,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.R
-import com.example.grouppay.domain.GroupInfo
 import com.example.grouppay.ui.features.core.CommonText
 import com.example.grouppay.ui.theme.GroupPayTheme
 import com.example.grouppay.ui.viewModel.GroupViewModel
+import com.google.gson.Gson
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,8 +35,7 @@ fun AllGroupsScreen(navController: NavController = rememberNavController()) {
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
             FloatingActionButton(onClick = {
-                viewModel.saveNewGroup()
-//                navController.navigate("add_groups")
+                navController.navigate("add_groups")
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.add_group),
@@ -57,9 +54,10 @@ fun AllGroupsScreen(navController: NavController = rememberNavController()) {
             GroupList(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding), groups = groups
+                    .padding(innerPadding),
+                groups = groups
             ) {
-                navController.navigate("group_details")
+                navController.navigate("group_details/${Gson().toJson(it)}")
             }
         }
     }

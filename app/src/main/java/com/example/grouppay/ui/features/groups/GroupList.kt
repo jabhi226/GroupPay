@@ -9,13 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.grouppay.domain.GroupInfo
+import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
+import org.mongodb.kbson.ObjectId
 
 @Composable
 fun GroupList(
     modifier: Modifier = Modifier,
-    groups: List<GroupInfo>,
-    navigateToGroup: () -> Unit = {}
+    groups: List<GroupWithTotalExpense>,
+    navigateToGroup: (GroupWithTotalExpense) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
@@ -23,7 +24,7 @@ fun GroupList(
         contentPadding = PaddingValues(8.dp, 4.dp)
     ) {
         items(groups) {
-            GroupItem(group = it) { navigateToGroup() }
+            GroupItem(group = it) { navigateToGroup(it) }
         }
     }
 }

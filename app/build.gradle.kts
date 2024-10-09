@@ -46,7 +46,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.7"
     }
     packaging {
         resources {
@@ -81,5 +81,6 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.gson)
 
 }

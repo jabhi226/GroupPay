@@ -7,7 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.grouppay.domain.Splitter
+import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.features.groups.AutocompleteTextField
 
 @Composable
@@ -16,9 +16,9 @@ fun AddContributionScreen(navController: NavController) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             AutocompleteTextField(suggestions = suggestions.map {
-                Splitter().apply {
-                    userName = it
-                    amountBorrowed = Math.random() * 100
+                Participant().apply {
+                    name = it
+                    amountBorrowedFromGroup = Math.random() * 100
                 }
             })
         }

@@ -7,10 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.grouppay.domain.Splitter
+import com.example.grouppay.domain.Participant
 
 @Composable
-fun OwersList(modifier: Modifier = Modifier, users: List<Splitter>) {
+fun OwersList(modifier: Modifier = Modifier, users: List<Participant>) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
