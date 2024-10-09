@@ -12,6 +12,7 @@ class Expense : RealmObject {
 
     @PrimaryKey
     var _id: ObjectId = ObjectId()
+    var label: String = ""
     var paidBy: Participant? = null
     @Ignore
     var dateOfExpense: Date? = Date()
