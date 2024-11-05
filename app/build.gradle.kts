@@ -83,4 +83,6 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.gson)
 
+    implementation(libs.accompanist.pager.indicators)
+
 }

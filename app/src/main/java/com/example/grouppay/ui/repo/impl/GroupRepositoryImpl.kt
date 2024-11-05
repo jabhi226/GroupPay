@@ -41,10 +41,25 @@ class GroupRepositoryImpl(
         return realm.query<Group>("_id=$0", _id).find().first()
     }
 
-    override suspend fun saveNewGroup(group: Group) {
+    override fun getAllParticipantByText(text: String): Flow<List<Participant>> {
+        return realm.query<Participant>("name CONTAINS $0", text).asFlow().map { it.list.toList() }
+    }
+
+    override suspend fun saveNewGroup(group: String) {
         withContext(Dispatchers.IO) {
             realm.write {
-                copyToRealm(group, updatePolicy = UpdatePolicy.ALL)
+                copyToRealm(Group().apply {
+                    name = group
+                }, updatePolicy = UpdatePolicy.ALL)
+            }
+        }
+    }
+
+    override suspend fun saveNewParticipantInTheGroup(groupId: String, participant: Participant) {
+        withContext(Dispatchers.IO) {
+            realm.write {
+                val group = realm.query<Group>("_id=$0", groupId).find().first()
+                group.participants.add(participant) // Add to the list
             }
         }
     }

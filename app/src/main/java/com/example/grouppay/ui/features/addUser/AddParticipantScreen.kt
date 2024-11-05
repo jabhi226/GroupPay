@@ -1,6 +1,6 @@
-package com.example.grouppay.ui.features.addGroup
+package com.example.grouppay.ui.features.addUser
 
-import androidx.compose.foundation.layout.Column
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,26 +14,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.grouppay.ui.features.core.AddItemComponent
-import com.example.grouppay.ui.features.core.CommonOutlinedTextField
+import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.features.core.CommonText
+import com.example.grouppay.ui.features.groups.AutocompleteTextField
 import com.example.grouppay.ui.theme.GroupPayTheme
 import com.example.grouppay.ui.viewModel.GroupViewModel
+import io.realm.kotlin.ext.copyFromRealm
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
 @Composable
-fun AddGroupScreen(navController: NavController = rememberNavController()) {
+fun AddParticipantScreen(navController: NavController = rememberNavController(), groupId: String?) {
 
     val viewModel: GroupViewModel = koinViewModel()
-    var text by remember { mutableStateOf("") }
+    val sug by viewModel.getAllParticipantsByText("").collectAsState(initial = emptyList())
+    var participant by remember { mutableStateOf(Participant()) }
     val state = viewModel.saveResponse.collectAsState(initial = false)
+    val context = LocalContext.current
 
     when (state.value) {
         true -> {
@@ -48,7 +50,11 @@ fun AddGroupScreen(navController: NavController = rememberNavController()) {
             modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-                    viewModel.saveNewGroup(text)
+                    if (groupId == null) {
+                        Toast.makeText(context, "group not found", Toast.LENGTH_SHORT).show()
+                        return@FloatingActionButton
+                    }
+                    viewModel.saveNewParticipantInTheGroup(groupId, participant)
                 }) {
                     CommonText(text = "Save")
                 }
@@ -56,21 +62,34 @@ fun AddGroupScreen(navController: NavController = rememberNavController()) {
             topBar = {
                 TopAppBar(title = {
                     CommonText(
-                        text =  "Add Group",
+                        text = "Add User",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                 })
             },
         ) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding)) {
-                CommonOutlinedTextField(
-                    text = text,
-                    hint = "Group name"
-                ) {
-                    text = it
+            AutocompleteTextField(
+                modifier = Modifier.padding(innerPadding),
+                text = participant.name,
+                updateText = {
+                    participant = participant.copyFromRealm().apply {
+                        name = it
+                    }
+                },
+                suggestions = sug,
+                getDisplayText = { it.name },
+                selectSuggestion = {
+                    participant = it.copyFromRealm()
+                },
+                saveNewSuggestion = {
+                    participant = participant.copyFromRealm().apply {
+                        name = it
+                    }
                 }
-            }
+            )
         }
     }
+
+
 }

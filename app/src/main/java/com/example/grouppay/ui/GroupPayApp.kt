@@ -1,14 +1,13 @@
 package com.example.grouppay.ui
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.grouppay.ui.features.groups.AllGroupsScreen
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.ui.features.AddContributionScreen
 import com.example.grouppay.ui.features.addGroup.AddGroupScreen
-import com.example.grouppay.ui.features.addUser.AddUserScreen
+import com.example.grouppay.ui.features.addUser.AddParticipantScreen
 import com.example.grouppay.ui.features.groupDetails.GroupDetailsScreen
 import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import com.google.gson.Gson
@@ -29,6 +28,12 @@ fun GroupPayApp() {
         }
         composable("add_contribution") { AddContributionScreen(navController) }
         composable("add_groups") { AddGroupScreen(navController) }
-        composable("add_user") { AddUserScreen(navController) }
+        composable("add_participant/{group_id}") { navBackStackEntry ->
+            val groupId = navBackStackEntry.arguments?.getString("group_id")
+            AddParticipantScreen(
+                navController = navController,
+                groupId = groupId
+            )
+        }
     }
 }
