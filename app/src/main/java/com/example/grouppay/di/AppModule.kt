@@ -3,9 +3,12 @@ package com.example.grouppay.di
 import com.example.grouppay.domain.Expense
 import com.example.grouppay.domain.Group
 import com.example.grouppay.domain.Participant
-import com.example.grouppay.ui.repo.GroupRepository
-import com.example.grouppay.ui.repo.impl.GroupRepositoryImpl
-import com.example.grouppay.ui.viewModel.GroupViewModel
+import com.example.grouppay.data.repo.GroupRepository
+import com.example.grouppay.data.repo.impl.GroupRepositoryImpl
+import com.example.grouppay.ui.features.addExpense.view.AddExpenseViewModel
+import com.example.grouppay.ui.features.addGroup.viewModel.AddGroupViewModel
+import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantViewModel
+import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import org.koin.dsl.module
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
@@ -30,5 +33,14 @@ val appModule = module {
 
     viewModel {
         GroupViewModel(get())
+    }
+    viewModel {
+        AddGroupViewModel(get())
+    }
+    viewModel {
+        AddParticipantViewModel(get())
+    }
+    viewModel {
+        AddExpenseViewModel(get())
     }
 }
