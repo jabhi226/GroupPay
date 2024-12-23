@@ -20,6 +20,7 @@ fun GroupPayApp() {
 
     NavHost(navController = navController, startDestination = "groups") {
         composable("groups") { AllGroupsScreen(navController) }
+
         composable("group_details/{group}") { navBackStackEntry ->
             val group = navBackStackEntry.arguments?.getString("group")
             GroupDetailsScreen(
@@ -27,7 +28,9 @@ fun GroupPayApp() {
                 group = Gson().fromJson(group, GroupWithTotalExpense::class.java)
             )
         }
+
         composable("add_groups") { AddGroupScreen(navController) }
+
         composable("add_participant/{group_id}") { navBackStackEntry ->
             val groupId = navBackStackEntry.arguments?.getString("group_id")
             val groupId1 = try {
@@ -40,17 +43,10 @@ fun GroupPayApp() {
                 groupId = groupId1?.toHexString() ?: groupId
             )
         }
+
         composable("add_expense/{group_id}") { navBackStackEntry ->
             val groupId = navBackStackEntry.arguments?.getString("group_id")
-//            val groupId1 = try {
-//                ObjectId(groupId)
-//            } catch (e: IllegalArgumentException) {
-//                null
-//            }
-            AddExpenseScreen(
-//                navController = navController,
-                groupId = groupId
-            )
+            AddExpenseScreen(groupId = groupId)
         }
     }
 }

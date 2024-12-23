@@ -34,6 +34,7 @@ import com.example.grouppay.domain.Group
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import java.text.SimpleDateFormat
+import java.util.Date
 
 
 @Composable
@@ -116,7 +117,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
             CommonText(
                 textColor = MaterialTheme.colorScheme.secondary,
                 fontStyle = FontStyle.Italic,
-                text = "Date: ${SimpleDateFormat("yyyy MMM dd, hh:mm").format(it)}",
+                text = "Date: ${SimpleDateFormat("yyyy MMM dd, hh:mm").format(Date(it))}",
                 modifier = Modifier.padding(top = 4.dp)
             )
         }

@@ -35,8 +35,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.Testing
-import com.example.grouppay.ui.features.addExpense.model.ExpenseParticipant
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
 import com.example.grouppay.ui.features.core.view.components.CommonText
@@ -145,11 +145,11 @@ fun AddExpenseScreen(groupId: String?) {
 @Composable
 fun ParticipantContributions(
     modifier: Modifier = Modifier,
-    participant: ExpenseParticipant = ExpenseParticipant(participant = Testing.getParticipent()),
+    participant: Participant = Testing.getParticipent(),
     index: Int = 0,
     totalAmountPaid: Double = 50.0,
     totalParticipants: Int = 2,
-    updateParticipant: (ExpenseParticipant) -> Unit = {}
+    updateParticipant: (Participant) -> Unit = {}
 ) {
     var rsText by remember { mutableStateOf((totalAmountPaid / totalParticipants).toString()) }
     var perText by remember { mutableStateOf(((totalAmountPaid / totalParticipants) / totalAmountPaid * 100).toString()) }
@@ -184,12 +184,12 @@ fun ParticipantContributions(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CommonText(
-                text = "${index + 1}: ${participant.participant?.name}",
+                text = "${index + 1}: ${participant.name}",
                 textColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
             Checkbox(checked = true, onCheckedChange = {
                 updateParticipant(participant.apply {
-                    this.participant?.setAmountBorrowedFromGroup(rsText)
+                    this.setAmountBorrowedFromGroup(rsText)
                 })
             })
         }
@@ -212,7 +212,7 @@ fun ParticipantContributions(
                     ),
                     keyboardActions = KeyboardActions(onDone = {
                         updateParticipant(participant.apply {
-                            this.participant?.setAmountBorrowedFromGroup(rsText)
+                            this.setAmountBorrowedFromGroup(rsText)
                         })
                     })
                 )
@@ -236,7 +236,7 @@ fun ParticipantContributions(
                     ),
                     keyboardActions = KeyboardActions(onDone = {
                         updateParticipant(participant.apply {
-                            this.participant?.setAmountBorrowedFromGroup(rsText)
+                            this.setAmountBorrowedFromGroup(rsText)
                         })
                     })
                 )

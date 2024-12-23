@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grouppay.data.repo.GroupRepository
 import com.example.grouppay.domain.Participant
-import com.example.grouppay.ui.features.addExpense.model.ExpenseParticipant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -12,7 +11,7 @@ class AddExpenseViewModel(
     private val repository: GroupRepository
 ) : ViewModel() {
 
-    val allParticipantsByGroupId = MutableStateFlow<ArrayList<ExpenseParticipant>>(arrayListOf())
+    val allParticipantsByGroupId = MutableStateFlow<ArrayList<Participant>>(arrayListOf())
     val paidBy = MutableStateFlow<Participant?>(null)
 
     fun getParticipantsByGroupId(groupId: String?) {
@@ -24,12 +23,12 @@ class AddExpenseViewModel(
         }
     }
 
-    fun updateParticipant(participant: ExpenseParticipant) {
+    fun updateParticipant(participant: Participant) {
         viewModelScope.launch {
             allParticipantsByGroupId.emit(
-                ArrayList<ExpenseParticipant>().apply {
+                ArrayList<Participant>().apply {
                     allParticipantsByGroupId.value.map {
-                        if (it.participant?._id == participant.participant?._id) {
+                        if (it._id == participant._id) {
                             participant
                         } else {
                             it
@@ -40,9 +39,9 @@ class AddExpenseViewModel(
         }
     }
 
-    fun updatePaidBy(participant: ExpenseParticipant) {
+    fun updatePaidBy(participant: Participant) {
         viewModelScope.launch {
-            paidBy.emit(participant.participant)
+            paidBy.emit(participant)
         }
     }
 

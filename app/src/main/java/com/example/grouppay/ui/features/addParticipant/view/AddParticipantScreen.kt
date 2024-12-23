@@ -1,6 +1,5 @@
 package com.example.grouppay.ui.features.addParticipant.view
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +9,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,10 +26,7 @@ import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantV
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.theme.GroupPayTheme
-import io.realm.kotlin.ext.copyFromRealm
 import org.koin.androidx.compose.koinViewModel
-import org.mongodb.kbson.BsonObjectId
-import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,21 +35,29 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
     val viewModel: AddParticipantViewModel = koinViewModel()
     val suggestions by viewModel.getAllParticipantsByText("").collectAsState(initial = emptyList())
     var participant by remember { mutableStateOf("") }
-    val state = viewModel.saveResponse.collectAsState()
+    val state by viewModel.saveResponse.collectAsState(null)
     val context = LocalContext.current
 
-    when (state.value) {
-        true -> {
-            Toast.makeText(context, "Participant $participant added.", Toast.LENGTH_SHORT).show()
-            navController.navigateUp()
+    LaunchedEffect(state) {
+        when (state) {
+            true -> {
+                Toast.makeText(context, "Participant $participant added.", Toast.LENGTH_SHORT)
+                    .show()
+                navController.navigateUp()
+            }
+
+            false -> {
+                Toast.makeText(
+                    context,
+                    "Error adding participant $participant.",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            }
+
+            else -> {}
         }
 
-        false -> {
-            Toast.makeText(context, "Error adding participant $participant.", Toast.LENGTH_SHORT)
-                .show()
-        }
-
-        else -> {}
     }
 
     GroupPayTheme {
@@ -64,7 +69,6 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
                         Toast.makeText(context, "Group not found", Toast.LENGTH_SHORT).show()
                         return@FloatingActionButton
                     }
-                    Log.d("######", "groupId: ${groupId}")
                     viewModel.saveNewParticipantInTheGroup(
                         groupId,
                         Participant().apply {
