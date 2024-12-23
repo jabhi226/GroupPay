@@ -1,7 +1,6 @@
 package com.example.grouppay.ui.features.addExpense.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,22 +24,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.Testing
+import com.example.grouppay.ui.features.addExpense.model.ExpenseParticipant
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
 import com.example.grouppay.ui.features.core.view.components.CommonText
@@ -56,9 +52,8 @@ fun AddExpenseScreen(groupId: String?) {
     }
     val allParticipantsByGroupId by viewModel.allParticipantsByGroupId.collectAsState()
     val paidBy by viewModel.paidBy.collectAsState()
-
     var expenseName by remember { mutableStateOf("") }
-    var totalAmountPaid by remember { mutableDoubleStateOf(0.0) }
+    var totalAmountPaid by remember { mutableStateOf("0.0") }
     var paidByText by remember { mutableStateOf(paidBy?.name ?: "") }
 
 
@@ -117,12 +112,10 @@ fun AddExpenseScreen(groupId: String?) {
 //                    },
 //                )
                 CommonOutlinedTextField(
-                    text = totalAmountPaid.toString(),
+                    text = totalAmountPaid,
                     hint = "Total Amount Paid",
                     updateText = {
-                        if (it.isNotEmpty() || it.matches(Regex("^\\d+\$"))) {
-                            totalAmountPaid = it.toDouble()
-                        }
+                        totalAmountPaid = (if (it.endsWith(".")) it.replace(".", "") else it)
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
@@ -136,7 +129,7 @@ fun AddExpenseScreen(groupId: String?) {
                         ParticipantContributions(
                             participant = participant,
                             index = index,
-                            totalAmountPaid = totalAmountPaid.toDouble(),
+                            totalAmountPaid = totalAmountPaid.toDoubleOrNull() ?: 0.0,
                             totalParticipants = allParticipantsByGroupId.size
                         ) {
                             viewModel.updateParticipant(it)
@@ -148,32 +141,33 @@ fun AddExpenseScreen(groupId: String?) {
     }
 }
 
-fun isValidNumber(input: String): Boolean {
-    // Check for valid integers or floats (including edge case for `12.`)
-    val regex =
-        "^[+-]?\\d*\\.?\\d+$".toRegex()  // Match integers and floats with optional decimal point
-    return input.matches(regex) || input.toDoubleOrNull() != null
-}
-
 @Preview(showSystemUi = true)
 @Composable
 fun ParticipantContributions(
     modifier: Modifier = Modifier,
-    participant: Participant = Testing.getParticipent(),
+    participant: ExpenseParticipant = ExpenseParticipant(participant = Testing.getParticipent()),
     index: Int = 0,
     totalAmountPaid: Double = 50.0,
     totalParticipants: Int = 2,
-    updateParticipant: (Participant) -> Unit = {}
+    updateParticipant: (ExpenseParticipant) -> Unit = {}
 ) {
-    var rsText by remember { mutableDoubleStateOf(totalAmountPaid / totalParticipants) }
-    var perText by remember { mutableDoubleStateOf((totalAmountPaid / totalParticipants) / totalAmountPaid * 100) }
+    var rsText by remember { mutableStateOf((totalAmountPaid / totalParticipants).toString()) }
+    var perText by remember { mutableStateOf(((totalAmountPaid / totalParticipants) / totalAmountPaid * 100).toString()) }
 
-    fun calculateAmountFromPercentage(percentage: Double) {
-        rsText = (totalAmountPaid * percentage) / 100
+    fun calculateAmountFromPercentage(percentage: String) {
+        try {
+            rsText = ((totalAmountPaid * percentage.toDouble()) / 100).toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    fun calculatePercentageFromAmount(amount: Double) {
-        perText = (amount / totalAmountPaid) * 100
+    fun calculatePercentageFromAmount(amount: String) {
+        try {
+            perText = ((amount.toDouble() / totalAmountPaid) * 100).toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
     Column(
         modifier = modifier
@@ -190,13 +184,12 @@ fun ParticipantContributions(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CommonText(
-                text = "${index + 1}: ${participant.name}",
+                text = "${index + 1}: ${participant.participant?.name}",
                 textColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
-            Checkbox(checked = true, onCheckedChange = { it
+            Checkbox(checked = true, onCheckedChange = {
                 updateParticipant(participant.apply {
-                    amountBorrowedFromGroup = rsText
-
+                    this.participant?.setAmountBorrowedFromGroup(rsText)
                 })
             })
         }
@@ -207,10 +200,10 @@ fun ParticipantContributions(
             ) {
                 CommonOutlinedTextField(
                     modifier = Modifier,
-                    text = rsText.toString(),
+                    text = rsText,
                     hint = "Amount in ₹",
                     updateText = {
-                        rsText = (if (it.endsWith(".")) it.replace(".", "") else it).toDouble()
+                        rsText = (if (it.endsWith(".")) it.replace(".", "") else it)
                         calculatePercentageFromAmount(rsText)
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -219,7 +212,7 @@ fun ParticipantContributions(
                     ),
                     keyboardActions = KeyboardActions(onDone = {
                         updateParticipant(participant.apply {
-                            amountBorrowedFromGroup = rsText
+                            this.participant?.setAmountBorrowedFromGroup(rsText)
                         })
                     })
                 )
@@ -231,10 +224,10 @@ fun ParticipantContributions(
             ) {
                 CommonOutlinedTextField(
                     modifier = Modifier,
-                    text = perText.toString(),
+                    text = perText,
                     hint = "Amount in %",
                     updateText = {
-                        perText = it.toDoubleOrNull() ?: 0.0
+                        perText = (if (it.endsWith(".")) it.replace(".", "") else it)
                         calculateAmountFromPercentage(perText)
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -243,7 +236,7 @@ fun ParticipantContributions(
                     ),
                     keyboardActions = KeyboardActions(onDone = {
                         updateParticipant(participant.apply {
-                            amountBorrowedFromGroup = rsText
+                            this.participant?.setAmountBorrowedFromGroup(rsText)
                         })
                     })
                 )

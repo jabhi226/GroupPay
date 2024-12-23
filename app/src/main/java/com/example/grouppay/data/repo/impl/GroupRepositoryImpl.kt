@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.grouppay.data.repo.GroupRepository
 import com.example.grouppay.domain.Group
 import com.example.grouppay.domain.Participant
+import com.example.grouppay.ui.features.addExpense.model.ExpenseParticipant
 import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
@@ -46,12 +47,17 @@ class GroupRepositoryImpl(
         return realm.query<Participant>("name CONTAINS $0", text).asFlow().map { it.list.toList() }
     }
 
-    override suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<Participant> {
+    override suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<ExpenseParticipant> {
         return withContext(Dispatchers.IO) {
             val group =
                 realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()
             group ?: return@withContext arrayListOf()
-            return@withContext ArrayList<Participant>().apply { addAll(group.participants) }
+            println("====> group ${group.participants}")
+            return@withContext ArrayList<ExpenseParticipant>().apply {
+                group.participants.map {
+                    ExpenseParticipant(participant = it)
+                }
+            }
         }
     }
 
@@ -77,20 +83,20 @@ class GroupRepositoryImpl(
                         realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()
                     group ?: return@write
                     Log.d("######", "participants: ${group.participants}")
-//                    group.participants?.add(participant)
-                    val allParticipants = arrayListOf<Participant>().apply {
-                        addAll(group.participants)
-                    }
-                    allParticipants.add(participant)
-
-                    copyToRealm(
-                        Group().apply {
-                            name = group.name
-                            participants = allParticipants.toRealmList()
-                            expenses = group.expenses
-                            _id = group._id
-                        }, updatePolicy = UpdatePolicy.ALL
-                    )
+                    group.participants.add(participant)
+//                    val allParticipants = arrayListOf<Participant>().apply {
+//                        addAll(group.participants)
+//                    }
+//                    allParticipants.add(participant)
+//
+//                    copyToRealm(
+//                        Group().apply {
+//                            name = group.name
+//                            participants = allParticipants.toRealmList()
+//                            expenses = group.expenses
+//                            _id = group._id
+//                        }, updatePolicy = UpdatePolicy.ALL
+//                    )
                 }
                 true
             }
