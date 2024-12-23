@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -79,7 +82,7 @@ fun AddExpenseScreen(groupId: String?) {
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .padding(8.dp)
+                    .padding(16.dp)
             ) {
 
                 CommonOutlinedTextField(
@@ -90,7 +93,7 @@ fun AddExpenseScreen(groupId: String?) {
                     },
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 AutocompleteTextField(
                     text = paidByText,
                     hint = "Paid by",
@@ -103,7 +106,7 @@ fun AddExpenseScreen(groupId: String?) {
                     },
                     saveNewSuggestion = {}
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 //                CommonOutlinedTextField(
 //                    text = expenseName,
 //                    hint = "Expense Name, ex. Lunch",
@@ -120,12 +123,12 @@ fun AddExpenseScreen(groupId: String?) {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 CommonText(text = "Included Participants", modifier = Modifier)
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Column {
-                    allParticipantsByGroupId.forEachIndexed { index, participant ->
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn {
+                    itemsIndexed(allParticipantsByGroupId) { index, participant ->
                         ParticipantContributions(
                             participant = participant,
                             index = index,
@@ -141,7 +144,7 @@ fun AddExpenseScreen(groupId: String?) {
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun ParticipantContributions(
     modifier: Modifier = Modifier,
@@ -171,12 +174,13 @@ fun ParticipantContributions(
     }
     Column(
         modifier = modifier
+            .padding(bottom = 16.dp)
             .fillMaxWidth()
             .background(
                 MaterialTheme.colorScheme.tertiaryContainer,
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(8.dp)
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -187,12 +191,17 @@ fun ParticipantContributions(
                 text = "${index + 1}: ${participant.name}",
                 textColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
-            Checkbox(checked = true, onCheckedChange = {
-                updateParticipant(participant.apply {
-                    this.setAmountBorrowedFromGroup(rsText)
-                })
-            })
+            Checkbox(
+                checked = participant.isSelected,
+                onCheckedChange = {
+                    updateParticipant(participant.apply {
+                        this.setAmountBorrowedFromGroup(rsText)
+                    })
+                },
+                modifier = Modifier.size(24.dp)
+            )
         }
+        Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Box(
                 modifier = Modifier

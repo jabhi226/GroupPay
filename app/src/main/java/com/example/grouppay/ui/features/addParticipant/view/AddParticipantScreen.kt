@@ -18,13 +18,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantViewModel
 import com.example.grouppay.ui.features.core.view.components.CommonText
-import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
+import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,7 +34,6 @@ import org.koin.androidx.compose.koinViewModel
 fun AddParticipantScreen(navController: NavController = rememberNavController(), groupId: String?) {
 
     val viewModel: AddParticipantViewModel = koinViewModel()
-    val suggestions by viewModel.getAllParticipantsByText("").collectAsState(initial = emptyList())
     var participant by remember { mutableStateOf("") }
     val state by viewModel.saveResponse.collectAsState(null)
     val context = LocalContext.current
@@ -91,17 +91,11 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
             Column(
                 modifier = Modifier.padding(innerPadding),
             ) {
-                AutocompleteTextField(
+                CommonOutlinedTextField(
+                    modifier = Modifier.padding(16.dp),
                     text = participant,
                     hint = "Participant name",
                     updateText = {
-                        participant = it
-                    },
-                    suggestions = suggestions,
-                    selectSuggestion = {
-                        participant = it.name
-                    },
-                    saveNewSuggestion = {
                         participant = it
                     }
                 )
