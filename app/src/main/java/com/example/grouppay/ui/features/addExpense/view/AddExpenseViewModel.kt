@@ -5,43 +5,49 @@ import androidx.lifecycle.viewModelScope
 import com.example.grouppay.data.repo.GroupRepository
 import com.example.grouppay.domain.Participant
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AddExpenseViewModel(
     private val repository: GroupRepository
 ) : ViewModel() {
 
-    val allParticipantsByGroupId = MutableStateFlow<ArrayList<Participant>>(arrayListOf())
+    val allParticipantsByGroupId = MutableStateFlow<List<Participant>>(listOf())
     val paidBy = MutableStateFlow<Participant?>(null)
 
     fun getParticipantsByGroupId(groupId: String?) {
         viewModelScope.launch {
             groupId ?: return@launch
             val list = repository.getAllParticipantByGroupId(groupId)
-            println("====> list $list")
             allParticipantsByGroupId.emit(list)
         }
     }
 
     fun updateParticipant(participant: Participant) {
         viewModelScope.launch {
-            allParticipantsByGroupId.emit(
+            allParticipantsByGroupId.update { items ->
                 ArrayList<Participant>().apply {
-                    allParticipantsByGroupId.value.map {
-                        if (it._id == participant._id) {
-                            participant
-                        } else {
-                            it
-                        }
-                    }
+                    addAll(
+                        items.map {
+                            if (it._id == participant._id) {
+                                participant
+                            } else {
+                                it
+                            }
+                        })
                 }
-            )
+            }
         }
     }
 
     fun updatePaidBy(participant: Participant) {
         viewModelScope.launch {
             paidBy.emit(participant)
+            allParticipantsByGroupId.update { items ->
+                ArrayList<Participant>().apply {
+                    addAll(items.filterNot { it._id == participant._id })
+                }
+            }
         }
     }
 

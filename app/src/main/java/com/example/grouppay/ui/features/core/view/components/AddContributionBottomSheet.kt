@@ -37,11 +37,12 @@ fun AddContributionBottomSheet(
             dragHandle = null,
             scrimColor = Color.Black.copy(alpha = .5f),
         ) {
-            var text by remember { mutableStateOf("") }
             AutocompleteTextField(
-                text = text,
-                updateText = { text = it },
+                text = "text",
                 suggestions = listOf<String>(),
+                getSuggestionName = {
+                    "test"
+                },
                 selectSuggestion = {},
                 saveNewSuggestion = {})
             CommonOutlinedTextField(text = mText.value) {

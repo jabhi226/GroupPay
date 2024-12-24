@@ -1,13 +1,20 @@
 package com.example.grouppay.ui.features.core.view.components
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.grouppay.R
 
@@ -23,40 +31,52 @@ fun <T> AutocompleteTextField(
     modifier: Modifier = Modifier,
     text: String,
     hint: String = "",
-    updateText: (String) -> Unit,
     suggestions: List<T>,
+    getSuggestionName: (T) -> String,
     selectSuggestion: (T) -> Unit,
-    saveNewSuggestion: (String) -> Unit
+    saveNewSuggestion: (String) -> Unit,
 ) {
 
+    var updatedText by remember { mutableStateOf(text) }
     var filteredSuggestions by remember { mutableStateOf(suggestions) }
     var showSuggestions by remember { mutableStateOf(false) }
-    var showAddNew by remember { mutableStateOf(text.isNotEmpty()) }
+    var showAddNew by remember { mutableStateOf(updatedText.isNotEmpty()) }
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(updatedText) {
+        if (updatedText.isEmpty()) {
+            filteredSuggestions = suggestions
+            showSuggestions = false
+            showAddNew = false
+        } else {
+            filteredSuggestions = suggestions.filter {
+                getSuggestionName(it).contains(updatedText, ignoreCase = true)
+            }
+            showSuggestions = true
+            showAddNew = true
+        }
+    }
 
     Column {
         CommonOutlinedTextField(
-            text = text,
+            text = updatedText,
             updateText = { input ->
-                filteredSuggestions = suggestions.filter {
-                    text.contains(input, ignoreCase = true)
-                }
-                showSuggestions = filteredSuggestions.isNotEmpty()
-                updateText(input)
+                updatedText = input
             },
             hint = hint,
             modifier = Modifier.fillMaxWidth()
         )
 
         if (showSuggestions) {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(scrollState)) {
                 filteredSuggestions.forEach { suggestion ->
                     SuggestionItem(
-                        suggestion = suggestion,
-                        text = text,
+                        text = getSuggestionName(suggestion),
                         showAddNew = false
                     ) {
-                        showSuggestions = false
-                        updateText(text)
+                        updatedText = getSuggestionName(suggestion)
                         selectSuggestion(suggestion)
                     }
                 }
@@ -64,34 +84,47 @@ fun <T> AutocompleteTextField(
         }
         if (showAddNew) {
             SuggestionItem(
-                suggestion = null,
-                text = text,
+                text = updatedText,
                 showAddNew = true
             ) {
-                showAddNew = false
-                saveNewSuggestion(text)
+                saveNewSuggestion(updatedText)
             }
         }
     }
 }
 
+
+@Preview
 @Composable
-fun <T> SuggestionItem(
-    suggestion: T,
-    text: String,
-    showAddNew: Boolean,
-    onClick: () -> Unit,
+fun SuggestionItem(
+    text: String = "Test",
+    showAddNew: Boolean = true,
+    onClick: () -> Unit = {},
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp)
+            .background(
+                color = MaterialTheme.colorScheme.primaryContainer,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(vertical = 16.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Start
     ) {
-        Icon(painter = painterResource(id = R.drawable.add), contentDescription = "")
+        if (showAddNew) {
+            Icon(
+                tint = MaterialTheme.colorScheme.inversePrimary,
+                painter = painterResource(id = R.drawable.add),
+                contentDescription = ""
+            )
+        }
         CommonText(
+            textColor = MaterialTheme.colorScheme.onPrimaryContainer,
             text = text,
             modifier = Modifier
-                .padding(8.dp)
+                .padding(horizontal = 16.dp)
                 .clickable { onClick() },
         )
     }

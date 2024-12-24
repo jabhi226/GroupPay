@@ -57,7 +57,6 @@ fun AddExpenseScreen(groupId: String?) {
     val paidBy by viewModel.paidBy.collectAsState()
     var expenseName by remember { mutableStateOf("") }
     var totalAmountPaid by remember { mutableStateOf("0.0") }
-    var paidByText by remember { mutableStateOf(paidBy?.name ?: "") }
 
 
     GroupPayTheme {
@@ -95,25 +94,18 @@ fun AddExpenseScreen(groupId: String?) {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 AutocompleteTextField(
-                    text = paidByText,
+                    text = paidBy?.name ?: "",
                     hint = "Paid by",
-                    updateText = {
-                        paidByText = it
-                    },
                     suggestions = allParticipantsByGroupId,
+                    getSuggestionName = {
+                        it.name
+                    },
                     selectSuggestion = {
                         viewModel.updatePaidBy(it)
                     },
                     saveNewSuggestion = {}
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-//                CommonOutlinedTextField(
-//                    text = expenseName,
-//                    hint = "Expense Name, ex. Lunch",
-//                    updateText = {
-//                        expenseName = it
-//                    },
-//                )
                 CommonOutlinedTextField(
                     text = totalAmountPaid,
                     hint = "Total Amount Paid",

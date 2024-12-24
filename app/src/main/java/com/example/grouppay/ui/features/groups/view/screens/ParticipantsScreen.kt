@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.Group
 import com.example.grouppay.domain.Participant
+import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.Testing.getContros
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.theme.GroupPayTheme
@@ -86,11 +87,11 @@ fun ParticipantsScreen(
 }
 
 
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 fun ParticipantItem(
     modifier: Modifier = Modifier,
-    participant: Participant = getContros()[0].remainingParticipants[0]
+    participant: Participant = Testing.getParticipent()
 ) {
     Box(
         modifier = modifier
@@ -120,13 +121,13 @@ fun ParticipantItem(
                 ) {
                     CommonText(
                         text = "Paid",
-                        textColor = Color.Gray
+                        textColor = MaterialTheme.colorScheme.outline
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     CommonText(
                         fontSize = 18.sp,
                         text = "₹ ${participant.amountOwedFromGroup}",
-                        textColor = Color.Black
+                        textColor = MaterialTheme.colorScheme.inverseSurface
                     )
                 }
                 Column(
@@ -135,7 +136,7 @@ fun ParticipantItem(
                 ) {
                     CommonText(
                         text = "Owes",
-                        textColor = Color.Gray
+                        textColor = MaterialTheme.colorScheme.outline
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     CommonText(
@@ -146,7 +147,7 @@ fun ParticipantItem(
                         } else if (participant.amountBorrowedFromGroup < 0.0) {
                             Color.Red
                         } else {
-                            Color.Black
+                            MaterialTheme.colorScheme.inverseSurface
                         }
                     )
                 }
