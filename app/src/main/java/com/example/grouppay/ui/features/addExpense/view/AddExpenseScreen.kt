@@ -35,14 +35,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grouppay.domain.Participant
-import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
 import com.example.grouppay.ui.features.core.view.components.CommonText
+import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,8 +54,9 @@ fun AddExpenseScreen(groupId: String?) {
     }
     val allParticipantsByGroupId by viewModel.allParticipantsByGroupId.collectAsState()
     val paidBy by viewModel.paidBy.collectAsState()
+    val totalAmountPaid by viewModel.totalAmountPaid.collectAsState()
+
     var expenseName by remember { mutableStateOf("") }
-    var totalAmountPaid by remember { mutableStateOf("0.0") }
 
 
     GroupPayTheme {
@@ -110,7 +110,7 @@ fun AddExpenseScreen(groupId: String?) {
                     text = totalAmountPaid,
                     hint = "Total Amount Paid",
                     updateText = {
-                        totalAmountPaid = (if (it.endsWith(".")) it.replace(".", "") else it)
+                        viewModel.updateTotalAmountPaid(it)
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
@@ -125,10 +125,10 @@ fun AddExpenseScreen(groupId: String?) {
                             participant = participant,
                             index = index,
                             totalAmountPaid = totalAmountPaid.toDoubleOrNull() ?: 0.0,
-                            totalParticipants = allParticipantsByGroupId.size
-                        ) {
-                            viewModel.updateParticipant(it)
-                        }
+                            totalParticipants = allParticipantsByGroupId.size,
+                            updateParticipantAmount = { viewModel.updateParticipantAmount(it) },
+                            updateParticipantSelection = { viewModel.updateParticipantSelection(it) },
+                        )
                     }
                 }
             }
@@ -136,34 +136,45 @@ fun AddExpenseScreen(groupId: String?) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun ParticipantContributions(
     modifier: Modifier = Modifier,
-    participant: Participant = Testing.getParticipent(),
-    index: Int = 0,
-    totalAmountPaid: Double = 50.0,
-    totalParticipants: Int = 2,
-    updateParticipant: (Participant) -> Unit = {}
+    participant: Participant,
+    index: Int,
+    totalAmountPaid: Double,
+    totalParticipants: Int,
+    updateParticipantAmount: (Participant) -> Unit = {},
+    updateParticipantSelection: (Participant) -> Unit = {}
 ) {
-    var rsText by remember { mutableStateOf((totalAmountPaid / totalParticipants).toString()) }
-    var perText by remember { mutableStateOf(((totalAmountPaid / totalParticipants) / totalAmountPaid * 100).toString()) }
+    var rsText by remember { mutableStateOf("") }
+    var perText by remember { mutableStateOf("") }
+    var isSelected by remember { mutableStateOf(false) }
 
-    fun calculateAmountFromPercentage(percentage: String) {
+    LaunchedEffect(totalAmountPaid) {
+        rsText = (totalAmountPaid / totalParticipants).formatToTwoDecimalPlaces()
+        perText =
+            ((totalAmountPaid / totalParticipants) / totalAmountPaid * 100).formatToTwoDecimalPlaces()
+    }
+
+    LaunchedEffect(perText) {
         try {
-            rsText = ((totalAmountPaid * percentage.toDouble()) / 100).toString()
+            rsText = ((totalAmountPaid * perText.toDouble()) / 100).formatToTwoDecimalPlaces()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    LaunchedEffect(rsText) {
+        try {
+            perText = ((rsText.toDouble() / totalAmountPaid) * 100).formatToTwoDecimalPlaces()
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun calculatePercentageFromAmount(amount: String) {
-        try {
-            perText = ((amount.toDouble() / totalAmountPaid) * 100).toString()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    LaunchedEffect(participant) {
+        isSelected = participant.isSelected
     }
+
     Column(
         modifier = modifier
             .padding(bottom = 16.dp)
@@ -184,11 +195,9 @@ fun ParticipantContributions(
                 textColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
             Checkbox(
-                checked = participant.isSelected,
+                checked = isSelected,
                 onCheckedChange = {
-                    updateParticipant(participant.apply {
-                        this.setAmountBorrowedFromGroup(rsText)
-                    })
+                    updateParticipantSelection(participant)
                 },
                 modifier = Modifier.size(24.dp)
             )
@@ -205,14 +214,13 @@ fun ParticipantContributions(
                     hint = "Amount in ₹",
                     updateText = {
                         rsText = (if (it.endsWith(".")) it.replace(".", "") else it)
-                        calculatePercentageFromAmount(rsText)
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(onDone = {
-                        updateParticipant(participant.apply {
+                        updateParticipantAmount(participant.apply {
                             this.setAmountBorrowedFromGroup(rsText)
                         })
                     })
@@ -229,14 +237,13 @@ fun ParticipantContributions(
                     hint = "Amount in %",
                     updateText = {
                         perText = (if (it.endsWith(".")) it.replace(".", "") else it)
-                        calculateAmountFromPercentage(perText)
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(onDone = {
-                        updateParticipant(participant.apply {
+                        updateParticipantAmount(participant.apply {
                             this.setAmountBorrowedFromGroup(rsText)
                         })
                     })
