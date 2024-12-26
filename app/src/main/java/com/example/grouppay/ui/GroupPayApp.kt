@@ -11,7 +11,6 @@ import com.example.grouppay.ui.features.addParticipant.view.AddParticipantScreen
 import com.example.grouppay.ui.features.groups.view.screens.GroupDetailsScreen
 import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import com.google.gson.Gson
-import org.bson.types.ObjectId
 
 
 @Composable
@@ -33,20 +32,18 @@ fun GroupPayApp() {
 
         composable("add_participant/{group_id}") { navBackStackEntry ->
             val groupId = navBackStackEntry.arguments?.getString("group_id")
-            val groupId1 = try {
-                ObjectId(groupId)
-            } catch (e: IllegalArgumentException) {
-                null
-            }
             AddParticipantScreen(
                 navController = navController,
-                groupId = groupId1?.toHexString() ?: groupId
+                groupId = groupId
             )
         }
 
         composable("add_expense/{group_id}") { navBackStackEntry ->
             val groupId = navBackStackEntry.arguments?.getString("group_id")
-            AddExpenseScreen(groupId = groupId)
+            AddExpenseScreen(
+                navController = navController,
+                groupId = groupId
+            )
         }
     }
 }

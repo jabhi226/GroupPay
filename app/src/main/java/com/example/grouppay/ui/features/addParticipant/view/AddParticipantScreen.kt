@@ -26,6 +26,7 @@ import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantViewModel
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
+import com.example.grouppay.ui.features.utils.showToast
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,18 +42,12 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
     LaunchedEffect(state) {
         when (state) {
             true -> {
-                Toast.makeText(context, "Participant $participant added.", Toast.LENGTH_SHORT)
-                    .show()
+                context.showToast("Participant $participant added.")
                 navController.navigateUp()
             }
 
             false -> {
-                Toast.makeText(
-                    context,
-                    "Error adding participant $participant.",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                context.showToast("Error adding participant $participant.")
             }
 
             else -> {}

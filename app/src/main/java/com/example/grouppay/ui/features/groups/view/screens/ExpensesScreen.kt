@@ -112,14 +112,12 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
         }
 
         // Date of Expense
-        expense.dateOfExpense?.let {
-            CommonText(
-                textColor = MaterialTheme.colorScheme.secondary,
-                fontStyle = FontStyle.Italic,
-                text = "Date: ${SimpleDateFormat("yyyy MMM dd, hh:mm").format(Date(it))}",
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        }
+        CommonText(
+            textColor = MaterialTheme.colorScheme.secondary,
+            fontStyle = FontStyle.Italic,
+            text = "Date: ${SimpleDateFormat("yyyy MMM dd, hh:mm").format(Date(expense.dateOfExpense))}",
+            modifier = Modifier.padding(top = 4.dp)
+        )
 
         // Remaining Participants
         if (expense.remainingParticipants.isNotEmpty()) {
@@ -159,12 +157,12 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
             }
         }
 
-        // Group
-        expense.group?.let {
-            CommonText(
-                text = "Group: ${it.name}",
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
+//        // Group
+//        expense.group?.let {
+//            CommonText(
+//                text = "Group: ${it.name}",
+//                modifier = Modifier.padding(top = 8.dp)
+//            )
+//        }
     }
 }

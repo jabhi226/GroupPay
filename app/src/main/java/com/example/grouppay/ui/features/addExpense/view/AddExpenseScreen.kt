@@ -32,22 +32,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
+import com.example.grouppay.ui.features.utils.showToast
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen(groupId: String?) {
+fun AddExpenseScreen(
+    navController: NavController,
+    groupId: String?
+) {
     val viewModel: AddExpenseViewModel = koinViewModel()
     LaunchedEffect(groupId) {
         viewModel.getParticipantsByGroupId(groupId)
@@ -55,8 +61,24 @@ fun AddExpenseScreen(groupId: String?) {
     val allParticipantsByGroupId by viewModel.allParticipantsByGroupId.collectAsState()
     val paidBy by viewModel.paidBy.collectAsState()
     val totalAmountPaid by viewModel.totalAmountPaid.collectAsState()
+    val expenseName by viewModel.expenseName.collectAsState()
+    val context = LocalContext.current
 
-    var expenseName by remember { mutableStateOf("") }
+    LaunchedEffect(viewModel.uiEvents) {
+        viewModel.uiEvents.collect { event ->
+            when (event) {
+                AddExpenseViewModel.UiEvents.NavigateUp -> {
+                    context.showToast("Expense $expenseName added.")
+                    navController.navigateUp()
+                }
+
+                is AddExpenseViewModel.UiEvents.ShowError -> {
+                    context.showToast("Error adding Expense $expenseName.")
+                }
+            }
+        }
+    }
+
 
 
     GroupPayTheme {
@@ -88,7 +110,7 @@ fun AddExpenseScreen(groupId: String?) {
                     text = expenseName,
                     hint = "Expense Name, ex. Lunch",
                     updateText = {
-                        expenseName = it
+                        viewModel.updateExpenseName(it)
                     },
                 )
 

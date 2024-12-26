@@ -12,9 +12,9 @@ class Expense : RealmObject {
     var _id: ObjectId = ObjectId()
     var label: String = ""
     var paidBy: Participant? = null
-    var dateOfExpense: Long? = System.currentTimeMillis()
+    var dateOfExpense: Long = System.currentTimeMillis()
     var remainingParticipants: RealmList<Participant> = realmListOf()
-    var group: Group? = null
+    var groupId: String = ""
 
     fun getDomainExpense(): DomainExpense {
         return DomainExpense(
@@ -23,7 +23,7 @@ class Expense : RealmObject {
             paidBy = paidBy?.getDomainModel(),
             dateOfExpense = dateOfExpense,
             remainingParticipants = remainingParticipants.map { it.getDomainModel() },
-            group = group?.getDomainGroup()
+            groupId = groupId
         )
     }
 

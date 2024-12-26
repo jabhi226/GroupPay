@@ -15,6 +15,7 @@ object Testing {
                 id = "",
                 label = "test",
                 dateOfExpense = System.currentTimeMillis(),
+                groupId = ""
             )
         }
     }
@@ -54,7 +55,8 @@ object Testing {
             paidBy = getParticipent(),
             id = "",
             dateOfExpense = System.currentTimeMillis(),
-            remainingParticipants = groupMembers()
+            remainingParticipants = groupMembers(),
+            groupId = ""
         )
     }
 
