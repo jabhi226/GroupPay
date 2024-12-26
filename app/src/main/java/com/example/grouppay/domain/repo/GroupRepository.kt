@@ -1,8 +1,9 @@
 package com.example.grouppay.domain.repo
 
 import com.example.grouppay.domain.Expense
+import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.domain.Group
-import com.example.grouppay.domain.Participant
+import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import kotlinx.coroutines.flow.Flow
 
@@ -14,12 +15,14 @@ interface GroupRepository {
 
     fun getGroupInformation(objectId: String): Group
 
-    fun getAllParticipantByText(text: String): Flow<List<Participant>>
+    fun getAllParticipantByText(text: String): Flow<List<GroupMember>>
 
-    suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<Participant>
+    suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<ExpenseMember>
 
-    suspend fun saveNewParticipantInTheGroup(groupId: String, participant: Participant): Boolean
+    suspend fun saveNewParticipantInTheGroup(groupId: String, participant: GroupMember): Boolean
 
     suspend fun upsertExpense(expense: Expense): Boolean
+
+    suspend fun getExpensesByGroupId(groupId: String): List<Expense>
 
 }

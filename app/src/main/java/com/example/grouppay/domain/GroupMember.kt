@@ -1,6 +1,6 @@
 package com.example.grouppay.domain
 
-data class Participant(
+data class GroupMember(
     var id: String = "",
     var name: String,
     var amountBorrowedFromGroup: Double = 0.0,

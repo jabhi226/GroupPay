@@ -1,8 +1,9 @@
 package com.example.grouppay.di
 
 import com.example.grouppay.data.entities.Expense
+import com.example.grouppay.data.entities.ExpenseMember
 import com.example.grouppay.data.entities.Group
-import com.example.grouppay.data.entities.Participant
+import com.example.grouppay.data.entities.GroupMember
 import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.data.repo.GroupRepositoryImpl
 import com.example.grouppay.ui.features.addExpense.view.AddExpenseViewModel
@@ -18,7 +19,12 @@ val appModule = module {
     single {
 
         val config = RealmConfiguration.Builder(
-            schema = setOf(Participant::class, Expense::class, Group::class)
+            schema = setOf(
+                GroupMember::class,
+                Expense::class,
+                Group::class,
+                ExpenseMember::class
+            )
         )
             .name("group_pay")
             .schemaVersion(1)

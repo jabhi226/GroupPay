@@ -5,5 +5,5 @@ data class Group(
     var id: String,
     var name: String,
     var expenses: List<Expense>,
-    var participants: List<Participant>
+    var participants: List<GroupMember>
 )

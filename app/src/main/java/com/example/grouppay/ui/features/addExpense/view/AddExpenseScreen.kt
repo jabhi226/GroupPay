@@ -39,7 +39,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.grouppay.domain.Participant
+import com.example.grouppay.domain.ExpenseMember
+import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
 import com.example.grouppay.ui.features.core.view.components.CommonText
@@ -161,12 +162,12 @@ fun AddExpenseScreen(
 @Composable
 fun ParticipantContributions(
     modifier: Modifier = Modifier,
-    participant: Participant,
+    participant: ExpenseMember,
     index: Int,
     totalAmountPaid: Double,
     totalParticipants: Int,
-    updateParticipantAmount: (Participant) -> Unit = {},
-    updateParticipantSelection: (Participant) -> Unit = {}
+    updateParticipantAmount: (ExpenseMember) -> Unit = {},
+    updateParticipantSelection: (ExpenseMember) -> Unit = {}
 ) {
     var rsText by remember { mutableStateOf("") }
     var perText by remember { mutableStateOf("") }
@@ -195,9 +196,9 @@ fun ParticipantContributions(
         }
     }
 
-    LaunchedEffect(participant.amountBorrowedFromGroup) {
-        println("====> ${participant.name} | ${participant.amountBorrowedFromGroup}")
-        rsText = participant.amountBorrowedFromGroup.toString()
+    LaunchedEffect(participant.amountBorrowedForExpense) {
+        println("====> ${participant.name} | ${participant.amountBorrowedForExpense}")
+        rsText = participant.amountBorrowedForExpense.toString()
     }
 
     Column(
@@ -246,7 +247,7 @@ fun ParticipantContributions(
                     ),
                     keyboardActions = KeyboardActions(onDone = {
                         updateParticipantAmount(participant.apply {
-                            this.setAmountBorrowedFromGroup(rsText)
+                            this.setAmountBorrowedForExpense(rsText)
                         })
                     })
                 )
@@ -269,7 +270,7 @@ fun ParticipantContributions(
                     ),
                     keyboardActions = KeyboardActions(onDone = {
                         updateParticipantAmount(participant.apply {
-                            this.setAmountBorrowedFromGroup(rsText)
+                            this.setAmountBorrowedForExpense(rsText)
                         })
                     })
                 )

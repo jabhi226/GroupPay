@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.grouppay.domain.Participant
+import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantViewModel
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
@@ -66,7 +66,7 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
                     }
                     viewModel.saveNewParticipantInTheGroup(
                         groupId,
-                        Participant(name = participant)
+                        GroupMember(name = participant)
                     )
                 }) {
                     CommonText(text = "Save")

@@ -3,8 +3,8 @@ package com.example.grouppay.ui.features.addExpense.view
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grouppay.domain.Expense
+import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.domain.repo.GroupRepository
-import com.example.grouppay.domain.Participant
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -14,8 +14,8 @@ class AddExpenseViewModel(
     private val repository: GroupRepository
 ) : ViewModel() {
 
-    val allParticipantsByGroupId = MutableStateFlow<List<Participant>>(listOf())
-    val paidBy = MutableStateFlow<Participant?>(null)
+    val allParticipantsByGroupId = MutableStateFlow<List<ExpenseMember>>(listOf())
+    val paidBy = MutableStateFlow(ExpenseMember(groupMemberId = "", name = ""))
     val totalAmountPaid = MutableStateFlow("0")
     val expenseName = MutableStateFlow("")
     private var groupId: String? = null
@@ -32,9 +32,9 @@ class AddExpenseViewModel(
         }
     }
 
-    fun updateParticipantAmount(participant: Participant) {
+    fun updateParticipantAmount(participant: ExpenseMember) {
         viewModelScope.launch {
-            val list = ArrayList<Participant>().apply {
+            val list = ArrayList<ExpenseMember>().apply {
                 addAll(
                     allParticipantsByGroupId.value.map {
                         if (it.id == participant.id) {
@@ -64,7 +64,7 @@ class AddExpenseViewModel(
                 }
             )
             item.copy(
-                amountBorrowedFromGroup = if (item.isSelected) {
+                amountBorrowedForExpense = if (item.isSelected) {
                     (totalAmountPaid.value.toDoubleOrNull() ?: 0.0) / currentSelectedParticipants
                 } else {
                     0.0
@@ -73,7 +73,7 @@ class AddExpenseViewModel(
         }
     }
 
-    fun updatePaidBy(participant: Participant) {
+    fun updatePaidBy(participant: ExpenseMember) {
         viewModelScope.launch {
             paidBy.emit(participant)
         }
@@ -91,7 +91,9 @@ class AddExpenseViewModel(
             val response = repository.upsertExpense(
                 Expense(
                     label = expenseName.value,
-                    paidBy = paidBy.value,
+                    paidBy = paidBy.value.copy(
+                        amountOwedForExpense = (totalAmountPaid.value.toDoubleOrNull() ?: 0.0)
+                    ),
                     remainingParticipants = allParticipantsByGroupId.value,
                     groupId = gId
                 )

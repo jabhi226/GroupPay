@@ -1,11 +1,10 @@
 package com.example.grouppay.domain
 
-
 data class Expense(
     var id: String = "",
     var label: String,
-    var paidBy: Participant?,
+    var paidBy: ExpenseMember? = null,
     var dateOfExpense: Long = System.currentTimeMillis(),
-    var remainingParticipants: List<Participant>,
+    var remainingParticipants: List<ExpenseMember>,
     var groupId: String
 )

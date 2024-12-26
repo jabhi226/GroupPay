@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.Group
-import com.example.grouppay.domain.Participant
+import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.theme.GroupPayTheme
@@ -86,7 +86,7 @@ fun ParticipantsScreen(
 @Composable
 fun ParticipantItem(
     modifier: Modifier = Modifier,
-    participant: Participant = Testing.getParticipent()
+    participant: GroupMember = Testing.getParticipent()
 ) {
     Box(
         modifier = modifier

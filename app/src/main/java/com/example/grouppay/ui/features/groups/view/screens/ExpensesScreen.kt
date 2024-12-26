@@ -19,6 +19,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -32,12 +35,20 @@ import com.example.grouppay.domain.Expense
 import com.example.grouppay.domain.Group
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
+import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
+import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 
 
 @Composable
 fun ExpensesScreen(navController: NavController, group: Group) {
+    val viewModel: GroupViewModel = koinViewModel()
+    val expenses by viewModel.expenses.collectAsState()
+    LaunchedEffect(group.id) {
+        viewModel.getExpensesByGroupId(groupId = group.id)
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -65,18 +76,18 @@ fun ExpensesScreen(navController: NavController, group: Group) {
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            items(group.expenses.ifEmpty { Testing.getExpenses() }) {
-                ExpenseComponent()
+            items(expenses) {
+                ExpenseComponent(expense = it)
             }
             item { Spacer(modifier = Modifier.padding(40.dp)) }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.getExpense()) {
     Column(
@@ -89,7 +100,6 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
             )
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        // Label
         CommonText(
             textColor = MaterialTheme.colorScheme.onPrimaryContainer,
             text = expense.label,
@@ -97,7 +107,6 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        // Paid By
         expense.paidBy?.let { participant ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -148,7 +157,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                             textColor = MaterialTheme.colorScheme.tertiary
                         )
                         CommonText(
-                            text = "Borrowed: ₹ ${participant.amountBorrowedFromGroup}",
+                            text = "Borrowed: ₹ ${participant.amountBorrowedForExpense}",
                             fontSize = 14.sp,
                             textColor = MaterialTheme.colorScheme.onTertiaryContainer
                         )

@@ -12,7 +12,7 @@ class Group : RealmObject {
     var _id: ObjectId = ObjectId()
     var name: String = ""
     var expenses: RealmList<Expense> = realmListOf()
-    var participants: RealmList<Participant> = realmListOf()
+    var participants: RealmList<GroupMember> = realmListOf()
 
     fun getDomainGroup(): DomainGroup {
         return DomainGroup(

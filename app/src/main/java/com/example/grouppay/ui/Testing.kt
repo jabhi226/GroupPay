@@ -1,7 +1,9 @@
 package com.example.grouppay.ui
 
+import com.example.grouppay.data.mapper.getDataModel
 import com.example.grouppay.domain.Expense
-import com.example.grouppay.domain.Participant
+import com.example.grouppay.domain.ExpenseMember
+import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 
 object Testing {
@@ -10,8 +12,8 @@ object Testing {
     fun getContros(): List<Expense> {
         return (0..0).map {
             Expense(
-                paidBy = groupMembers()[0],
-                remainingParticipants = groupMembers().drop(1),
+                paidBy = groupExpenseMembers()[0],
+                remainingParticipants = groupExpenseMembers(),
                 id = "",
                 label = "test",
                 dateOfExpense = System.currentTimeMillis(),
@@ -20,14 +22,22 @@ object Testing {
         }
     }
 
-    fun groupMembers(): List<Participant> {
+    fun groupMembers(): List<GroupMember> {
         return (0..0).map {
             getParticipent()
         }
     }
+    fun groupExpenseMembers(): List<ExpenseMember> {
+        return (0..0).map {
+            ExpenseMember(
+                groupMemberId = "",
+                name = ""
+            )
+        }
+    }
 
-    fun getParticipent(): Participant {
-        return Participant(
+    fun getParticipent(): GroupMember {
+        return GroupMember(
             name = "Test",
             amountOwedFromGroup = 0.0,
             id = ""
@@ -52,10 +62,10 @@ object Testing {
     fun getExpense(): Expense {
         return Expense(
             label = "Cake Cutting",
-            paidBy = getParticipent(),
+            paidBy = groupExpenseMembers()[0],
             id = "",
             dateOfExpense = System.currentTimeMillis(),
-            remainingParticipants = groupMembers(),
+            remainingParticipants = groupExpenseMembers(),
             groupId = ""
         )
     }

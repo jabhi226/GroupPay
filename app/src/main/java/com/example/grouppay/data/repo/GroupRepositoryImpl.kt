@@ -2,10 +2,11 @@ package com.example.grouppay.data.repo
 
 import com.example.grouppay.data.entities.Expense
 import com.example.grouppay.data.entities.Group
-import com.example.grouppay.data.entities.Participant
+import com.example.grouppay.data.entities.GroupMember
 import com.example.grouppay.data.mapper.getDataModel
+import com.example.grouppay.domain.ExpenseMember as DomainExpenseMember
 import com.example.grouppay.domain.Expense as DomainExpense
-import com.example.grouppay.domain.Participant as DomainParticipant
+import com.example.grouppay.domain.GroupMember as DomainParticipant
 import com.example.grouppay.domain.Group as DomainGroup
 import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
@@ -35,7 +36,7 @@ class GroupRepositoryImpl(
                         it.name,
                         it.participants.size,
                         it.expenses.sumOf { contribution ->
-                            contribution.paidBy?.amountOwedFromGroup ?: 0.0
+                            contribution.paidBy?.amountOwedForExpense ?: 0.0
                         }
                     )
                 }
@@ -47,20 +48,20 @@ class GroupRepositoryImpl(
     }
 
     override fun getAllParticipantByText(text: String): Flow<List<DomainParticipant>> {
-        return realm.query<Participant>("name CONTAINS $0", text).asFlow().map { realmList ->
+        return realm.query<GroupMember>("name CONTAINS $0", text).asFlow().map { realmList ->
             realmList.list.map {
                 it.getDomainModel()
             }
         }
     }
 
-    override suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<DomainParticipant> {
+    override suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<DomainExpenseMember> {
         return withContext(Dispatchers.IO) {
             val group =
                 realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()
             group ?: return@withContext arrayListOf()
-            return@withContext ArrayList<DomainParticipant>().apply {
-                addAll(group.participants.map { it.getDomainModel() })
+            return@withContext ArrayList<DomainExpenseMember>().apply {
+                addAll(group.participants.map { it.getExpenseMemberModel() })
             }
         }
     }
@@ -97,6 +98,7 @@ class GroupRepositoryImpl(
     }
 
     override suspend fun upsertExpense(expense: DomainExpense): Boolean {
+        println("=======> $expense")
         try {
             return withContext(Dispatchers.IO) {
                 return@withContext realm.write {
@@ -114,7 +116,11 @@ class GroupRepositoryImpl(
                         expense.remainingParticipants.forEach {
                             copyToRealm(it.getDataModel(), updatePolicy = UpdatePolicy.ALL)
                         }
-                        copyToRealm(expense.getDataModel(), updatePolicy = UpdatePolicy.ALL)
+                        val dbExpense =
+                            copyToRealm(expense.getDataModel(), updatePolicy = UpdatePolicy.ALL)
+                        dbExpense.remainingParticipants.forEach {
+                            it.groupExpenseId = dbExpense._id.toHexString()
+                        }
                     }
                     true
                 }
@@ -123,5 +129,12 @@ class GroupRepositoryImpl(
             e.printStackTrace()
             return false
         }
+    }
+
+    override suspend fun getExpensesByGroupId(groupId: String): List<DomainExpense> {
+//        return realm.query<Expense>("groupId == $0", groupId).find().map { it.getDomainExpense() }
+        val l = realm.query<Expense>("groupId == $0", groupId).find().map { it.getDomainExpense() }
+        println("=======> $l")
+        return l
     }
 }

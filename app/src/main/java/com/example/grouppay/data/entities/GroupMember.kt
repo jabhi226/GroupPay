@@ -1,11 +1,12 @@
 package com.example.grouppay.data.entities
 
-import com.example.grouppay.domain.Participant as DomainParticipant
+import com.example.grouppay.domain.GroupMember as DomainParticipant
+import com.example.grouppay.domain.ExpenseMember as DomainExpenseMember
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
 
-class Participant : RealmObject {
+class GroupMember : RealmObject {
 
     @PrimaryKey
     var _id: ObjectId = ObjectId()
@@ -27,6 +28,13 @@ class Participant : RealmObject {
             name = name,
             amountBorrowedFromGroup = amountBorrowedFromGroup,
             amountOwedFromGroup = amountOwedFromGroup
+        )
+    }
+
+    fun getExpenseMemberModel(): DomainExpenseMember {
+        return DomainExpenseMember(
+            groupMemberId = _id.toHexString(),
+            name = name
         )
     }
 }

@@ -14,15 +14,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grouppay.R
-import com.example.grouppay.domain.Participant
+import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 
-@Preview
 @Composable
 fun Ower(
     modifier: Modifier = Modifier,
-    user: Participant = Testing.getContros()[0].remainingParticipants[0]
+    user: GroupMember
 ) {
     Box(
         modifier = modifier.background(

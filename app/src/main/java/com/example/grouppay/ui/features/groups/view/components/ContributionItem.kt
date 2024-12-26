@@ -41,7 +41,7 @@ fun ContributionItem(modifier: Modifier = Modifier, contribution: Expense = Test
             )
             Spacer(modifier = Modifier.height(10.dp))
             CommonText(
-                text = "${contribution.paidBy?.name} paid ₹${contribution.paidBy?.amountOwedFromGroup}",
+                text = "${contribution.paidBy?.name} paid ₹${contribution.paidBy?.amountBorrowedForExpense}",
                 fontSize = 16.sp,
                 textColor = colorResource(R.color.light_text_color)
             )
