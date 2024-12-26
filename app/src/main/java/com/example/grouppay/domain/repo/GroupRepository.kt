@@ -1,10 +1,9 @@
-package com.example.grouppay.data.repo
+package com.example.grouppay.domain.repo
 
 import com.example.grouppay.domain.Group
 import com.example.grouppay.domain.Participant
 import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import kotlinx.coroutines.flow.Flow
-import org.mongodb.kbson.ObjectId
 
 interface GroupRepository {
 
@@ -12,7 +11,7 @@ interface GroupRepository {
 
     suspend fun saveNewGroup(group: String)
 
-    fun getGroupInformation(objectId: ObjectId): Group
+    fun getGroupInformation(objectId: String): Group
 
     fun getAllParticipantByText(text: String): Flow<List<Participant>>
 

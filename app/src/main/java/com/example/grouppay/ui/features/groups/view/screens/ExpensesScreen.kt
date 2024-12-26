@@ -1,6 +1,5 @@
 package com.example.grouppay.ui.features.groups.view.screens
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,7 +43,7 @@ fun ExpensesScreen(navController: NavController, group: Group) {
             FloatingActionButton(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-                    navController.navigate("add_expense/${group._id.toHexString()}")
+                    navController.navigate("add_expense/${group.id}")
                 }) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp),

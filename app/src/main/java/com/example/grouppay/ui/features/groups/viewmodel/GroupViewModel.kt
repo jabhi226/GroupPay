@@ -1,11 +1,9 @@
 package com.example.grouppay.ui.features.groups.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.domain.Participant
-import com.example.grouppay.data.repo.GroupRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 
 class GroupViewModel(
@@ -20,7 +18,7 @@ class GroupViewModel(
 
     }
 
-    fun getGroupInformation(objectId: ObjectId) = repository.getGroupInformation(objectId)
+    fun getGroupInformation(objectId: String) = repository.getGroupInformation(objectId)
 
     fun getAllParticipantsByText(text: String) = repository.getAllParticipantByText(text)
 

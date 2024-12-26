@@ -71,9 +71,8 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
                     }
                     viewModel.saveNewParticipantInTheGroup(
                         groupId,
-                        Participant().apply {
-                            name = participant
-                        })
+                        Participant(name = participant)
+                    )
                 }) {
                     CommonText(text = "Save")
                 }

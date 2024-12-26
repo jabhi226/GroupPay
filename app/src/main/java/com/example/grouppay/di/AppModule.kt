@@ -1,10 +1,10 @@
 package com.example.grouppay.di
 
-import com.example.grouppay.domain.Expense
-import com.example.grouppay.domain.Group
-import com.example.grouppay.domain.Participant
-import com.example.grouppay.data.repo.GroupRepository
-import com.example.grouppay.data.repo.impl.GroupRepositoryImpl
+import com.example.grouppay.data.entities.Expense
+import com.example.grouppay.data.entities.Group
+import com.example.grouppay.data.entities.Participant
+import com.example.grouppay.domain.repo.GroupRepository
+import com.example.grouppay.data.repo.GroupRepositoryImpl
 import com.example.grouppay.ui.features.addExpense.view.AddExpenseViewModel
 import com.example.grouppay.ui.features.addGroup.viewModel.AddGroupViewModel
 import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantViewModel

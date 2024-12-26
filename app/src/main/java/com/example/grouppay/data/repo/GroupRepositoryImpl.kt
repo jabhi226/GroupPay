@@ -1,8 +1,11 @@
-package com.example.grouppay.data.repo.impl
+package com.example.grouppay.data.repo
 
-import com.example.grouppay.data.repo.GroupRepository
-import com.example.grouppay.domain.Group
-import com.example.grouppay.domain.Participant
+import com.example.grouppay.data.entities.Group
+import com.example.grouppay.data.entities.Participant
+import com.example.grouppay.data.mapper.getDataModel
+import com.example.grouppay.domain.Participant as DomainParticipant
+import com.example.grouppay.domain.Group as DomainGroup
+import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
@@ -24,7 +27,7 @@ class GroupRepositoryImpl(
             .map { results ->
                 results.list.map {
                     GroupWithTotalExpense(
-                        it._id,
+                        it._id.toHexString(),
                         it.name,
                         it.participants.size,
                         it.expenses.sumOf { contribution ->
@@ -35,21 +38,25 @@ class GroupRepositoryImpl(
             }
     }
 
-    override fun getGroupInformation(objectId: ObjectId): Group {
-        return realm.query<Group>("_id=$0", objectId).find().first()
+    override fun getGroupInformation(objectId: String): DomainGroup {
+        return realm.query<Group>("_id=$0", ObjectId(objectId)).find().first().getDomainGroup()
     }
 
-    override fun getAllParticipantByText(text: String): Flow<List<Participant>> {
-        return realm.query<Participant>("name CONTAINS $0", text).asFlow().map { it.list.toList() }
+    override fun getAllParticipantByText(text: String): Flow<List<DomainParticipant>> {
+        return realm.query<Participant>("name CONTAINS $0", text).asFlow().map { realmList ->
+            realmList.list.map {
+                it.getDomainModel()
+            }
+        }
     }
 
-    override suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<Participant> {
+    override suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<DomainParticipant> {
         return withContext(Dispatchers.IO) {
             val group =
                 realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()
             group ?: return@withContext arrayListOf()
-            return@withContext ArrayList<Participant>().apply {
-                addAll(group.participants)
+            return@withContext ArrayList<DomainParticipant>().apply {
+                addAll(group.participants.map { it.getDomainModel() })
             }
         }
     }
@@ -66,7 +73,7 @@ class GroupRepositoryImpl(
 
     override suspend fun saveNewParticipantInTheGroup(
         groupId: String,
-        participant: Participant
+        participant: DomainParticipant
     ): Boolean {
         return withContext(Dispatchers.IO) {
             return@withContext realm.write {
@@ -74,7 +81,7 @@ class GroupRepositoryImpl(
                     val group =
                         realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()
                     group ?: return@write false
-                    val managedParticipant = copyToRealm(participant)
+                    val managedParticipant = copyToRealm(participant.getDataModel())
                     val latestGroup = findLatest(group) ?: return@write false
                     return@write latestGroup.participants.add(managedParticipant)
                 } catch (e: Exception) {

@@ -48,7 +48,7 @@ fun GroupDetailsScreen(
 
     val viewModel = koinViewModel<GroupViewModel>()
     val groupInfo by remember {
-        mutableStateOf(viewModel.getGroupInformation(group._id))
+        mutableStateOf(viewModel.getGroupInformation(group.id))
     }
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),

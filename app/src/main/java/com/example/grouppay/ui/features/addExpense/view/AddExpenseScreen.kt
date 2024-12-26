@@ -125,9 +125,9 @@ fun AddExpenseScreen(groupId: String?) {
                             participant = participant,
                             index = index,
                             totalAmountPaid = totalAmountPaid.toDoubleOrNull() ?: 0.0,
-                            totalParticipants = allParticipantsByGroupId.size,
+                            totalParticipants = allParticipantsByGroupId.count { it.isSelected },
                             updateParticipantAmount = { viewModel.updateParticipantAmount(it) },
-                            updateParticipantSelection = { viewModel.updateParticipantSelection(it) },
+                            updateParticipantSelection = { viewModel.updateParticipantSelection(it.id) },
                         )
                     }
                 }
@@ -150,10 +150,12 @@ fun ParticipantContributions(
     var perText by remember { mutableStateOf("") }
     var isSelected by remember { mutableStateOf(false) }
 
-    LaunchedEffect(totalAmountPaid) {
-        rsText = (totalAmountPaid / totalParticipants).formatToTwoDecimalPlaces()
+    LaunchedEffect(totalAmountPaid, participant.isSelected) {
+        isSelected = participant.isSelected
+        rsText =
+            if (isSelected) (totalAmountPaid / totalParticipants).formatToTwoDecimalPlaces() else "0.0"
         perText =
-            ((totalAmountPaid / totalParticipants) / totalAmountPaid * 100).formatToTwoDecimalPlaces()
+            if (isSelected) ((totalAmountPaid / totalParticipants) / totalAmountPaid * 100).formatToTwoDecimalPlaces() else "0.0"
     }
 
     LaunchedEffect(perText) {
@@ -171,8 +173,9 @@ fun ParticipantContributions(
         }
     }
 
-    LaunchedEffect(participant) {
-        isSelected = participant.isSelected
+    LaunchedEffect(participant.amountBorrowedFromGroup) {
+        println("====> ${participant.name} | ${participant.amountBorrowedFromGroup}")
+        rsText = participant.amountBorrowedFromGroup.toString()
     }
 
     Column(
