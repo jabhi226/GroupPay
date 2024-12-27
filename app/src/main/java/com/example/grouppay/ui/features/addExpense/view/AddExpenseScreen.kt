@@ -74,13 +74,11 @@ fun AddExpenseScreen(
                 }
 
                 is AddExpenseViewModel.UiEvents.ShowError -> {
-                    context.showToast("Error adding Expense $expenseName.")
+                    context.showToast(event.error)
                 }
             }
         }
     }
-
-
 
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),

@@ -32,6 +32,7 @@ import com.example.grouppay.domain.Group
 import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
+import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.theme.GroupPayTheme
 
 
@@ -67,14 +68,20 @@ fun ParticipantsScreen(
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                LazyColumn(
-                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 2.dp),
-                    userScrollEnabled = true
-                ) {
-                    items(group.participants) {
-                        ParticipantItem(participant = it)
+                if (group.participants.isEmpty()) {
+                    EmptyScreen(
+                        text = "No participants are found with ${group.name} group."
+                    )
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 2.dp),
+                        userScrollEnabled = true
+                    ) {
+                        items(group.participants) {
+                            ParticipantItem(participant = it)
+                        }
+                        item { Spacer(modifier = Modifier.padding(40.dp)) }
                     }
-                    item { Spacer(modifier = Modifier.padding(40.dp)) }
                 }
             }
         }

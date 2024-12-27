@@ -35,6 +35,7 @@ import com.example.grouppay.domain.Expense
 import com.example.grouppay.domain.Group
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
+import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
@@ -72,17 +73,23 @@ fun ExpensesScreen(navController: NavController, group: Group) {
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            items(expenses) {
-                ExpenseComponent(expense = it)
+        if (expenses.isEmpty()) {
+            EmptyScreen(
+                text = "No Expense are found with ${group.name} group."
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                items(expenses) {
+                    ExpenseComponent(expense = it)
+                }
+                item { Spacer(modifier = Modifier.padding(40.dp)) }
             }
-            item { Spacer(modifier = Modifier.padding(40.dp)) }
         }
     }
 }

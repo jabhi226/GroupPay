@@ -88,6 +88,14 @@ class AddExpenseViewModel(
             } else {
                 groupId
             }
+            if (expenseName.value.isEmpty()) {
+                _uiEvents.send(UiEvents.ShowError("Please give a name for the expense"))
+                return@launch
+            }
+            if (allParticipantsByGroupId.value.count { it.isSelected } <= 0) {
+                _uiEvents.send(UiEvents.ShowError("Select at lease one member for the split"))
+                return@launch
+            }
             val response = repository.upsertExpense(
                 Expense(
                     label = expenseName.value,
@@ -102,7 +110,7 @@ class AddExpenseViewModel(
                 if (response) {
                     UiEvents.NavigateUp
                 } else {
-                    UiEvents.ShowError("Something went wrong")
+                    UiEvents.ShowError("Error adding Expense ${expenseName.value}.")
                 }
             )
         }

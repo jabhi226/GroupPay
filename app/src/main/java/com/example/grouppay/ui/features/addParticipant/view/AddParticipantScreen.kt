@@ -1,6 +1,5 @@
 package com.example.grouppay.ui.features.addParticipant.view
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -41,16 +40,16 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
 
     LaunchedEffect(state) {
         when (state) {
-            true -> {
-                context.showToast("Participant $participant added.")
+            AddParticipantViewModel.UiEvents.ShowSuccess -> {
+                context.showToast("Group member $participant added.")
                 navController.navigateUp()
             }
 
-            false -> {
-                context.showToast("Error adding participant $participant.")
+            is AddParticipantViewModel.UiEvents.ShowError -> {
+                context.showToast((state as AddParticipantViewModel.UiEvents.ShowError).errorMessage)
             }
 
-            else -> {}
+            null -> {}
         }
 
     }
@@ -60,10 +59,6 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
             modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-                    if (groupId == null) {
-                        Toast.makeText(context, "Group not found", Toast.LENGTH_SHORT).show()
-                        return@FloatingActionButton
-                    }
                     viewModel.saveNewParticipantInTheGroup(
                         groupId,
                         GroupMember(name = participant)
@@ -75,7 +70,7 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
             topBar = {
                 TopAppBar(title = {
                     CommonText(
-                        text = "Add Participant",
+                        text = "Add Group Member",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -88,7 +83,7 @@ fun AddParticipantScreen(navController: NavController = rememberNavController(),
                 CommonOutlinedTextField(
                     modifier = Modifier.padding(16.dp),
                     text = participant,
-                    hint = "Participant name",
+                    hint = "Group member name",
                     updateText = {
                         participant = it
                     }

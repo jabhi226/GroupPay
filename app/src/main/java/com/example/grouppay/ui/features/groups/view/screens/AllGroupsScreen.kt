@@ -1,15 +1,19 @@
 package com.example.grouppay.ui.features.groups.view.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +24,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.R
 import com.example.grouppay.ui.features.core.view.components.CommonText
+import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.view.components.GroupList
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.theme.GroupPayTheme
@@ -56,13 +61,19 @@ fun AllGroupsScreen(
                 )
             })
         }) { innerPadding ->
-            GroupList(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                groups = groups
-            ) {
-                navController.navigate("group_details/${Gson().toJson(it)}")
+            if (groups.isEmpty()) {
+                EmptyScreen(
+                    text = "No groups are created."
+                )
+            } else {
+                GroupList(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    groups = groups
+                ) {
+                    navController.navigate("group_details/${Gson().toJson(it)}")
+                }
             }
         }
     }
