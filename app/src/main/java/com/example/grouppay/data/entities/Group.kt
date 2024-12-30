@@ -11,14 +11,12 @@ class Group : RealmObject {
     @PrimaryKey
     var _id: ObjectId = ObjectId()
     var name: String = ""
-    var expenses: RealmList<Expense> = realmListOf()
     var participants: RealmList<GroupMember> = realmListOf()
 
     fun getDomainGroup(): DomainGroup {
         return DomainGroup(
             id = _id.toHexString(),
             name = name,
-            expenses = expenses.toList().map { it.getDomainExpense() },
             participants = participants.map { it.getDomainModel() }
         )
     }

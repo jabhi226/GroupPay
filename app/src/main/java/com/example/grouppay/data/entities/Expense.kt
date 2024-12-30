@@ -1,6 +1,5 @@
 package com.example.grouppay.data.entities
 
-import com.example.grouppay.data.mapper.getDataModel
 import com.example.grouppay.domain.Expense as DomainExpense
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
@@ -13,6 +12,7 @@ class Expense : RealmObject {
     var _id: ObjectId = ObjectId()
     var label: String = ""
     var paidBy: ExpenseMember? = null
+    var totalAmountPaid: Double = 0.0
     var dateOfExpense: Long = System.currentTimeMillis()
     var remainingParticipants: RealmList<ExpenseMember> = realmListOf()
     var groupId: String = ""
@@ -22,6 +22,7 @@ class Expense : RealmObject {
             id = _id.toHexString(),
             label = label,
             paidBy = paidBy?.getDomainModel(),
+            totalAmountPaid = totalAmountPaid,
             dateOfExpense = dateOfExpense,
             remainingParticipants = remainingParticipants.map { it.getDomainModel() },
             groupId = groupId

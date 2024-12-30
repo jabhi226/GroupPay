@@ -102,6 +102,7 @@ class AddExpenseViewModel(
                     paidBy = paidBy.value.copy(
                         amountOwedForExpense = (totalAmountPaid.value.toDoubleOrNull() ?: 0.0)
                     ),
+                    totalAmountPaid = allParticipantsByGroupId.value.sumOf { it.amountBorrowedForExpense },
                     remainingParticipants = allParticipantsByGroupId.value,
                     groupId = gId
                 )
@@ -125,6 +126,7 @@ class AddExpenseViewModel(
                     amountText
                 }
             )
+            allParticipantsByGroupId
         }
     }
 

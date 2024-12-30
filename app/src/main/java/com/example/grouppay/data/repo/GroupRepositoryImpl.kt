@@ -30,13 +30,17 @@ class GroupRepositoryImpl(
             .query<Group>()
             .asFlow()
             .map { results ->
-                results.list.map {
+                results.list.map { group ->
+                    val expense =
+                        realm.query<Expense>("groupId == $0", group._id.toHexString()).find()
                     GroupWithTotalExpense(
-                        it._id.toHexString(),
-                        it.name,
-                        it.participants.size,
-                        it.expenses.sumOf { contribution ->
-                            contribution.paidBy?.amountOwedForExpense ?: 0.0
+                        group._id.toHexString(),
+                        group.name,
+                        group.participants.size,
+                        expense.sumOf { expense1 ->
+                            expense1.remainingParticipants.sumOf {
+                                it.amountBorrowedForExpense
+                            }
                         }
                     )
                 }
@@ -98,7 +102,6 @@ class GroupRepositoryImpl(
     }
 
     override suspend fun upsertExpense(expense: DomainExpense): Boolean {
-        println("=======> $expense")
         try {
             return withContext(Dispatchers.IO) {
                 return@withContext realm.write {
@@ -108,6 +111,7 @@ class GroupRepositoryImpl(
                             realm.query<Expense>("_id = $0", ObjectId(expense.id)).find().first()
                         existingExpense.label = expense.label
                         existingExpense.paidBy = expense.paidBy?.getDataModel()
+                        existingExpense.totalAmountPaid = expense.totalAmountPaid
                         existingExpense.dateOfExpense = expense.dateOfExpense
                         existingExpense.remainingParticipants =
                             expense.remainingParticipants.map { it.getDataModel() }.toRealmList()

@@ -34,6 +34,7 @@ fun DomainExpense.getDataModel(): Expense {
         }
         label = this@getDataModel.label
         paidBy = this@getDataModel.paidBy?.getDataModel()
+        totalAmountPaid = this@getDataModel.totalAmountPaid
         groupId = this@getDataModel.groupId
         dateOfExpense = this@getDataModel.dateOfExpense
         remainingParticipants =

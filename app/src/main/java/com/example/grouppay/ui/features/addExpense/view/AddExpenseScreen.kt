@@ -40,10 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.domain.ExpenseMember
-import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
 import com.example.grouppay.ui.features.core.view.components.CommonText
+import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
 import com.example.grouppay.ui.features.utils.showToast
 import com.example.grouppay.ui.theme.GroupPayTheme
@@ -140,17 +140,25 @@ fun AddExpenseScreen(
                 CommonText(text = "Included Participants", modifier = Modifier)
 
                 Spacer(modifier = Modifier.height(16.dp))
-                LazyColumn {
-                    itemsIndexed(allParticipantsByGroupId) { index, participant ->
-                        ParticipantContributions(
-                            participant = participant,
-                            index = index,
-                            totalAmountPaid = totalAmountPaid.toDoubleOrNull() ?: 0.0,
-                            totalParticipants = allParticipantsByGroupId.count { it.isSelected },
-                            updateParticipantAmount = { viewModel.updateParticipantAmount(it) },
-                            updateParticipantSelection = { viewModel.updateParticipantSelection(it.id) },
-                        )
+                if (allParticipantsByGroupId.isNotEmpty()) {
+                    LazyColumn {
+                        itemsIndexed(allParticipantsByGroupId) { index, participant ->
+                            ParticipantContributions(
+                                participant = participant,
+                                index = index,
+                                totalAmountPaid = totalAmountPaid.toDoubleOrNull() ?: 0.0,
+                                totalParticipants = allParticipantsByGroupId.count { it.isSelected },
+                                updateParticipantAmount = { viewModel.updateParticipantAmount(it) },
+                                updateParticipantSelection = {
+                                    viewModel.updateParticipantSelection(
+                                        it.id
+                                    )
+                                },
+                            )
+                        }
                     }
+                } else {
+                    EmptyScreen(text = "No group members found to make expense.")
                 }
             }
         }
@@ -189,6 +197,9 @@ fun ParticipantContributions(
     LaunchedEffect(rsText) {
         try {
             perText = ((rsText.toDouble() / totalAmountPaid) * 100).formatToTwoDecimalPlaces()
+            updateParticipantAmount(participant.apply {
+                this.setAmountBorrowedForExpense(rsText)
+            })
         } catch (e: Exception) {
             e.printStackTrace()
         }
