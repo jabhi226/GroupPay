@@ -27,6 +27,7 @@ object Testing {
             getParticipent()
         }
     }
+
     fun groupExpenseMembers(): List<ExpenseMember> {
         return (0..0).map {
             ExpenseMember(
@@ -61,7 +62,7 @@ object Testing {
 
     fun getExpense(): Expense {
         return Expense(
-            label = "Cake Cutting",
+            label = "Lunch",
             paidBy = groupExpenseMembers()[0],
             id = "",
             dateOfExpense = System.currentTimeMillis(),

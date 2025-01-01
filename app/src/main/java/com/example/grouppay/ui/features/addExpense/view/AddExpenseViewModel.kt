@@ -37,7 +37,7 @@ class AddExpenseViewModel(
             val list = ArrayList<ExpenseMember>().apply {
                 addAll(
                     allParticipantsByGroupId.value.map {
-                        if (it.id == participant.id) {
+                        if (it.id == participant.groupMemberId) {
                             participant
                         } else {
                             it
@@ -50,14 +50,14 @@ class AddExpenseViewModel(
 
     fun updateParticipantSelection(participantId: String) {
         var currentSelectedParticipants = allParticipantsByGroupId.value.count { it.isSelected }
-        if (allParticipantsByGroupId.value.find { it.id == participantId }?.isSelected == true) {
+        if (allParticipantsByGroupId.value.find { it.groupMemberId == participantId }?.isSelected == true) {
             currentSelectedParticipants--
         } else {
             currentSelectedParticipants++
         }
         allParticipantsByGroupId.value = allParticipantsByGroupId.value.map {
             val item = it.copy(
-                isSelected = if (it.id == participantId) {
+                isSelected = if (it.groupMemberId == participantId) {
                     !it.isSelected
                 } else {
                     it.isSelected

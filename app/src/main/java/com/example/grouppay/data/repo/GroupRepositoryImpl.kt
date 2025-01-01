@@ -136,9 +136,6 @@ class GroupRepositoryImpl(
     }
 
     override suspend fun getExpensesByGroupId(groupId: String): List<DomainExpense> {
-//        return realm.query<Expense>("groupId == $0", groupId).find().map { it.getDomainExpense() }
-        val l = realm.query<Expense>("groupId == $0", groupId).find().map { it.getDomainExpense() }
-        println("=======> $l")
-        return l
+        return realm.query<Expense>("groupId == $0", groupId).find().map { it.getDomainExpense() }
     }
 }

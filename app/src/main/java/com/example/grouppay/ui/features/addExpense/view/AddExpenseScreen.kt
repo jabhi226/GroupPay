@@ -115,7 +115,7 @@ fun AddExpenseScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
                 AutocompleteTextField(
-                    text = paidBy?.name ?: "",
+                    text = paidBy.name,
                     hint = "Paid by",
                     suggestions = allParticipantsByGroupId,
                     getSuggestionName = {
@@ -148,10 +148,12 @@ fun AddExpenseScreen(
                                 index = index,
                                 totalAmountPaid = totalAmountPaid.toDoubleOrNull() ?: 0.0,
                                 totalParticipants = allParticipantsByGroupId.count { it.isSelected },
-                                updateParticipantAmount = { viewModel.updateParticipantAmount(it) },
+                                updateParticipantAmount = {
+                                    viewModel.updateParticipantAmount(it)
+                                },
                                 updateParticipantSelection = {
                                     viewModel.updateParticipantSelection(
-                                        it.id
+                                        it.groupMemberId
                                     )
                                 },
                             )
@@ -179,7 +181,7 @@ fun ParticipantContributions(
     var perText by remember { mutableStateOf("") }
     var isSelected by remember { mutableStateOf(false) }
 
-    LaunchedEffect(totalAmountPaid, participant.isSelected) {
+    LaunchedEffect(totalAmountPaid, totalParticipants, participant.isSelected) {
         isSelected = participant.isSelected
         rsText =
             if (isSelected) (totalAmountPaid / totalParticipants).formatToTwoDecimalPlaces() else "0.0"
@@ -206,7 +208,6 @@ fun ParticipantContributions(
     }
 
     LaunchedEffect(participant.amountBorrowedForExpense) {
-        println("====> ${participant.name} | ${participant.amountBorrowedForExpense}")
         rsText = participant.amountBorrowedForExpense.toString()
     }
 
