@@ -5,7 +5,8 @@ data class GroupMember(
     var name: String,
     var amountBorrowedFromGroup: Double = 0.0,
     var amountOwedFromGroup: Double = 0.0,
-    var isSelected: Boolean = true
+    var isSelected: Boolean = true,
+    val paymentToBeMadeMapping: ArrayList<Pair<String, Double>> = arrayListOf()
 ) {
     fun setAmountBorrowedFromGroup(rsText: String) {
         try {

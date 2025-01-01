@@ -12,7 +12,7 @@ class GroupMember : RealmObject {
     var _id: ObjectId = ObjectId()
     var name: String = ""
     var amountBorrowedFromGroup: Double = 0.0
-    var amountOwedFromGroup: Double = 10.0
+    var amountOwedFromGroup: Double = 0.0
 
     fun setAmountBorrowedFromGroup(rsText: String) {
         try {

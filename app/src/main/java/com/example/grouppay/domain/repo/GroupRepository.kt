@@ -13,7 +13,7 @@ interface GroupRepository {
 
     suspend fun saveNewGroup(group: String)
 
-    fun getGroupInformation(objectId: String): Group
+    suspend fun getGroupInformation(objectId: String): Group
 
     fun getAllParticipantByText(text: String): Flow<List<GroupMember>>
 

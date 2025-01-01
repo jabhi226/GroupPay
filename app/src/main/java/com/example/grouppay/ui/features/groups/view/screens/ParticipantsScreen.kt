@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -95,6 +96,9 @@ fun ParticipantItem(
     modifier: Modifier = Modifier,
     participant: GroupMember = Testing.getParticipent()
 ) {
+    LaunchedEffect(participant) { // todo @abhi add square-off logic.
+        println("===> ${participant.id}: ${participant.paymentToBeMadeMapping.joinToString()}}")
+    }
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -129,7 +133,13 @@ fun ParticipantItem(
                     CommonText(
                         fontSize = 18.sp,
                         text = "₹ ${participant.amountOwedFromGroup}",
-                        textColor = MaterialTheme.colorScheme.inverseSurface
+                        textColor = if (participant.amountOwedFromGroup > 0.0) {
+                            Color(0xFF85BB65)
+                        } else if (participant.amountOwedFromGroup < 0.0) {
+                            Color(0xFFFF5544)
+                        } else {
+                            MaterialTheme.colorScheme.inverseSurface
+                        }
                     )
                 }
                 Column(
@@ -137,7 +147,7 @@ fun ParticipantItem(
                     horizontalAlignment = Alignment.End
                 ) {
                     CommonText(
-                        text = "Owes",
+                        text = "Borrowed",
                         textColor = MaterialTheme.colorScheme.outline
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -145,9 +155,9 @@ fun ParticipantItem(
                         fontSize = 18.sp,
                         text = "₹ ${participant.amountBorrowedFromGroup}",
                         textColor = if (participant.amountBorrowedFromGroup > 0.0) {
-                            Color.Green
+                            Color(0xFFFF5544)
                         } else if (participant.amountBorrowedFromGroup < 0.0) {
-                            Color.Red
+                            Color(0xFF85BB65)
                         } else {
                             MaterialTheme.colorScheme.inverseSurface
                         }

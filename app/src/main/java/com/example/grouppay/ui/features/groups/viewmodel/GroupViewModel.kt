@@ -3,6 +3,7 @@ package com.example.grouppay.ui.features.groups.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grouppay.domain.Expense
+import com.example.grouppay.domain.Group
 import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.domain.GroupMember
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,7 +30,12 @@ class GroupViewModel(
 
     }
 
-    fun getGroupInformation(objectId: String) = repository.getGroupInformation(objectId)
+    val groupInfo = MutableStateFlow<Group?>(null)
+    fun getGroupInformation(objectId: String) {
+        viewModelScope.launch {
+            groupInfo.emit(repository.getGroupInformation(objectId))
+        }
+    }
 
     fun getAllParticipantsByText(text: String) = repository.getAllParticipantByText(text)
 

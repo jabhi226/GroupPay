@@ -13,6 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,11 +47,13 @@ fun GroupDetailsScreen(
     navController: NavController,
     group: GroupWithTotalExpense
 ) {
-
     val viewModel = koinViewModel<GroupViewModel>()
-    val groupInfo by remember {
-        mutableStateOf(viewModel.getGroupInformation(group.id))
+    val groupInfo by viewModel.groupInfo.collectAsState()
+
+    LaunchedEffect(group.id) {
+        viewModel.getGroupInformation(group.id)
     }
+
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
 //            floatingActionButton = {
@@ -75,7 +79,7 @@ fun GroupDetailsScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                GroupDetailTabs(navController, groupInfo)
+                groupInfo?.let { GroupDetailTabs(navController, it) }
             }
         }
     }

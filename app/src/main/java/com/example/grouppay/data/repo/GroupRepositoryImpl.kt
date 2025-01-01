@@ -47,8 +47,41 @@ class GroupRepositoryImpl(
             }
     }
 
-    override fun getGroupInformation(objectId: String): DomainGroup {
-        return realm.query<Group>("_id=$0", ObjectId(objectId)).find().first().getDomainGroup()
+    override suspend fun getGroupInformation(objectId: String): DomainGroup {
+        val participants = ArrayList<DomainParticipant>()
+        val payers =
+            hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
+        val grp = realm.query<Group>("_id=$0", ObjectId(objectId)).find().first()
+        participants.addAll(grp.participants.map { it.getDomainModel() })
+        payers.putAll(grp.participants.map { Pair(it._id.toHexString(), arrayListOf()) })
+        val expenses = realm.query<Expense>("groupId = $0", grp._id.toHexString()).find()
+        expenses.forEach { expense ->
+            val paidBy = expense.paidBy ?: return@forEach
+            for (i in participants.indices) {
+                val p = participants[i]
+                if (p.id == paidBy.groupMemberId) {
+                    val amountOwed = paidBy.amountOwedForExpense ?: 0.0
+                    p.amountOwedFromGroup += amountOwed
+                } else {
+                    val participant =
+                        expense.remainingParticipants.find { it.groupMemberId == p.id } ?: continue
+                    val amountBorrowed = participant.amountBorrowedForExpense
+                    p.amountBorrowedFromGroup += amountBorrowed
+                    p.paymentToBeMadeMapping.add(
+                        Pair(
+                            paidBy.groupMemberId,
+                            amountBorrowed
+                        )
+                    )
+                }
+                participants[i] = p
+            }
+        }
+        return DomainGroup(
+            id = grp._id.toHexString(),
+            name = grp.name,
+            participants = participants
+        )
     }
 
     override fun getAllParticipantByText(text: String): Flow<List<DomainParticipant>> {
