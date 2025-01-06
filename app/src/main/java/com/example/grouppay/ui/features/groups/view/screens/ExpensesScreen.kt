@@ -69,7 +69,7 @@ fun ExpensesScreen(navController: NavController, group: Group) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.add_expense),
+                        painter = painterResource(id = R.drawable.ic_add_expense),
                         contentDescription = "add_user"
                     )
                     CommonText(
@@ -118,44 +118,46 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
             ) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
-                    CommonText(
-                        textColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        text = expense.label,
-                        fontSize = 20.sp,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-
-                    expense.paidBy?.let { participant ->
-                        Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        CommonText(
+                            textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            text = expense.label,
+                            fontSize = 20.sp,
+                        )
                         CommonText(
                             textColor = Color(0xFF85BB65),
                             fontSize = 26.sp,
                             text = "₹ ${expense.totalAmountPaid}"
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         CommonText(
                             textColor = MaterialTheme.colorScheme.tertiary,
                             fontSize = 18.sp,
-                            text = "Paid by: ${participant.name.ifEmpty { "Abhishek" }}"
+                            text = if (expense.paidBy == null) "Unpaid" else "Paid by: ${expense.paidBy?.name?.ifEmpty { "Abhishek" }}"
+                        )
+
+                        CommonText(
+                            textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            fontStyle = FontStyle.Italic,
+                            text = "Date: ${expense.dateOfExpense.getDateInStringFormat()}",
+                            modifier = Modifier.padding(top = 4.dp)
                         )
                     }
-
-                    CommonText(
-                        textColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        fontStyle = FontStyle.Italic,
-                        text = "Date: ${expense.dateOfExpense.getDateInStringFormat()}",
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
                 }
 
                 if (expense.remainingParticipants.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    CommonText(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "Remaining Participants:",
-                        textColor = MaterialTheme.colorScheme.tertiary,
-                        fontSize = 16.sp,
-                    )
                     LazyRow(modifier = Modifier.padding(top = 8.dp)) {
                         items(expense.remainingParticipants) { participant ->
                             Column(
@@ -164,12 +166,12 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                                     .border(
                                         BorderStroke(
                                             1.dp,
-                                            MaterialTheme.colorScheme.tertiaryContainer
+                                            MaterialTheme.colorScheme.secondaryContainer
                                         ),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .background(
-                                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                                        color = MaterialTheme.colorScheme.secondaryContainer,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .padding(8.dp)
@@ -195,15 +197,15 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Column {
                                         CommonText(
-                                            text = participant.name.ifEmpty { "Suraj" },
+                                            text = participant.name.ifEmpty { "Siddhesh" },
                                             fontSize = 16.sp,
-                                            textColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                            textColor = MaterialTheme.colorScheme.onSecondaryContainer
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                         CommonText(
                                             text = "₹ ${participant.amountBorrowedForExpense}",
                                             fontSize = 14.sp,
-                                            textColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                            textColor = MaterialTheme.colorScheme.onSecondaryContainer
                                         )
                                     }
                                 }

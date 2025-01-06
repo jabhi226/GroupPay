@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import com.example.grouppay.domain.Group
 import com.example.grouppay.ui.features.groups.view.screens.ExpensesScreen
 import com.example.grouppay.ui.features.groups.view.screens.ParticipantsScreen
+import com.example.grouppay.ui.features.groups.view.screens.SettlementScreen
 
 sealed class TabItem(
     val title: String,
@@ -31,5 +32,14 @@ sealed class TabItem(
             title = "Participants",
             icons = Icons.Default.ShoppingCart,
             screens = { ParticipantsScreen(navController, group) })
+
+    data class SettlementScreenItem(
+        val navController: NavController,
+        val group: Group
+    ) :
+        TabItem(
+            title = "Square-off",
+            icons = Icons.Default.ShoppingCart,
+            screens = { SettlementScreen(navController, group) })
 }
 

@@ -6,7 +6,7 @@ data class GroupMember(
     var amountBorrowedFromGroup: Double = 0.0,
     var amountOwedFromGroup: Double = 0.0,
     var isSelected: Boolean = true,
-    val paymentToBeMadeMapping: ArrayList<Pair<String, Double>> = arrayListOf()
+    val pendingPaymentsMapping: ArrayList<PendingPayments> = arrayListOf()
 ) {
     fun setAmountBorrowedFromGroup(rsText: String) {
         try {

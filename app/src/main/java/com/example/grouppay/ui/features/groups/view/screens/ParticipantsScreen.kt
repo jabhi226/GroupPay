@@ -54,7 +54,7 @@ fun ParticipantsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.add_user),
+                            painter = painterResource(id = R.drawable.ic_add_user),
                             contentDescription = "add_user"
                         )
                         CommonText(
@@ -96,9 +96,6 @@ fun ParticipantItem(
     modifier: Modifier = Modifier,
     participant: GroupMember = Testing.getParticipent()
 ) {
-    LaunchedEffect(participant) { // todo @abhi add square-off logic.
-        println("===> ${participant.id}: ${participant.paymentToBeMadeMapping.joinToString()}}")
-    }
     Box(
         modifier = modifier
             .fillMaxWidth()

@@ -94,6 +94,7 @@ fun GroupDetailTabs(
     val tabs = listOf(
         TabItem.ExpensesScreenItem(navController, groupInfo),
         TabItem.ParticipantScreenItem(navController, groupInfo),
+        TabItem.SettlementScreenItem(navController, groupInfo),
     )
 
     val pagerState = com.google.accompanist.pager.rememberPagerState()

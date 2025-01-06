@@ -4,6 +4,7 @@ import com.example.grouppay.data.entities.Expense
 import com.example.grouppay.data.entities.Group
 import com.example.grouppay.data.entities.GroupMember
 import com.example.grouppay.data.mapper.getDataModel
+import com.example.grouppay.domain.PendingPayments
 import com.example.grouppay.domain.ExpenseMember as DomainExpenseMember
 import com.example.grouppay.domain.Expense as DomainExpense
 import com.example.grouppay.domain.GroupMember as DomainParticipant
@@ -67,9 +68,10 @@ class GroupRepositoryImpl(
                         expense.remainingParticipants.find { it.groupMemberId == p.id } ?: continue
                     val amountBorrowed = participant.amountBorrowedForExpense
                     p.amountBorrowedFromGroup += amountBorrowed
-                    p.paymentToBeMadeMapping.add(
-                        Pair(
+                    p.pendingPaymentsMapping.add(
+                        PendingPayments(
                             paidBy.groupMemberId,
+                            paidBy.name,
                             amountBorrowed
                         )
                     )

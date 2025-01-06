@@ -116,7 +116,7 @@ fun SuggestionItem(
         if (showAddNew) {
             Icon(
                 tint = MaterialTheme.colorScheme.inversePrimary,
-                painter = painterResource(id = R.drawable.add),
+                painter = painterResource(id = R.drawable.ic_add),
                 contentDescription = ""
             )
         }
