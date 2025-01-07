@@ -27,7 +27,8 @@ val appModule = module {
             )
         )
             .name("group_pay")
-            .schemaVersion(1)
+            .schemaVersion(2)
+            .deleteRealmIfMigrationNeeded()
             .build()
 
         Realm.open(config)

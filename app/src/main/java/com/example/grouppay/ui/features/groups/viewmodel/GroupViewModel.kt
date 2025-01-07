@@ -17,17 +17,10 @@ class GroupViewModel(
     val groupList = repository.getGroupList()
 
     val expenses = MutableStateFlow<List<Expense>>(listOf())
-
     fun getExpensesByGroupId(groupId: String) {
         viewModelScope.launch {
             expenses.emit(repository.getExpensesByGroupId(groupId))
         }
-    }
-
-    val saveResponse: MutableSharedFlow<Boolean> = MutableSharedFlow()
-
-    fun saveParticipateWithGroup() {
-
     }
 
     val groupInfo = MutableStateFlow<Group?>(null)
@@ -37,13 +30,10 @@ class GroupViewModel(
         }
     }
 
-    fun getAllParticipantsByText(text: String) = repository.getAllParticipantByText(text)
+    fun getSquareOffTransactions(group: Group) {
+        viewModelScope.launch {
 
-    fun saveNewParticipantInTheGroup(groupId: String, participant: GroupMember) {
-//        viewModelScope.launch {
-//            repository.saveNewParticipantInTheGroup(groupId, participant)
-//            saveResponse.emit(true)
-//        }
+        }
     }
 
 }
