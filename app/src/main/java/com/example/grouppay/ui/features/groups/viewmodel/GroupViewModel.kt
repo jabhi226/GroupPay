@@ -3,10 +3,11 @@ package com.example.grouppay.ui.features.groups.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grouppay.domain.Expense
+import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.domain.Group
-import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.domain.GroupMember
-import kotlinx.coroutines.flow.MutableSharedFlow
+import com.example.grouppay.domain.repo.GroupRepository
+import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -30,10 +31,49 @@ class GroupViewModel(
         }
     }
 
+    val squareOffTransactions =
+        MutableStateFlow<List<SquareOffTransactionModel>>(listOf())
+
     fun getSquareOffTransactions(group: Group) {
         viewModelScope.launch {
-
+            squareOffTransactions.emit(SquareOffUtils.getSquareOffTransaction(group))
         }
+    }
+
+    fun squareOffTransaction(participant: SquareOffTransactionModel, groupId: String) {
+        viewModelScope.launch {
+            val isSaved = repository.upsertExpense(
+                Expense(
+                    label = "Square Off",
+                    paidBy = getExpenseModelFromGroupModel(
+                        participant.senderMember.copy(
+                            amountOwedFromGroup = participant.amount
+                        )
+                    ),
+                    totalAmountPaid = participant.amount,
+                    remainingParticipants = listOf(
+                        getExpenseModelFromGroupModel(
+                            participant.receiverMember.copy(
+                                amountBorrowedFromGroup = participant.amount
+                            )
+                        )
+                    ),
+                    groupId = groupId
+                )
+            )
+            if (isSaved) {
+                squareOffTransactions.emit(squareOffTransactions.value.filterNot { it == participant })
+            }
+        }
+    }
+
+    private fun getExpenseModelFromGroupModel(senderMember: GroupMember): ExpenseMember {
+        return ExpenseMember(
+            groupMemberId = senderMember.id,
+            name = senderMember.name,
+            amountOwedForExpense = senderMember.amountOwedFromGroup,
+            amountBorrowedForExpense = senderMember.amountBorrowedFromGroup,
+        )
     }
 
 }
