@@ -16,8 +16,6 @@ class AddExpenseViewModel(
 
     val allParticipantsByGroupId = MutableStateFlow<List<ExpenseMember>>(listOf())
     val paidBy = MutableStateFlow(ExpenseMember(groupMemberId = "", name = ""))
-    val totalAmountPaid = MutableStateFlow("0")
-    val expenseName = MutableStateFlow("")
     private var groupId: String? = null
 
     private val _uiEvents = Channel<UiEvents>()
@@ -32,23 +30,25 @@ class AddExpenseViewModel(
         }
     }
 
-    fun updateParticipantAmount(participant: ExpenseMember) {
+    fun updateParticipantAmount(participant: ExpenseMember, totalAmountPaid: String) {
         viewModelScope.launch {
-            val list = ArrayList<ExpenseMember>().apply {
-                addAll(
-                    allParticipantsByGroupId.value.map {
-                        if (it.id == participant.groupMemberId) {
-                            participant
-                        } else {
-                            it
-                        }
-                    })
-            }
-            allParticipantsByGroupId.emit(list)
+            var total = 0.0
+            allParticipantsByGroupId.emit(allParticipantsByGroupId.value.map {
+                if (it.id == participant.groupMemberId) {
+                    total += participant.amountBorrowedForExpense
+                    participant
+                } else {
+                    total += it.amountBorrowedForExpense
+                    it
+                }
+            })
+//            if (total != (totalAmountPaid.toDoubleOrNull() ?: 0.0)) {
+//                _uiEvents.send(UiEvents.ShowError("Total amount mismatch."))
+//            }
         }
     }
 
-    fun updateParticipantSelection(participantId: String) {
+    fun updateParticipantSelection(participantId: String, totalAmountPaid: String) {
         var currentSelectedParticipants = allParticipantsByGroupId.value.count { it.isSelected }
         if (allParticipantsByGroupId.value.find { it.groupMemberId == participantId }?.isSelected == true) {
             currentSelectedParticipants--
@@ -65,7 +65,7 @@ class AddExpenseViewModel(
             )
             item.copy(
                 amountBorrowedForExpense = if (item.isSelected) {
-                    (totalAmountPaid.value.toDoubleOrNull() ?: 0.0) / currentSelectedParticipants
+                    (totalAmountPaid.toDoubleOrNull() ?: 0.0) / currentSelectedParticipants
                 } else {
                     0.0
                 }
@@ -79,7 +79,7 @@ class AddExpenseViewModel(
         }
     }
 
-    fun saveExpense() {
+    fun saveExpense(totalAmountPaid: String, expenseName: String) {
         viewModelScope.launch {
             val gId = groupId
             if (gId == null) {
@@ -88,7 +88,7 @@ class AddExpenseViewModel(
             } else {
                 groupId
             }
-            if (expenseName.value.isEmpty()) {
+            if (expenseName.isEmpty()) {
                 _uiEvents.send(UiEvents.ShowError("Please give a name for the expense"))
                 return@launch
             }
@@ -98,9 +98,9 @@ class AddExpenseViewModel(
             }
             val response = repository.upsertExpense(
                 Expense(
-                    label = expenseName.value,
+                    label = expenseName,
                     paidBy = paidBy.value.copy(
-                        amountOwedForExpense = (totalAmountPaid.value.toDoubleOrNull() ?: 0.0)
+                        amountOwedForExpense = (totalAmountPaid.toDoubleOrNull() ?: 0.0)
                     ),
                     totalAmountPaid = allParticipantsByGroupId.value.sumOf { it.amountBorrowedForExpense },
                     remainingParticipants = allParticipantsByGroupId.value,
@@ -111,27 +111,10 @@ class AddExpenseViewModel(
                 if (response) {
                     UiEvents.NavigateUp
                 } else {
-                    UiEvents.ShowError("Error adding Expense ${expenseName.value}.")
+                    UiEvents.ShowError("Error adding Expense ${expenseName}.")
                 }
             )
         }
-    }
-
-    fun updateTotalAmountPaid(amountText: String) {
-        viewModelScope.launch {
-            totalAmountPaid.emit(
-                if (amountText.endsWith(".")) {
-                    amountText.replace(".", "")
-                } else {
-                    amountText
-                }
-            )
-            allParticipantsByGroupId
-        }
-    }
-
-    fun updateExpenseName(name: String) {
-        expenseName.value = name
     }
 
     sealed class UiEvents {

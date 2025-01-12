@@ -2,6 +2,7 @@ package com.example.grouppay.ui.features.core.view.components
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -12,12 +13,14 @@ import com.example.grouppay.R
 @Composable
 fun CommonButton(
     modifier: Modifier = Modifier,
-    text: String = "Add User",
+    text: String = "",
     onClick: () -> Unit = {}
 ) {
     Button(
-        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.accent_color)),
-        onClick = { }) {
-        CommonText(text = text, textColor = colorResource(id = R.color.text_color))
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+        onClick = onClick
+    ) {
+        CommonText(text = text, textColor = MaterialTheme.colorScheme.onPrimary)
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.Group
+import com.example.grouppay.ui.features.core.view.components.CommonButton
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
@@ -50,10 +52,11 @@ fun SettlementScreen(
 
     val viewModel: GroupViewModel = koinViewModel()
     val squareOffTransaction by viewModel.squareOffTransactions.collectAsState()
+    var isShowSquareOff by remember { mutableStateOf(false) }
+
     LaunchedEffect(group) {
         viewModel.getSquareOffTransactions(group)
     }
-    var isShowSquareOff by remember { mutableStateOf(false) }
 
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
@@ -108,12 +111,14 @@ fun SettlementItem(
     squareOffTransaction: () -> Unit = {}
 ) {
 
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.inverseSurface,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(16.dp)
             )
             .height(IntrinsicSize.Min),
@@ -126,14 +131,19 @@ fun SettlementItem(
                 .fillMaxWidth(0.8f),
             text = "${participant.senderMember.name} will pay ₹ ${participant.amount} to ${participant.receiverMember.name}",
             fontSize = 18.sp,
-            textColor = MaterialTheme.colorScheme.inverseOnSurface
+            textColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
         if (isShowSquareOff) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(8.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.inversePrimary,
+                        shape = RoundedCornerShape(100.dp)
+                    )
                     .clickable {
-                        squareOffTransaction()
+                        showConfirmationDialog = true
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -141,9 +151,38 @@ fun SettlementItem(
                     modifier = Modifier.size(28.dp),
                     painter = painterResource(id = R.drawable.ic_settlement),
                     contentDescription = "squareoff",
-                    tint = MaterialTheme.colorScheme.inverseOnSurface
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
+        }
+        if (showConfirmationDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    showConfirmationDialog = false
+                },
+                text = {
+                    CommonText(
+                        text = "Do you want to square off this transaction?"
+                    )
+                },
+                confirmButton = {
+                    CommonButton(
+                        text = "Ok",
+                        onClick = {
+                            showConfirmationDialog = false
+                            squareOffTransaction()
+                        }
+                    )
+                },
+                dismissButton = {
+                    CommonButton(
+                        text = "Cancel",
+                        onClick = {
+                            showConfirmationDialog = false
+                        }
+                    )
+                }
+            )
         }
     }
 

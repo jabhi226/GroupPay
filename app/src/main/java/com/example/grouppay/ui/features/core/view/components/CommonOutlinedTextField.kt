@@ -8,17 +8,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
 
 @Composable
 fun CommonOutlinedTextField(
@@ -26,25 +19,22 @@ fun CommonOutlinedTextField(
     text: String = "",
     hint: String = "",
     singleLine: Boolean = true,
+    maxCharacterLength: Int = 100,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Sentences),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     updateText: (String) -> Unit = {},
 ) {
-    val showKeyboard = remember { mutableStateOf(true) }
-    val focusRequester = remember { FocusRequester() }
-    val keyboard = LocalSoftwareKeyboardController.current
-
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
-            .focusable(true)
-            .focusRequester(focusRequester = focusRequester),
+            .focusable(true),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         singleLine = singleLine,
         value = text,
         onValueChange = {
-            updateText(it)
+            if (it.length <= maxCharacterLength)
+                updateText(it)
         },
         label = {
             CommonText(
@@ -52,14 +42,6 @@ fun CommonOutlinedTextField(
             )
         },
         textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     )
-
-    LaunchedEffect(focusRequester) {
-        if (showKeyboard.equals(true)) {
-            focusRequester.requestFocus()
-            delay(100)
-            keyboard?.show()
-        }
-    }
 }

@@ -33,14 +33,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.grouppay.domain.Expense
 import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
@@ -49,13 +51,13 @@ import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
 import com.example.grouppay.ui.features.utils.showToast
 import com.example.grouppay.ui.theme.GroupPayTheme
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExpenseScreen(
-    navController: NavController,
-    groupId: String?
+    navController: NavController, groupId: String?
 ) {
     val viewModel: AddExpenseViewModel = koinViewModel()
     LaunchedEffect(groupId) {
@@ -63,9 +65,30 @@ fun AddExpenseScreen(
     }
     val allParticipantsByGroupId by viewModel.allParticipantsByGroupId.collectAsState()
     val paidBy by viewModel.paidBy.collectAsState()
-    val totalAmountPaid by viewModel.totalAmountPaid.collectAsState()
-    val expenseName by viewModel.expenseName.collectAsState()
+    var totalAmountPaid by remember { mutableStateOf("") }
+    var expenseName by remember { mutableStateOf("") }
     val context = LocalContext.current
+
+    val focusRequesters =
+        remember { mutableStateListOf(FocusRequester(), FocusRequester(), FocusRequester()) }
+    var membersRequesters by remember { mutableStateOf(listOf<FocusRequester>()) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        focusRequesters[0].requestFocus()
+        delay(100)
+        keyboardController?.show()
+    }
+
+    LaunchedEffect(allParticipantsByGroupId.size) {
+        membersRequesters = allParticipantsByGroupId.map {
+            FocusRequester()
+        }
+    }
+
+    LaunchedEffect(totalAmountPaid) {
+        println("==> $totalAmountPaid")
+    }
 
     LaunchedEffect(viewModel.uiEvents) {
         viewModel.uiEvents.collect { event ->
@@ -83,79 +106,120 @@ fun AddExpenseScreen(
     }
 
     GroupPayTheme {
-        Scaffold(modifier = Modifier.fillMaxSize(),
-            topBar = {
-                TopAppBar(title = {
-                    CommonText(
-                        text = "Add Expense",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                })
-            },
-            floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    viewModel.saveExpense()
-                }) {
-                    CommonText(text = "Save")
-                }
+        Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+            TopAppBar(title = {
+                CommonText(
+                    text = "Add Expense", fontSize = 20.sp, fontWeight = FontWeight.Bold
+                )
+            })
+        }, floatingActionButton = {
+            FloatingActionButton(onClick = {
+                viewModel.saveExpense(totalAmountPaid, expenseName)
+            }) {
+                CommonText(text = "Save")
             }
-        ) { innerPadding ->
+        }) { innerPadding ->
+
             Column(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(16.dp)
+                    .padding(16.dp),
             ) {
 
                 CommonOutlinedTextField(
+                    modifier = Modifier.focusRequester(focusRequesters[0]),
                     text = expenseName,
                     hint = "Expense Name, ex. Lunch",
                     updateText = {
-                        viewModel.updateExpenseName(it)
+                        expenseName = it
                     },
+                    maxCharacterLength = 6,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                        }
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+
                 AutocompleteTextField(
+                    modifier = Modifier.focusRequester(focusRequesters[1]),
                     text = paidBy.name,
                     hint = "Paid by",
                     suggestions = allParticipantsByGroupId,
-                    getSuggestionName = {
-                        it.name
-                    },
-                    selectSuggestion = {
-                        viewModel.updatePaidBy(it)
-                    },
+                    getSuggestionName = { it.name },
+                    selectSuggestion = { viewModel.updatePaidBy(it) },
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusRequesters[2].requestFocus()
+                        },
+                    ),
                     saveNewSuggestion = {}
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 CommonOutlinedTextField(
+                    modifier = Modifier.focusRequester(focusRequesters[2]),
                     text = totalAmountPaid,
                     hint = "Total Amount Paid",
                     updateText = {
-                        viewModel.updateTotalAmountPaid(it)
+                        totalAmountPaid = it
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    maxCharacterLength = 6,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
+                        keyboardType = KeyboardType.Number
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            membersRequesters.getOrNull(0)?.requestFocus()
+                        },
+                    ),
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
                 CommonText(text = "Included Participants", modifier = Modifier)
-
                 Spacer(modifier = Modifier.height(16.dp))
+
                 if (allParticipantsByGroupId.isNotEmpty()) {
-                    LazyColumn {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+
                         itemsIndexed(allParticipantsByGroupId) { index, participant ->
                             ParticipantContributions(
+                                modifier = Modifier.focusRequester(
+                                    membersRequesters.getOrNull(index) ?: FocusRequester.Default
+                                ),
                                 participant = participant,
                                 index = index,
-                                totalAmountPaid = totalAmountPaid.toDoubleOrNull() ?: 0.0,
+                                totalAmountPaid = totalAmountPaid,
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        if (index < membersRequesters.size - 1) {
+                                            membersRequesters.getOrNull(index + 1)?.requestFocus()
+                                        }
+                                    },
+                                    onDone = {
+                                        membersRequesters.getOrNull(index)?.freeFocus()
+                                    }
+                                ),
                                 totalParticipants = allParticipantsByGroupId.count { it.isSelected },
                                 updateParticipantAmount = {
-                                    viewModel.updateParticipantAmount(it)
+                                    viewModel.updateParticipantAmount(it, totalAmountPaid)
                                 },
                                 updateParticipantSelection = {
                                     viewModel.updateParticipantSelection(
-                                        it.groupMemberId
+                                        it.groupMemberId,
+                                        totalAmountPaid
                                     )
                                 },
                             )
@@ -174,35 +238,61 @@ fun ParticipantContributions(
     modifier: Modifier = Modifier,
     participant: ExpenseMember,
     index: Int,
-    totalAmountPaid: Double,
+    totalAmountPaid: String,
     totalParticipants: Int,
+    keyboardActions: KeyboardActions,
     updateParticipantAmount: (ExpenseMember) -> Unit = {},
     updateParticipantSelection: (ExpenseMember) -> Unit = {}
 ) {
-    var rsText by remember { mutableStateOf("") }
-    var perText by remember { mutableStateOf("") }
+    var amountText by remember { mutableStateOf("") }
+    var percentageText by remember { mutableStateOf("") }
     var isSelected by remember { mutableStateOf(false) }
 
     LaunchedEffect(totalAmountPaid, totalParticipants, participant.isSelected) {
+        val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
         isSelected = participant.isSelected
-        rsText =
-            if (isSelected) (totalAmountPaid / totalParticipants).formatToTwoDecimalPlaces() else "0.0"
-        perText =
-            if (isSelected) ((totalAmountPaid / totalParticipants) / totalAmountPaid * 100).formatToTwoDecimalPlaces() else "0.0"
+        val (amt, per) = if (total == 0.0) {
+            Pair("0", "0")
+        } else {
+            Pair(
+                if (isSelected) (total / totalParticipants).formatToTwoDecimalPlaces() else "0",
+                if (isSelected) ((total / totalParticipants) / total * 100).formatToTwoDecimalPlaces() else "0"
+            )
+        }
+        amountText = amt
+        percentageText = per
     }
 
-    LaunchedEffect(perText) {
+    LaunchedEffect(percentageText, totalAmountPaid) {
         try {
-            rsText = ((totalAmountPaid * perText.toDouble()) / 100).formatToTwoDecimalPlaces()
+            val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
+            val amount = if (total == 0.0) {
+                "0"
+            } else {
+                ((total * percentageText.toDouble()) / 100).formatToTwoDecimalPlaces()
+            }
+            if (amountText.toDouble() != amount.toDouble()) {
+                amountText = amount
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
-    LaunchedEffect(rsText) {
+
+    LaunchedEffect(amountText, totalAmountPaid) {
         try {
-            perText = ((rsText.toDouble() / totalAmountPaid) * 100).formatToTwoDecimalPlaces()
+            val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
+            val percentage = if (total == 0.0) {
+                "0"
+            } else {
+                ((amountText.toDouble() / total) * 100).formatToTwoDecimalPlaces()
+            }
+
+            if (percentage.toDouble() != percentageText.toDouble()) {
+                percentageText = percentage
+            }
             updateParticipantAmount(participant.apply {
-                this.setAmountBorrowedForExpense(rsText)
+                this.setAmountBorrowedForExpense(amountText)
             })
         } catch (e: Exception) {
             e.printStackTrace()
@@ -210,7 +300,17 @@ fun ParticipantContributions(
     }
 
     LaunchedEffect(participant.amountBorrowedForExpense) {
-        rsText = participant.amountBorrowedForExpense.toString()
+        amountText = participant.amountBorrowedForExpense.toString().replace(".0", "")
+    }
+
+    fun updateAmount(s: String) {
+//        amountText = (if (s.endsWith(".")) s.replace(".", "") else s)
+        amountText = s.replace(".0", "")
+    }
+
+    fun updatePercentage(s: String) {
+//        percentageText = (if (s.endsWith(".")) s.replace(".", "") else s)
+        percentageText = s.replace(".0", "")
     }
 
     Column(
@@ -218,8 +318,7 @@ fun ParticipantContributions(
             .padding(bottom = 16.dp)
             .fillMaxWidth()
             .background(
-                MaterialTheme.colorScheme.tertiaryContainer,
-                shape = RoundedCornerShape(8.dp)
+                MaterialTheme.colorScheme.secondaryContainer, shape = RoundedCornerShape(8.dp)
             )
             .padding(16.dp)
     ) {
@@ -230,7 +329,7 @@ fun ParticipantContributions(
         ) {
             CommonText(
                 text = "${index + 1}: ${participant.name}",
-                textColor = MaterialTheme.colorScheme.onTertiaryContainer
+                textColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Checkbox(
                 checked = isSelected,
@@ -243,48 +342,43 @@ fun ParticipantContributions(
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Box(
-                modifier = Modifier
-                    .weight(1F)
+                modifier = Modifier.weight(1F)
             ) {
                 CommonOutlinedTextField(
-                    modifier = Modifier,
-                    text = rsText,
+                    modifier = modifier,
+                    text = amountText,
                     hint = "Amount in ₹",
-                    updateText = {
-                        rsText = (if (it.endsWith(".")) it.replace(".", "") else it)
-                    },
+                    updateText = { updateAmount(it) },
+                    maxCharacterLength = 6,
                     keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = if (index == totalParticipants - 1) ImeAction.Done else ImeAction.Next,
                         keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
                     ),
-                    keyboardActions = KeyboardActions(onDone = {
-                        updateParticipantAmount(participant.apply {
-                            this.setAmountBorrowedForExpense(rsText)
-                        })
-                    })
+                    keyboardActions = keyboardActions,
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Box(
-                modifier = Modifier
-                    .weight(1F)
+                modifier = Modifier.weight(1F)
             ) {
                 CommonOutlinedTextField(
                     modifier = Modifier,
-                    text = perText,
+                    text = percentageText,
                     hint = "Amount in %",
                     updateText = {
-                        perText = (if (it.endsWith(".")) it.replace(".", "") else it)
+                        updatePercentage(it)
                     },
+                    maxCharacterLength = 6,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(onDone = {
-                        updateParticipantAmount(participant.apply {
-                            this.setAmountBorrowedForExpense(rsText)
-                        })
-                    })
+                    ), keyboardActions = KeyboardActions(
+                        onDone = {
+                            updateParticipantAmount(participant.apply {
+                                this.setAmountBorrowedForExpense(amountText)
+                            })
+                        }
+                    )
                 )
             }
         }
