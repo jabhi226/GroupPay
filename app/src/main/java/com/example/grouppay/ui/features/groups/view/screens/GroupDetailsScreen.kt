@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -56,28 +58,26 @@ fun GroupDetailsScreen(
 
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
-//            floatingActionButton = {
-//            FloatingActionButton(onClick = { navController.navigate("add_contribution") }) {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.add_payment),
-//                    contentDescription = "add_user"
-//                )
-//            }
-//        },
             topBar = {
-                TopAppBar(title = {
-                    CommonText(
-                        text = group.groupName,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                })
+                TopAppBar(
+                    title = {
+                        CommonText(
+                            text = group.groupName,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    navigationIcon = {
+
+                    }
+                )
             }) { innerPadding ->
 
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(color = Color.Red)
             ) {
                 groupInfo?.let { GroupDetailTabs(navController, it) }
             }
@@ -100,7 +100,8 @@ fun GroupDetailTabs(
     val pagerState = com.google.accompanist.pager.rememberPagerState()
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(color = Color.Blue),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Tabs(tabs = tabs, pagerState = pagerState)
@@ -116,8 +117,7 @@ fun Tabs(tabs: List<TabItem>, pagerState: PagerState) {
         modifier = Modifier
             .fillMaxWidth(),
         selectedTabIndex = pagerState.currentPage,
-//        backgroundColor = Color(0xff1E76DA),
-        indicator = { tabPositions ->
+        indicator = { _ ->
             Box {}
         },
     ) {
@@ -130,7 +130,7 @@ fun Tabs(tabs: List<TabItem>, pagerState: PagerState) {
                         if (isSelected) {
                             MaterialTheme.colorScheme.primary
                         } else {
-                            Color.White
+                            MaterialTheme.colorScheme.background
                         }
                     ),
                 selected = isSelected,
@@ -144,13 +144,13 @@ fun Tabs(tabs: List<TabItem>, pagerState: PagerState) {
                         text = tabItem.title, textColor = if (isSelected) {
                             MaterialTheme.colorScheme.onPrimary
                         } else {
-                            colorResource(id = R.color.text_color)
+                            MaterialTheme.colorScheme.onBackground
                         }
                     )
                 },
-                icon = { null },
-                selectedContentColor = Color.White,
-                unselectedContentColor = Color.Gray,
+                icon = { },
+                selectedContentColor = Color.Red,
+                unselectedContentColor = Color.Blue,
                 enabled = true
             )
         }

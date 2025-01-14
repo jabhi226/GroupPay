@@ -1,5 +1,6 @@
 package com.example.grouppay.ui.features.groups.view.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +50,8 @@ import com.example.grouppay.ui.features.utils.getDateInStringFormat
 import com.example.grouppay.ui.features.utils.getInitials
 import org.koin.androidx.compose.koinViewModel
 
-
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ExpensesScreen(navController: NavController, group: Group) {
     val viewModel: GroupViewModel = koinViewModel()
@@ -66,20 +69,23 @@ fun ExpensesScreen(navController: NavController, group: Group) {
                 }) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_add_expense),
+                        tint = MaterialTheme.colorScheme.primary,
                         contentDescription = "add_user"
                     )
                     CommonText(
                         modifier = Modifier.padding(start = 12.dp),
-                        text = "Add Expense"
+                        text = "Add Expense",
+                        textColor = MaterialTheme.colorScheme.primary
                     )
                 }
             }
         }
-    ) { innerPadding ->
+    ) { _ ->
         if (expenses.isEmpty()) {
             EmptyScreen(
                 text = "No Expense are found with ${group.name} group."
@@ -87,7 +93,6 @@ fun ExpensesScreen(navController: NavController, group: Group) {
         } else {
             LazyColumn(
                 modifier = Modifier
-                    .padding(innerPadding)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,7 +109,7 @@ fun ExpensesScreen(navController: NavController, group: Group) {
 @Preview
 @Composable
 fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.getExpense()) {
-    Box(modifier = Modifier.background(Color.White)) {
+    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
 
         Surface(
             modifier = Modifier.padding(16.dp),
@@ -117,7 +122,6 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                     .padding(vertical = 16.dp)
             ) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.Top,
@@ -144,7 +148,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                         CommonText(
                             textColor = MaterialTheme.colorScheme.tertiary,
                             fontSize = 18.sp,
-                            text = if (expense.paidBy == null) "Unpaid" else "Paid by: ${expense.paidBy?.name?.ifEmpty { "Abhishek" }}"
+                            text = if (expense.paidBy == null) "Unpaid" else "Paid by: ${expense.paidBy?.name}"
                         )
 
                         CommonText(
@@ -180,7 +184,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                                     Box(
                                         modifier = Modifier
                                             .background(
-                                                color = Color.White,
+                                                color = MaterialTheme.colorScheme.background,
                                                 shape = RoundedCornerShape(100.dp)
                                             )
                                             .padding(8.dp)
@@ -189,7 +193,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                                         contentAlignment = Alignment.Center
                                     ) {
                                         CommonText(
-                                            text = participant.name.ifEmpty { "Abhishek Ja" }
+                                            text = participant.name
                                                 .getInitials(),
                                             fontSize = 22.sp
                                         )
@@ -197,7 +201,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Column {
                                         CommonText(
-                                            text = participant.name.ifEmpty { "Siddhesh" },
+                                            text = participant.name,
                                             fontSize = 16.sp,
                                             textColor = MaterialTheme.colorScheme.onSecondaryContainer
                                         )

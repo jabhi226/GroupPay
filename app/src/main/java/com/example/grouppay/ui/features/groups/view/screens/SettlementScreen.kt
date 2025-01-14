@@ -1,10 +1,12 @@
 package com.example.grouppay.ui.features.groups.view.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,6 +46,7 @@ import com.example.grouppay.ui.features.groups.viewmodel.SquareOffUtils
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SettlementScreen(
     navController: NavController,
@@ -66,33 +69,35 @@ fun SettlementScreen(
                 }) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
                             painter = painterResource(id = if (!isShowSquareOff) R.drawable.ic_settlement else R.drawable.ic_settlement),
-                            contentDescription = "add_settlement"
+                            contentDescription = "add_settlement",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         CommonText(
                             modifier = Modifier.padding(start = 12.dp),
                             text = if (!isShowSquareOff) "Settle up" else "Save",
+                            textColor = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
-            }) { innerPadding ->
-            Box(
-                modifier = Modifier.padding(innerPadding),
-            ) {
-                if (squareOffTransaction.isEmpty()) {
-                    EmptyScreen(text = "All transactions are squared off.")
-                } else {
-                    LazyColumn {
-                        items(squareOffTransaction) { participant ->
-                            SettlementItem(
-                                participant = participant,
-                                isShowSquareOff = isShowSquareOff
-                            ) {
-                                viewModel.squareOffTransaction(participant, group.id)
-                            }
+            }) { _ ->
+            if (squareOffTransaction.isEmpty()) {
+                EmptyScreen(text = "All transactions are squared off.")
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 2.dp),
+                    userScrollEnabled = true
+                ) {
+                    items(squareOffTransaction) { participant ->
+                        SettlementItem(
+                            participant = participant,
+                            isShowSquareOff = isShowSquareOff
+                        ) {
+                            viewModel.squareOffTransaction(participant, group.id)
                         }
                     }
                 }
@@ -115,8 +120,8 @@ fun SettlementItem(
 
     Row(
         modifier = modifier
-            .padding(8.dp)
             .fillMaxWidth()
+            .padding(8.dp)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(16.dp)
