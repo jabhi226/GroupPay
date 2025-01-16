@@ -10,7 +10,7 @@ import com.example.grouppay.domain.Expense as DomainExpense
 import com.example.grouppay.domain.GroupMember as DomainParticipant
 import com.example.grouppay.domain.Group as DomainGroup
 import com.example.grouppay.domain.repo.GroupRepository
-import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
+import com.example.grouppay.domain.GroupWithTotalExpense
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
