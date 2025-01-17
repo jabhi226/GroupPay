@@ -1,4 +1,4 @@
-package com.example.grouppay.ui.features.groups.model
+package com.example.grouppay.domain
 
 data class GroupWithTotalExpense(
     val id: String,

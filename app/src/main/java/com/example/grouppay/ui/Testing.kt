@@ -1,10 +1,9 @@
 package com.example.grouppay.ui
 
-import com.example.grouppay.data.mapper.getDataModel
 import com.example.grouppay.domain.Expense
 import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.domain.GroupMember
-import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
+import com.example.grouppay.domain.GroupWithTotalExpense
 
 object Testing {
 

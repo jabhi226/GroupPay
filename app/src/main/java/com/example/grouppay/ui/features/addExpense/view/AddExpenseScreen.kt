@@ -184,7 +184,7 @@ fun AddExpenseScreen(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-                CommonText(text = "Included Participants", modifier = Modifier)
+                CommonText(text = "Included Members", modifier = Modifier)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (allParticipantsByGroupId.isNotEmpty()) {

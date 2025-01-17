@@ -9,7 +9,7 @@ import com.example.grouppay.ui.features.addExpense.view.AddExpenseScreen
 import com.example.grouppay.ui.features.addGroup.view.AddGroupScreen
 import com.example.grouppay.ui.features.addParticipant.view.AddParticipantScreen
 import com.example.grouppay.ui.features.groups.view.screens.GroupDetailsScreen
-import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
+import com.example.grouppay.domain.GroupWithTotalExpense
 import com.google.gson.Gson
 
 

@@ -4,7 +4,7 @@ import com.example.grouppay.domain.Expense
 import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.domain.Group
 import com.example.grouppay.domain.GroupMember
-import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
+import com.example.grouppay.domain.GroupWithTotalExpense
 import kotlinx.coroutines.flow.Flow
 
 interface GroupRepository {

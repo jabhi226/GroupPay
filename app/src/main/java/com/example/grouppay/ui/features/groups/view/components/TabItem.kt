@@ -29,7 +29,7 @@ sealed class TabItem(
         val group: Group
     ) :
         TabItem(
-            title = "Participants",
+            title = "Members",
             icons = Icons.Default.ShoppingCart,
             screens = { ParticipantsScreen(navController, group) })
 

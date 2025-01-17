@@ -1,5 +1,6 @@
 package com.example.grouppay.ui.features.groups.view.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,7 +37,7 @@ import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.theme.GroupPayTheme
 
-
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ParticipantsScreen(
     navController: NavController,
@@ -51,27 +52,29 @@ fun ParticipantsScreen(
                 }) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_add_user),
+                            tint = MaterialTheme.colorScheme.primary,
                             contentDescription = "add_user"
                         )
                         CommonText(
                             modifier = Modifier.padding(start = 12.dp),
-                            text = "Add Participant"
+                            text = "Add Member",
+                            textColor = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
-            }) { innerPadding ->
+            }) { _ ->
             Box(
                 modifier = Modifier
-                    .padding(innerPadding)
                     .fillMaxSize()
             ) {
                 if (group.participants.isEmpty()) {
                     EmptyScreen(
-                        text = "No participants are found with ${group.name} group."
+                        text = "No members are found with ${group.name} group."
                     )
                 } else {
                     LazyColumn(
