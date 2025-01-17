@@ -212,7 +212,7 @@ fun AddExpenseScreen(
                                         membersRequesters.getOrNull(index)?.freeFocus()
                                     }
                                 ),
-                                totalParticipants = allParticipantsByGroupId.count { it.isSelected },
+                                totalSelectedParticipants = allParticipantsByGroupId.filter { it.isSelected },
                                 updateParticipantAmount = {
                                     viewModel.updateParticipantAmount(it, totalAmountPaid)
                                 },
@@ -239,7 +239,7 @@ fun ParticipantContributions(
     participant: ExpenseMember,
     index: Int,
     totalAmountPaid: String,
-    totalParticipants: Int,
+    totalSelectedParticipants: List<ExpenseMember>,
     keyboardActions: KeyboardActions,
     updateParticipantAmount: (ExpenseMember) -> Unit = {},
     updateParticipantSelection: (ExpenseMember) -> Unit = {}
@@ -248,17 +248,30 @@ fun ParticipantContributions(
     var percentageText by remember { mutableStateOf("") }
     var isSelected by remember { mutableStateOf(false) }
 
-    LaunchedEffect(totalAmountPaid, totalParticipants, participant.isSelected) {
+    LaunchedEffect(totalAmountPaid, totalSelectedParticipants, participant) {
         val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
-        isSelected = participant.isSelected
+         isSelected = participant.isSelected
         val (amt, per) = if (total == 0.0) {
             Pair("0", "0")
         } else {
-            Pair(
-                if (isSelected) (total / totalParticipants).formatToTwoDecimalPlaces() else "0",
-                if (isSelected) ((total / totalParticipants) / total * 100).formatToTwoDecimalPlaces() else "0"
-            )
+            if (participant.id == totalSelectedParticipants.last().id) {
+                val distributedAmount =
+                    (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces()
+                        .toDouble() * (totalSelectedParticipants.size - 1)
+                val distributedPer =
+                    ((total / totalSelectedParticipants.size) / total * 100).formatToTwoDecimalPlaces()
+                        .toDouble() * (totalSelectedParticipants.size - 1)
+                val lastAmount = total - distributedAmount
+                val lastPercentage = 100 - distributedPer
+                Pair(lastAmount.toString(), lastPercentage.toString())
+            } else {
+                Pair(
+                    if (isSelected) (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces() else "0",
+                    if (isSelected) ((total / totalSelectedParticipants.size) / total * 100).formatToTwoDecimalPlaces() else "0"
+                )
+            }
         }
+        println("===> ${participant.id == totalSelectedParticipants.last().id} | $isSelected | $amt | $per")
         amountText = amt
         percentageText = per
     }
@@ -351,7 +364,7 @@ fun ParticipantContributions(
                     updateText = { updateAmount(it) },
                     maxCharacterLength = 6,
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = if (index == totalParticipants - 1) ImeAction.Done else ImeAction.Next,
+                        imeAction = if (index == totalSelectedParticipants.size - 1) ImeAction.Done else ImeAction.Next,
                         keyboardType = KeyboardType.Number,
                     ),
                     keyboardActions = keyboardActions,

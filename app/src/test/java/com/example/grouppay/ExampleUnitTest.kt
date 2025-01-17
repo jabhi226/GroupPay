@@ -1,9 +1,10 @@
 package com.example.grouppay
 
-import com.example.grouppay.domain.Group
+import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.domain.PendingPayments
-import com.example.grouppay.ui.features.groups.viewmodel.SquareOffUtils
+import com.example.grouppay.ui.Testing
+import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
 import org.junit.Test
 
 import kotlin.random.Random
@@ -16,7 +17,51 @@ import kotlin.random.Random
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        SquareOffUtils.getSquareOffTransaction(Group(id = "test", name = "test", participants = getParticipants()))
+//        SquareOffUtils.getSquareOffTransaction(
+//            Group(
+//                id = "test",
+//                name = "test",
+//                participants = getParticipants()
+//            )
+//        )
+        val total = "300"
+        getTotal(total, Testing.groupExpenseMembers()[0], Testing.groupExpenseMembers())
+        getTotal(total, Testing.groupExpenseMembers()[1], Testing.groupExpenseMembers())
+        getTotal(total, Testing.groupExpenseMembers()[2], Testing.groupExpenseMembers())
+
+
+    }
+
+    private fun getTotal(
+        totalAmountPaid: String,
+        participant: ExpenseMember,
+        totalSelectedParticipants: List<ExpenseMember>,
+    ) {
+        val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
+        val isSelected = participant.isSelected
+        val (amt, per) = if (total == 0.0) {
+            Pair("0", "0")
+        } else {
+            if (participant.id == totalSelectedParticipants.last().id) {
+                val distributedAmount =
+                    (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces()
+                        .toDouble() * (totalSelectedParticipants.size - 1)
+                val distributedPer =
+                    ((total / totalSelectedParticipants.size) / total * 100).formatToTwoDecimalPlaces()
+                        .toDouble() * (totalSelectedParticipants.size - 1)
+                val lastAmount = total - distributedAmount
+                val lastPercentage = 100 - distributedPer
+                Pair(lastAmount.toString(), lastPercentage.toString())
+            } else {
+                Pair(
+                    if (isSelected) (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces() else "0",
+                    if (isSelected) ((total / totalSelectedParticipants.size) / total * 100).formatToTwoDecimalPlaces() else "0"
+                )
+            }
+        }
+        val amountText = amt
+        val percentageText = per
+        println("===> $isSelected | $amountText | $percentageText | ${amountText.toDouble() * totalSelectedParticipants.size} | ${percentageText.toDouble() * totalSelectedParticipants.size}")
     }
 
     private fun getParticipants(): List<GroupMember> {

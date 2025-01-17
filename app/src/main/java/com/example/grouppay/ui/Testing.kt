@@ -29,10 +29,12 @@ object Testing {
     }
 
     fun groupExpenseMembers(): List<ExpenseMember> {
-        return (0..0).map {
+        return (0..2).map {
             ExpenseMember(
+                id = it.toString(),
                 groupMemberId = "",
-                name = ""
+                name = "",
+                isSelected = if (it == 10) false else true
             )
         }
     }
