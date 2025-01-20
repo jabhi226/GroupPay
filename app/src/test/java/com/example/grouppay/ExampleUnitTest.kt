@@ -25,11 +25,55 @@ class ExampleUnitTest {
 //            )
 //        )
         val total = "300"
-        getTotal(total, Testing.groupExpenseMembers()[0], Testing.groupExpenseMembers())
-        getTotal(total, Testing.groupExpenseMembers()[1], Testing.groupExpenseMembers())
-        getTotal(total, Testing.groupExpenseMembers()[2], Testing.groupExpenseMembers())
+//        getTotal(total, Testing.groupExpenseMembers()[0], Testing.groupExpenseMembers())
+//        getTotal(total, Testing.groupExpenseMembers()[1], Testing.groupExpenseMembers())
+//        getTotal(total, Testing.groupExpenseMembers()[2], Testing.groupExpenseMembers())
 
+//        getPercentage("33.33", total)
+        getAmount("10", total)
 
+    }
+
+    private fun getPercentage(percentageText: String, totalAmountPaid: String) {
+        try {
+            var amountText = "0"
+            val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
+            val amount = if (total == 0.0) {
+                "0"
+            } else {
+                ((total * percentageText.toDouble()) / 100).formatToTwoDecimalPlaces()
+            }
+            println("======> $amount")
+            if (amountText.toDouble() != amount.toDouble()) {
+                amountText = amount
+            }
+            println("======> $amountText")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun getAmount(amountText: String, totalAmountPaid: String) {
+
+        try {
+            var percentageText = "33.33"
+            val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
+            val percentage = if (total == 0.0) {
+                "0"
+            } else {
+                ((amountText.toDouble() / total) * 100).formatToTwoDecimalPlaces()
+            }
+
+            if (percentage.toDouble() != percentageText.toDouble()) {
+                percentageText = percentage
+            }
+            println("=====> $percentageText")
+//            updateParticipantAmount(participant.apply {
+//                this.setAmountBorrowedForExpense(amountText)
+//            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun getTotal(
@@ -38,30 +82,52 @@ class ExampleUnitTest {
         totalSelectedParticipants: List<ExpenseMember>,
     ) {
         val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
+        val totalParticipants = totalSelectedParticipants.size
         val isSelected = participant.isSelected
-        val (amt, per) = if (total == 0.0) {
-            Pair("0", "0")
-        } else {
+
+        var amountText = ""
+        var percentageText = ""
+        // Avoid dividing by zero
+        if (total == 0.0 || totalParticipants == 0) {
+            amountText = "0"
+            percentageText = "0"
+            return
+        }
+
+        // Calculate the distributed amounts and percentages
+        val distributedAmount = (total / totalParticipants).formatToTwoDecimalPlaces().toDouble()
+        val distributedPercentage =
+            ((distributedAmount / total) * 100).formatToTwoDecimalPlaces().toDouble()
+
+        // If the current participant is the last one, calculate their final share
+        val (amt, per) = if (isSelected) {
             if (participant.id == totalSelectedParticipants.last().id) {
-                val distributedAmount =
-                    (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces()
-                        .toDouble() * (totalSelectedParticipants.size - 1)
-                val distributedPer =
-                    ((total / totalSelectedParticipants.size) / total * 100).formatToTwoDecimalPlaces()
-                        .toDouble() * (totalSelectedParticipants.size - 1)
-                val lastAmount = total - distributedAmount
-                val lastPercentage = 100 - distributedPer
-                Pair(lastAmount.toString(), lastPercentage.toString())
+                val distributedAmountExceptLast = distributedAmount * (totalParticipants - 1)
+                val distributedPercentageExceptLast =
+                    distributedPercentage * (totalParticipants - 1)
+
+                val lastAmount = total - distributedAmountExceptLast
+                val lastPercentage = 100 - distributedPercentageExceptLast
+                Pair(
+                    lastAmount.formatToTwoDecimalPlaces(),
+                    lastPercentage.formatToTwoDecimalPlaces()
+                )
             } else {
                 Pair(
-                    if (isSelected) (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces() else "0",
-                    if (isSelected) ((total / totalSelectedParticipants.size) / total * 100).formatToTwoDecimalPlaces() else "0"
+                    distributedAmount.formatToTwoDecimalPlaces(),
+                    distributedPercentage.formatToTwoDecimalPlaces()
                 )
             }
+        } else {
+            Pair("0", "0")
         }
-        val amountText = amt
-        val percentageText = per
-        println("===> $isSelected | $amountText | $percentageText | ${amountText.toDouble() * totalSelectedParticipants.size} | ${percentageText.toDouble() * totalSelectedParticipants.size}")
+
+        // Update amount and percentage texts
+        amountText = amt
+        percentageText = per
+
+        // For debugging purposes (optional)
+        println("===> Participant ID: ${participant.id} | isSelected: $isSelected | Amount: $amt | Percentage: $per")
     }
 
     private fun getParticipants(): List<GroupMember> {
