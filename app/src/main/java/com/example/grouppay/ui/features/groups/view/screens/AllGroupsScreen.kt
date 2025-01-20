@@ -1,15 +1,19 @@
 package com.example.grouppay.ui.features.groups.view.screens
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,13 +44,25 @@ fun AllGroupsScreen(
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
             FloatingActionButton(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(bottom = 40.dp),
                 onClick = { navController.navigate("add_groups") }
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_add_group),
-                    contentDescription = "add_group"
-                )
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add_group),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "add_group"
+                    )
+                    CommonText(
+                        modifier = Modifier.padding(start = 12.dp),
+                        text = "Add Group",
+                        textColor = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }, topBar = {
             CenterAlignedTopAppBar(title = {

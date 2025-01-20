@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -37,12 +38,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.grouppay.R
 import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
@@ -113,10 +117,28 @@ fun AddExpenseScreen(
                 )
             })
         }, floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.saveExpense(totalAmountPaid, expenseName)
-            }) {
-                CommonText(text = "Save")
+            FloatingActionButton(
+                modifier = Modifier.padding(bottom = 40.dp),
+                onClick = {
+                    viewModel.saveExpense(totalAmountPaid, expenseName)
+                }) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add_expense),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "add_expense"
+                    )
+                    CommonText(
+                        modifier = Modifier.padding(start = 12.dp),
+                        text = "Save Expense",
+                        textColor = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }) { innerPadding ->
 
@@ -136,6 +158,7 @@ fun AddExpenseScreen(
                     },
                     maxCharacterLength = 6,
                     keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
                         imeAction = ImeAction.Next
                     ),
                     keyboardActions = KeyboardActions(
@@ -154,6 +177,7 @@ fun AddExpenseScreen(
                     getSuggestionName = { it.name },
                     selectSuggestion = { viewModel.updatePaidBy(it) },
                     keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
                         imeAction = ImeAction.Next
                     ),
                     keyboardActions = KeyboardActions(
@@ -193,7 +217,6 @@ fun AddExpenseScreen(
                             .fillMaxWidth()
                             .weight(1f)
                     ) {
-
                         itemsIndexed(allParticipantsByGroupId) { index, participant ->
                             ParticipantContributions(
                                 modifier = Modifier.focusRequester(
@@ -224,6 +247,9 @@ fun AddExpenseScreen(
                                 },
                             )
                         }
+                        item {
+                            Spacer(modifier = Modifier.height(60.dp))
+                        }
                     }
                 } else {
                     EmptyScreen(text = "No group members found to make expense.")
@@ -247,39 +273,55 @@ fun ParticipantContributions(
     var amountText by remember { mutableStateOf("") }
     var percentageText by remember { mutableStateOf("") }
     var isSelected by remember { mutableStateOf(false) }
+    var isCalculatingAmount by remember { mutableStateOf(false) }
+    var isCalculatingPercentage by remember { mutableStateOf(false) }
 
     LaunchedEffect(totalAmountPaid, totalSelectedParticipants, participant) {
+        isCalculatingAmount = true
+        isCalculatingPercentage = true
         val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
-         isSelected = participant.isSelected
+        isSelected = participant.isSelected
         val (amt, per) = if (total == 0.0) {
             Pair("0", "0")
         } else {
-            if (participant.id == totalSelectedParticipants.last().id) {
-                val distributedAmount =
-                    (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces()
-                        .toDouble() * (totalSelectedParticipants.size - 1)
-                val distributedPer =
-                    ((total / totalSelectedParticipants.size) / total * 100).formatToTwoDecimalPlaces()
-                        .toDouble() * (totalSelectedParticipants.size - 1)
+            if ((totalSelectedParticipants.count { it.isSelected } > 0)
+                && (participant.groupMemberId == totalSelectedParticipants.last { it.isSelected }.groupMemberId)) {
+                val amount =
+                    (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces().toDouble()
+                val distributedAmount = (amount * (totalSelectedParticipants.size - 1))
                 val lastAmount = total - distributedAmount
+                val distributedPer = (distributedAmount / total * 100)
+                    .formatToTwoDecimalPlaces()
+                    .toDouble()
                 val lastPercentage = 100 - distributedPer
-                Pair(lastAmount.toString(), lastPercentage.toString())
-            } else {
                 Pair(
-                    if (isSelected) (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces() else "0",
-                    if (isSelected) ((total / totalSelectedParticipants.size) / total * 100).formatToTwoDecimalPlaces() else "0"
+                    lastAmount.formatToTwoDecimalPlaces(),
+                    lastPercentage.formatToTwoDecimalPlaces()
+                )
+            } else {
+                val amount = (total / totalSelectedParticipants.size).formatToTwoDecimalPlaces()
+                Pair(
+                    if (isSelected) amount else "0",
+                    if (isSelected) (amount.toDouble() / total * 100).formatToTwoDecimalPlaces() else "0"
                 )
             }
         }
-        println("===> ${participant.id == totalSelectedParticipants.last().id} | $isSelected | $amt | $per")
         amountText = amt
         percentageText = per
+        updateParticipantAmount(participant.apply {
+            this.setAmountBorrowedForExpense(amountText)
+        })
     }
 
-    LaunchedEffect(percentageText, totalAmountPaid) {
+    LaunchedEffect(percentageText, totalAmountPaid, participant) {
+        if (isCalculatingPercentage) {
+            delay(300)
+            isCalculatingPercentage = false
+            return@LaunchedEffect
+        }
         try {
             val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
-            val amount = if (total == 0.0) {
+            val amount = if (total == 0.0 || !participant.isSelected) {
                 "0"
             } else {
                 ((total * percentageText.toDouble()) / 100).formatToTwoDecimalPlaces()
@@ -292,10 +334,15 @@ fun ParticipantContributions(
         }
     }
 
-    LaunchedEffect(amountText, totalAmountPaid) {
+    LaunchedEffect(amountText, totalAmountPaid, participant) {
+        if (isCalculatingAmount) {
+            delay(300)
+            isCalculatingAmount = false
+            return@LaunchedEffect
+        }
         try {
             val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
-            val percentage = if (total == 0.0) {
+            val percentage = if (total == 0.0 || !participant.isSelected) {
                 "0"
             } else {
                 ((amountText.toDouble() / total) * 100).formatToTwoDecimalPlaces()
@@ -303,10 +350,10 @@ fun ParticipantContributions(
 
             if (percentage.toDouble() != percentageText.toDouble()) {
                 percentageText = percentage
+                updateParticipantAmount(participant.apply {
+                    this.setAmountBorrowedForExpense(amountText)
+                })
             }
-            updateParticipantAmount(participant.apply {
-                this.setAmountBorrowedForExpense(amountText)
-            })
         } catch (e: Exception) {
             e.printStackTrace()
         }
