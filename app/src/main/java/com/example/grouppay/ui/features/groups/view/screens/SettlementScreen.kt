@@ -30,8 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -57,8 +57,8 @@ fun SettlementScreen(
     val squareOffTransaction by viewModel.squareOffTransactions.collectAsState()
     var isShowSquareOff by remember { mutableStateOf(false) }
 
-    LaunchedEffect(group) {
-        viewModel.getSquareOffTransactions(group)
+    LaunchedEffect(group.id) {
+        viewModel.getSquareOffTransactions(group.id)
     }
 
     GroupPayTheme {
@@ -79,7 +79,7 @@ fun SettlementScreen(
                         )
                         CommonText(
                             modifier = Modifier.padding(start = 12.dp),
-                            text = if (!isShowSquareOff) "Settle up" else "Save",
+                            text = if (!isShowSquareOff) "Square off" else "Save Square off",
                             textColor = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -107,11 +107,10 @@ fun SettlementScreen(
 }
 
 
-@Preview(showBackground = true)
 @Composable
 fun SettlementItem(
     modifier: Modifier = Modifier,
-    participant: SquareOffTransactionModel = SquareOffUtils.getSquareOffTransaction()[0],
+    participant: SquareOffTransactionModel,
     isShowSquareOff: Boolean = true,
     squareOffTransaction: () -> Unit = {}
 ) {
@@ -134,7 +133,7 @@ fun SettlementItem(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(0.8f),
-            text = "${participant.senderMember.name} will pay ₹ ${participant.amount} to ${participant.receiverMember.name}",
+            text = "${participant.senderMember.name} paid ₹ ${participant.amount} to ${participant.receiverMember.name}.",
             fontSize = 18.sp,
             textColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
@@ -147,6 +146,7 @@ fun SettlementItem(
                         color = MaterialTheme.colorScheme.inversePrimary,
                         shape = RoundedCornerShape(100.dp)
                     )
+                    .clip(shape = RoundedCornerShape(100.dp))
                     .clickable {
                         showConfirmationDialog = true
                     },

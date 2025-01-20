@@ -87,14 +87,14 @@ fun <T> AutocompleteTextField(
                 }
             }
         }
-        if (showAddNew) {
-            SuggestionItem(
-                text = updatedText,
-                showAddNew = true
-            ) {
-                saveNewSuggestion(updatedText)
-            }
-        }
+//        if (showAddNew) {
+//            SuggestionItem(
+//                text = updatedText,
+//                showAddNew = true
+//            ) {
+//                saveNewSuggestion(updatedText)
+//            }
+//        }
     }
 }
 

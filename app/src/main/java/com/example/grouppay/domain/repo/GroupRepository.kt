@@ -15,6 +15,8 @@ interface GroupRepository {
 
     suspend fun getGroupInformation(objectId: String): Group
 
+    suspend fun getGroupInformationFlow(objectId: String): Flow<Group>
+
     fun getAllParticipantByText(text: String): Flow<List<GroupMember>>
 
     suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<ExpenseMember>

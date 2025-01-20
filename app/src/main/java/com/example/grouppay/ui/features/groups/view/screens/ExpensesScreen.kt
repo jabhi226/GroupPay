@@ -50,7 +50,6 @@ import com.example.grouppay.ui.features.utils.getDateInStringFormat
 import com.example.grouppay.ui.features.utils.getInitials
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ExpensesScreen(navController: NavController, group: Group) {
@@ -160,10 +159,10 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                     }
                 }
 
-                if (expense.remainingParticipants.isNotEmpty()) {
+                if (expense.remainingParticipants.count { it.amountBorrowedForExpense > 0.0 } > 0) {
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(modifier = Modifier.padding(top = 8.dp)) {
-                        items(expense.remainingParticipants) { participant ->
+                        items(expense.remainingParticipants.filter { it.amountBorrowedForExpense > 0.0 }) { participant ->
                             Column(
                                 modifier = Modifier
                                     .padding(start = 16.dp)

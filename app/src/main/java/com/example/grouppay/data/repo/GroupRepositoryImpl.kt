@@ -17,6 +17,7 @@ import io.realm.kotlin.ext.query
 import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId.Companion.invoke
@@ -83,6 +84,46 @@ class GroupRepositoryImpl(
             id = grp._id.toHexString(),
             name = grp.name,
             participants = participants
+        )
+    }
+
+    override suspend fun getGroupInformationFlow(objectId: String): Flow<DomainGroup> = flow {
+        val participants = ArrayList<DomainParticipant>()
+        val payers =
+            hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
+        val grp = realm.query<Group>("_id=$0", ObjectId(objectId)).find().first()
+        participants.addAll(grp.participants.map { it.getDomainModel() })
+        payers.putAll(grp.participants.map { Pair(it._id.toHexString(), arrayListOf()) })
+        val expenses = realm.query<Expense>("groupId = $0", grp._id.toHexString()).find()
+        expenses.forEach { expense ->
+            val paidBy = expense.paidBy ?: return@forEach
+            for (i in participants.indices) {
+                val p = participants[i]
+                if (p.id == paidBy.groupMemberId) {
+                    val amountOwed = paidBy.amountOwedForExpense ?: 0.0
+                    p.amountOwedFromGroup += amountOwed
+                } else {
+                    val participant =
+                        expense.remainingParticipants.find { it.groupMemberId == p.id } ?: continue
+                    val amountBorrowed = participant.amountBorrowedForExpense
+                    p.amountBorrowedFromGroup += amountBorrowed
+                    p.pendingPaymentsMapping.add(
+                        PendingPayments(
+                            paidBy.groupMemberId,
+                            paidBy.name,
+                            amountBorrowed
+                        )
+                    )
+                }
+                participants[i] = p
+            }
+        }
+        emit(
+            DomainGroup(
+                id = grp._id.toHexString(),
+                name = grp.name,
+                participants = participants
+            )
         )
     }
 

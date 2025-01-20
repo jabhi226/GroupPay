@@ -27,7 +27,7 @@ fun String.formatToTwoDecimalPlaces(): String {
 }
 
 fun Long.getDateInStringFormat(): String {
-    return SimpleDateFormat("dd MMM yy", Locale.US).format(Date(this))
+    return SimpleDateFormat("dd MMM yy hh:mm", Locale.US).format(Date(this))
 }
 
 fun Context.showToast(text: String) {

@@ -21,6 +21,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +37,9 @@ import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
+import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.theme.GroupPayTheme
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -43,6 +47,13 @@ fun ParticipantsScreen(
     navController: NavController,
     group: Group
 ) {
+
+    val viewModel: GroupViewModel = koinViewModel()
+    val groupInfo by viewModel.groupInfoFlow.collectAsState()
+
+    LaunchedEffect(group.id) {
+        viewModel.getGroupInformationFlow(group.id)
+    }
 
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
@@ -72,7 +83,7 @@ fun ParticipantsScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                if (group.participants.isEmpty()) {
+                if (groupInfo?.participants?.isEmpty() == true) {
                     EmptyScreen(
                         text = "No members are found with ${group.name} group."
                     )
@@ -81,7 +92,7 @@ fun ParticipantsScreen(
                         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 2.dp),
                         userScrollEnabled = true
                     ) {
-                        items(group.participants) {
+                        items(groupInfo?.participants ?: listOf()) {
                             ParticipantItem(participant = it)
                         }
                         item { Spacer(modifier = Modifier.padding(40.dp)) }

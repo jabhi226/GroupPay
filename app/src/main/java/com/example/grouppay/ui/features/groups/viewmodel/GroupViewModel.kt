@@ -9,6 +9,7 @@ import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class GroupViewModel(
@@ -31,12 +32,27 @@ class GroupViewModel(
         }
     }
 
+    val groupInfoFlow = MutableStateFlow<Group?>(null)
+    fun getGroupInformationFlow(objectId: String) {
+        viewModelScope.launch {
+            repository.getGroupInformationFlow(objectId).collectLatest {
+                groupInfoFlow.emit(it)
+            }
+        }
+    }
+
     val squareOffTransactions =
         MutableStateFlow<List<SquareOffTransactionModel>>(listOf())
 
-    fun getSquareOffTransactions(group: Group) {
+    fun getSquareOffTransactions(groupId: String) {
         viewModelScope.launch {
-            squareOffTransactions.emit(SquareOffUtils.getSquareOffTransaction(group))
+            squareOffTransactions.emit(
+                SquareOffUtils.getSquareOffTransaction(
+                    repository.getGroupInformation(
+                        groupId
+                    )
+                )
+            )
         }
     }
 

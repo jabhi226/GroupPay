@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -38,12 +39,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.grouppay.R
 import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
@@ -116,10 +120,27 @@ fun AddExpenseScreen(
                 )
             })
         }, floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.saveExpense(totalAmountPaid, expenseName)
-            }) {
-                CommonText(text = "Save")
+            FloatingActionButton(
+                modifier = Modifier.padding(bottom = 40.dp),
+                onClick = {
+                    viewModel.saveExpense(totalAmountPaid, expenseName)
+                }) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add_expense),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "add_expense"
+                    )
+                    CommonText(
+                        modifier = Modifier.padding(start = 12.dp),
+                        text = "Save Expense",
+                        textColor = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }) { innerPadding ->
 
@@ -139,6 +160,7 @@ fun AddExpenseScreen(
                     },
                     maxCharacterLength = 6,
                     keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
                         imeAction = ImeAction.Next
                     ),
                     keyboardActions = KeyboardActions(
@@ -157,6 +179,7 @@ fun AddExpenseScreen(
                     getSuggestionName = { it.name },
                     selectSuggestion = { viewModel.updatePaidBy(it) },
                     keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
                         imeAction = ImeAction.Next
                     ),
                     keyboardActions = KeyboardActions(
@@ -196,7 +219,6 @@ fun AddExpenseScreen(
                             .fillMaxWidth()
                             .weight(1f)
                     ) {
-
                         itemsIndexed(allParticipantsByGroupId) { index, participant ->
                             ParticipantContributions(
                                 modifier = Modifier.focusRequester(
@@ -227,6 +249,9 @@ fun AddExpenseScreen(
                                 },
                             )
                         }
+                        item {
+                            Spacer(modifier = Modifier.height(60.dp))
+                        }
                     }
                 } else {
                     EmptyScreen(text = "No group members found to make expense.")
@@ -250,8 +275,12 @@ fun ParticipantContributions(
     var amountText by remember { mutableStateOf("") }
     var percentageText by remember { mutableStateOf("") }
     val isSelected by rememberUpdatedState(participant.isSelected)
+    var isCalculatingAmount by remember { mutableStateOf(false) }
+    var isCalculatingPercentage by remember { mutableStateOf(false) }
 
     LaunchedEffect(totalAmountPaid, totalSelectedParticipants, participant) {
+        isCalculatingAmount = true
+        isCalculatingPercentage = true
         val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
         val totalParticipants = totalSelectedParticipants.size
 
@@ -261,12 +290,12 @@ fun ParticipantContributions(
             return@LaunchedEffect
         }
 
-        val distributedAmount = (total / totalParticipants)
+        val distributedAmount = (total / totalParticipants).formatToTwoDecimalPlaces().toDouble()
         val distributedPercentage =
-            ((distributedAmount / total) * 100)
+            ((distributedAmount / total) * 100).formatToTwoDecimalPlaces().toDouble()
 
         val (amt, per) = if (isSelected) {
-            if (participant.id == totalSelectedParticipants.last().id) {
+            if ((totalSelectedParticipants.count { it.isSelected } > 0) && (participant.groupMemberId == totalSelectedParticipants.last { it.isSelected }.groupMemberId)) {
                 val distributedAmountExceptLast = distributedAmount * (totalParticipants - 1)
                 val distributedPercentageExceptLast =
                     distributedPercentage * (totalParticipants - 1)
@@ -293,12 +322,20 @@ fun ParticipantContributions(
         if (percentageText != per) {
             percentageText = per
         }
+        updateParticipantAmount(participant.apply {
+            this.setAmountBorrowedForExpense(amountText)
+        })
     }
 
     LaunchedEffect(percentageText, totalAmountPaid) {
+        if (isCalculatingPercentage) {
+            delay(300)
+            isCalculatingPercentage = false
+            return@LaunchedEffect
+        }
         try {
             val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
-            val amount = if (total == 0.0) {
+            val amount = if (total == 0.0 || !participant.isSelected) {
                 "0"
             } else {
                 val calculatedAmount = BigDecimal(total * percentageText.toDouble())
@@ -316,9 +353,14 @@ fun ParticipantContributions(
     }
 
     LaunchedEffect(amountText, totalAmountPaid) {
+        if (isCalculatingAmount) {
+            delay(300)
+            isCalculatingAmount = false
+            return@LaunchedEffect
+        }
         try {
             val total = totalAmountPaid.toDoubleOrNull() ?: 0.0
-            val percentage = if (total == 0.0) {
+            val percentage = if (total == 0.0 || !participant.isSelected) {
                 "0"
             } else {
                 ((amountText.toDouble() / total) * 100).formatToTwoDecimalPlaces()
@@ -335,17 +377,15 @@ fun ParticipantContributions(
         }
     }
 
-//    LaunchedEffect(participant.amountBorrowedForExpense) {
-//        amountText = participant.amountBorrowedForExpense.toString().replace(".0", "")
-//    }
+    LaunchedEffect(participant.amountBorrowedForExpense) {
+        amountText = participant.amountBorrowedForExpense.toString().replace(".0", "")
+    }
 
     fun updateAmount(s: String) {
-//        amountText = (if (s.endsWith(".")) s.replace(".", "") else s)
         amountText = s.replace(".0", "")
     }
 
     fun updatePercentage(s: String) {
-//        percentageText = (if (s.endsWith(".")) s.replace(".", "") else s)
         percentageText = s.replace(".0", "")
     }
 
@@ -387,6 +427,7 @@ fun ParticipantContributions(
                     updateText = { updateAmount(it) },
                     maxCharacterLength = 6,
                     keyboardOptions = KeyboardOptions.Default.copy(
+                        capitalization = KeyboardCapitalization.Sentences,
                         imeAction = if (index == totalSelectedParticipants.size - 1) ImeAction.Done else ImeAction.Next,
                         keyboardType = KeyboardType.Number,
                     ),

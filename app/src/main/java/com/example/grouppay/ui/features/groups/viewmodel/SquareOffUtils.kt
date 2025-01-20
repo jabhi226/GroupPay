@@ -8,19 +8,7 @@ import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
 object SquareOffUtils {
 
 
-    fun getSquareOffTransaction(
-        group: Group = Group(
-            id = "test",
-            name = "test",
-            participants = getParticipants()
-        )
-    ): List<SquareOffTransactionModel> {
-        println(
-            group.participants.joinToString { groupMember ->
-                "\n${groupMember.id} | ${groupMember.pendingPaymentsMapping.joinToString { "${it.originalPayerId}->${it.amountToBePaid}" }}"
-            }
-        )
-
+    fun getSquareOffTransaction(group: Group): List<SquareOffTransactionModel> {
         val squreOffValues = mutableMapOf<GroupMember, Double>()
         val toBePaidValues = mutableMapOf<GroupMember, Double>()
         val toBeReceivedValues = mutableMapOf<GroupMember, Double>()
@@ -42,117 +30,6 @@ object SquareOffUtils {
         }
 
         return getMinimumTransactions(squreOffValues)
-    }
-
-    private fun getParticipants(): List<GroupMember> {
-        val list = ArrayList<GroupMember>()
-        val personA = "ABC"
-        val personB = "XYZ"
-        val personC = "PQR"
-        list.add(GroupMember(
-            id = personA,
-            name = personA,
-            pendingPaymentsMapping = ArrayList<PendingPayments>().apply {
-                add(
-                    PendingPayments(
-                        personB,
-                        personB,
-                        500.0
-                    )
-                )
-                add(
-                    PendingPayments(
-                        personB,
-                        personB,
-                        100.0
-                    )
-                )
-                add(
-                    PendingPayments(
-                        personC,
-                        personC,
-                        70.0
-                    )
-                )
-            }
-        ))
-        list.add(GroupMember(
-            id = personB,
-            name = personB,
-            pendingPaymentsMapping = ArrayList<PendingPayments>().apply {
-                add(
-                    PendingPayments(
-                        personA,
-                        personA,
-                        200.0
-                    )
-                )
-                add(
-                    PendingPayments(
-                        personA,
-                        personA,
-                        30.0
-                    )
-                )
-                add(
-                    PendingPayments(
-                        personC,
-                        personC,
-                        10.0
-                    )
-                )
-                add(
-                    PendingPayments(
-                        personA,
-                        personA,
-                        500.0
-                    )
-                )
-                add(
-                    PendingPayments(
-                        personC,
-                        personC,
-                        10.0
-                    )
-                )
-            }
-        ))
-        list.add(GroupMember(
-            id = personC,
-            name = personC,
-            pendingPaymentsMapping = ArrayList<PendingPayments>().apply {
-                add(
-                    PendingPayments(
-                        personA,
-                        personA,
-                        200.0
-                    )
-                )
-                add(
-                    PendingPayments(
-                        personA,
-                        personA,
-                        30.0
-                    )
-                )
-
-                add(
-                    PendingPayments(
-                        personB,
-                        personB,
-                        20.0
-                    )
-                )
-                add(
-                    PendingPayments(
-                        personA,
-                        personA,
-                        500.0
-                    )
-                )
-            }
-        ))
-        return list
     }
 
     private fun getMinimumTransactions(
