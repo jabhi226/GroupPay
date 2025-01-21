@@ -38,6 +38,7 @@ import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
+import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -143,7 +144,7 @@ fun ParticipantItem(
                     Spacer(modifier = Modifier.height(4.dp))
                     CommonText(
                         fontSize = 18.sp,
-                        text = "₹ ${participant.amountOwedFromGroup}",
+                        text = "₹ ${participant.amountOwedFromGroup.roundToTwoDecimal()}",
                         textColor = if (participant.amountOwedFromGroup > 0.0) {
                             Color(0xFF85BB65)
                         } else if (participant.amountOwedFromGroup < 0.0) {
@@ -164,7 +165,7 @@ fun ParticipantItem(
                     Spacer(modifier = Modifier.height(4.dp))
                     CommonText(
                         fontSize = 18.sp,
-                        text = "₹ ${participant.amountBorrowedFromGroup}",
+                        text = "₹ ${participant.amountBorrowedFromGroup.roundToTwoDecimal()}",
                         textColor = if (participant.amountBorrowedFromGroup > 0.0) {
                             Color(0xFFFF5544)
                         } else if (participant.amountBorrowedFromGroup < 0.0) {

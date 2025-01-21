@@ -2,6 +2,8 @@ package com.example.grouppay.ui.features.utils
 
 import android.content.Context
 import android.widget.Toast
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -14,6 +16,10 @@ fun Double.formatToTwoDecimalPlaces(): String {
         formattedString
     }
     return value
+}
+
+fun Double.roundToTwoDecimal(): Double {
+    return BigDecimal(this).setScale(2, RoundingMode.HALF_EVEN).toDouble()
 }
 
 fun String.formatToTwoDecimalPlaces(): String {

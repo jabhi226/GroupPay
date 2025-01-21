@@ -1,4 +1,4 @@
-package com.example.grouppay.ui.features.addExpense.view
+package com.example.grouppay.ui.features.addExpense.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

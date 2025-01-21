@@ -42,7 +42,7 @@ import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
-import com.example.grouppay.ui.features.groups.viewmodel.SquareOffUtils
+import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -133,7 +133,7 @@ fun SettlementItem(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(0.8f),
-            text = "${participant.senderMember.name} paid ₹ ${participant.amount} to ${participant.receiverMember.name}.",
+            text = "${participant.senderMember.name} will pay ₹ ${participant.amount.roundToTwoDecimal()} to ${participant.receiverMember.name}.",
             fontSize = 18.sp,
             textColor = MaterialTheme.colorScheme.onPrimaryContainer
         )

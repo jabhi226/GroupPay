@@ -11,6 +11,7 @@ import com.example.grouppay.domain.GroupMember as DomainParticipant
 import com.example.grouppay.domain.Group as DomainGroup
 import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.domain.GroupWithTotalExpense
+import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
@@ -51,29 +52,31 @@ class GroupRepositoryImpl(
 
     override suspend fun getGroupInformation(objectId: String): DomainGroup {
         val participants = ArrayList<DomainParticipant>()
-        val payers =
-            hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
+//        val payers = hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
         val grp = realm.query<Group>("_id=$0", ObjectId(objectId)).find().first()
         participants.addAll(grp.participants.map { it.getDomainModel() })
-        payers.putAll(grp.participants.map { Pair(it._id.toHexString(), arrayListOf()) })
+//        payers.putAll(grp.participants.map { Pair(it._id.toHexString(), arrayListOf()) })
         val expenses = realm.query<Expense>("groupId = $0", grp._id.toHexString()).find()
         expenses.forEach { expense ->
             val paidBy = expense.paidBy ?: return@forEach
             for (i in participants.indices) {
                 val p = participants[i]
                 if (p.id == paidBy.groupMemberId) {
-                    val amountOwed = paidBy.amountOwedForExpense ?: 0.0
-                    p.amountOwedFromGroup += amountOwed
+                    val amountOwed = paidBy.amountOwedForExpense
+                    println("==> amountOwed: ${paidBy.amountOwedForExpense} | $amountOwed")
+                    p.amountOwedFromGroup = (p.amountOwedFromGroup + amountOwed).roundToTwoDecimal()
                 } else {
                     val participant =
                         expense.remainingParticipants.find { it.groupMemberId == p.id } ?: continue
                     val amountBorrowed = participant.amountBorrowedForExpense
-                    p.amountBorrowedFromGroup += amountBorrowed
+                    println("==> amountBorrowed: ${p.amountBorrowedFromGroup} | $amountBorrowed")
+                    p.amountBorrowedFromGroup =
+                        (p.amountBorrowedFromGroup + amountBorrowed).roundToTwoDecimal()
                     p.pendingPaymentsMapping.add(
                         PendingPayments(
                             paidBy.groupMemberId,
                             paidBy.name,
-                            amountBorrowed
+                            amountBorrowed.roundToTwoDecimal()
                         )
                     )
                 }
@@ -89,29 +92,30 @@ class GroupRepositoryImpl(
 
     override suspend fun getGroupInformationFlow(objectId: String): Flow<DomainGroup> = flow {
         val participants = ArrayList<DomainParticipant>()
-        val payers =
-            hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
+//        val payers = hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
         val grp = realm.query<Group>("_id=$0", ObjectId(objectId)).find().first()
         participants.addAll(grp.participants.map { it.getDomainModel() })
-        payers.putAll(grp.participants.map { Pair(it._id.toHexString(), arrayListOf()) })
+//        payers.putAll(grp.participants.map { Pair(it._id.toHexString(), arrayListOf()) })
         val expenses = realm.query<Expense>("groupId = $0", grp._id.toHexString()).find()
         expenses.forEach { expense ->
             val paidBy = expense.paidBy ?: return@forEach
             for (i in participants.indices) {
                 val p = participants[i]
                 if (p.id == paidBy.groupMemberId) {
-                    val amountOwed = paidBy.amountOwedForExpense ?: 0.0
+                    val amountOwed = paidBy.amountOwedForExpense
+                    println("==> amountOwed: ${paidBy.amountOwedForExpense} | $amountOwed")
                     p.amountOwedFromGroup += amountOwed
                 } else {
                     val participant =
                         expense.remainingParticipants.find { it.groupMemberId == p.id } ?: continue
                     val amountBorrowed = participant.amountBorrowedForExpense
+                    println("==> amountBorrowed: ${p.amountBorrowedFromGroup} | $amountBorrowed")
                     p.amountBorrowedFromGroup += amountBorrowed
                     p.pendingPaymentsMapping.add(
                         PendingPayments(
                             paidBy.groupMemberId,
                             paidBy.name,
-                            amountBorrowed
+                            amountBorrowed.roundToTwoDecimal()
                         )
                     )
                 }

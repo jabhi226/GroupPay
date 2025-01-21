@@ -1,9 +1,10 @@
-package com.example.grouppay.ui.features.groups.viewmodel
+package com.example.grouppay.ui.features.groups.utils
 
 import com.example.grouppay.domain.Group
 import com.example.grouppay.domain.GroupMember
-import com.example.grouppay.domain.PendingPayments
 import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
+import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
+import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 
 object SquareOffUtils {
 
@@ -14,16 +15,20 @@ object SquareOffUtils {
         val toBeReceivedValues = mutableMapOf<GroupMember, Double>()
 
         group.participants.map { groupMember ->
-            val amountToBePaid = groupMember.pendingPaymentsMapping.sumOf { it.amountToBePaid }
+            val amountToBePaid =
+                groupMember.pendingPaymentsMapping.sumOf { it.amountToBePaid }.roundToTwoDecimal()
             toBePaidValues[groupMember] = amountToBePaid
         }
 
         toBePaidValues.forEach { groupMember ->
             val amountToReceive =
-                group.participants.filterNot { it.id == groupMember.key.id }.sumOf { member ->
-                    member.pendingPaymentsMapping.filter { it.originalPayerId == groupMember.key.id }
-                        .sumOf { it.amountToBePaid }
-                }
+                group.participants
+                    .filterNot { it.id == groupMember.key.id }
+                    .sumOf { member ->
+                        member.pendingPaymentsMapping
+                            .filter { it.originalPayerId == groupMember.key.id }
+                            .sumOf { it.amountToBePaid }
+                    }.roundToTwoDecimal()
             toBeReceivedValues[groupMember.key] = amountToReceive
             squreOffValues[groupMember.key] =
                 amountToReceive - (toBePaidValues[groupMember.key] ?: 0.0)
