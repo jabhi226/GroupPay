@@ -64,24 +64,28 @@ fun SettlementScreen(
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    isShowSquareOff = !isShowSquareOff
-                }) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                if (squareOffTransaction.isNotEmpty()) {
+                    FloatingActionButton(
+                        onClick = {
+                            isShowSquareOff = !isShowSquareOff
+                        }
                     ) {
-                        Icon(
-                            painter = painterResource(id = if (!isShowSquareOff) R.drawable.ic_settlement else R.drawable.ic_settlement),
-                            contentDescription = "add_settlement",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        CommonText(
-                            modifier = Modifier.padding(start = 12.dp),
-                            text = if (!isShowSquareOff) "Square off" else "Save Square off",
-                            textColor = MaterialTheme.colorScheme.primary
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = if (!isShowSquareOff) R.drawable.ic_settlement else R.drawable.ic_settlement),
+                                contentDescription = "add_settlement",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            CommonText(
+                                modifier = Modifier.padding(start = 12.dp),
+                                text = if (!isShowSquareOff) "Square off" else "Save Square off",
+                                textColor = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }) { _ ->

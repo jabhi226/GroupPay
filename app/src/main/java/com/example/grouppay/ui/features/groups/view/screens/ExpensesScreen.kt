@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +49,7 @@ import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.features.utils.getDateInStringFormat
 import com.example.grouppay.ui.features.utils.getInitials
+import com.example.grouppay.ui.features.utils.showToast
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -55,6 +57,8 @@ import org.koin.androidx.compose.koinViewModel
 fun ExpensesScreen(navController: NavController, group: Group) {
     val viewModel: GroupViewModel = koinViewModel()
     val expenses by viewModel.expenses.collectAsState()
+    val context = LocalContext.current
+
     LaunchedEffect(group.id) {
         viewModel.getExpensesByGroupId(groupId = group.id)
     }
@@ -64,7 +68,11 @@ fun ExpensesScreen(navController: NavController, group: Group) {
             FloatingActionButton(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-                    navController.navigate("add_expense/${group.id}")
+                    if (group.participants.isEmpty()) {
+                        context.showToast("Please add group members before making expense.")
+                    } else {
+                        navController.navigate("add_expense/${group.id}")
+                    }
                 }) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp),
@@ -86,9 +94,12 @@ fun ExpensesScreen(navController: NavController, group: Group) {
         }
     ) { _ ->
         if (expenses.isEmpty()) {
-            EmptyScreen(
-                text = "No Expense are found with ${group.name} group."
-            )
+            val txt = if (group.participants.isEmpty()) {
+                "Please add group members before making expense."
+            } else {
+                "No Expense are found with ${group.name} group."
+            }
+            EmptyScreen(text = txt)
         } else {
             LazyColumn(
                 modifier = Modifier
