@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grouppay.domain.Expense
 import com.example.grouppay.domain.ExpenseMember
+import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.domain.repo.GroupRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,8 +26,9 @@ class AddExpenseViewModel(
         viewModelScope.launch {
             this@AddExpenseViewModel.groupId = groupId
             groupId ?: return@launch
-            val list = repository.getAllParticipantByGroupId(groupId)
-            allParticipantsByGroupId.emit(list)
+            repository.getAllParticipantByGroupIdFlow(groupId).collect {
+                allParticipantsByGroupId.emit(it)
+            }
         }
     }
 
@@ -114,6 +116,16 @@ class AddExpenseViewModel(
                     UiEvents.ShowError("Error adding Expense ${expenseName}.")
                 }
             )
+        }
+    }
+
+    fun saveNewMember(groupId: String?, memberName: String) {
+        viewModelScope.launch {
+            if (groupId == null) {
+                _uiEvents.send(UiEvents.ShowError("Can not found group."))
+                return@launch
+            }
+            repository.saveNewParticipantInTheGroup(groupId, GroupMember(name = memberName))
         }
     }
 

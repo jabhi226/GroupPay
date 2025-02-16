@@ -75,7 +75,7 @@ fun <T> AutocompleteTextField(
             keyboardActions = keyboardActions,
         )
 
-        if (showSuggestions) {
+        if (showSuggestions && filteredSuggestions.isNotEmpty()) {
             LazyColumn {
                 items(filteredSuggestions) { suggestion ->
                     SuggestionItem(
@@ -87,14 +87,15 @@ fun <T> AutocompleteTextField(
                 }
             }
         }
-//        if (showAddNew) {
-//            SuggestionItem(
-//                text = updatedText,
-//                showAddNew = true
-//            ) {
-//                saveNewSuggestion(updatedText)
-//            }
-//        }
+        if (showAddNew) {
+            SuggestionItem(
+                text = updatedText,
+                showAddNew = true
+            ) {
+                showAddNew = false
+                saveNewSuggestion(updatedText)
+            }
+        }
     }
 }
 

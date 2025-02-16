@@ -145,119 +145,139 @@ fun AddExpenseScreen(
             }
         }) { innerPadding ->
 
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(16.dp),
             ) {
+                item {
+                    CommonOutlinedTextField(
+                        modifier = Modifier.focusRequester(focusRequesters[0]),
+                        text = expenseName,
+                        hint = "Expense Name, ex. Lunch",
+                        updateText = {
+                            expenseName = it
+                        },
+                        maxCharacterLength = 6,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                            }
+                        )
+                    )
+                }
 
-                CommonOutlinedTextField(
-                    modifier = Modifier.focusRequester(focusRequesters[0]),
-                    text = expenseName,
-                    hint = "Expense Name, ex. Lunch",
-                    updateText = {
-                        expenseName = it
-                    },
-                    maxCharacterLength = 6,
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = {
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                item {
+                    AutocompleteTextField(
+                        modifier = Modifier.focusRequester(focusRequesters[1]),
+                        text = paidBy.name,
+                        hint = "Paid by",
+                        suggestions = allParticipantsByGroupId,
+                        getSuggestionName = { it.name },
+                        selectSuggestion = {
+                            viewModel.updatePaidBy(it)
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusRequesters[2].requestFocus()
+                            },
+                        ),
+                        saveNewSuggestion = {
+                            viewModel.saveNewMember(groupId, it)
                         }
                     )
-                )
+                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
-                AutocompleteTextField(
-                    modifier = Modifier.focusRequester(focusRequesters[1]),
-                    text = paidBy.name,
-                    hint = "Paid by",
-                    suggestions = allParticipantsByGroupId,
-                    getSuggestionName = { it.name },
-                    selectSuggestion = { viewModel.updatePaidBy(it) },
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusRequesters[2].requestFocus()
+                item {
+                    CommonOutlinedTextField(
+                        modifier = Modifier.focusRequester(focusRequesters[2]),
+                        text = totalAmountPaid,
+                        hint = "Total Amount Paid",
+                        updateText = {
+                            totalAmountPaid = it
                         },
-                    ),
-                    saveNewSuggestion = {}
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                CommonOutlinedTextField(
-                    modifier = Modifier.focusRequester(focusRequesters[2]),
-                    text = totalAmountPaid,
-                    hint = "Total Amount Paid",
-                    updateText = {
-                        totalAmountPaid = it
-                    },
-                    maxCharacterLength = 6,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Number
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            membersRequesters.getOrNull(0)?.requestFocus()
-                        },
-                    ),
-                )
+                        maxCharacterLength = 6,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next,
+                            keyboardType = KeyboardType.Number
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                membersRequesters.getOrNull(0)?.requestFocus()
+                            },
+                        ),
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                CommonText(text = "Included Members", modifier = Modifier)
-                Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                item {
+                    CommonText(text = "Included Members", modifier = Modifier)
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
                 if (allParticipantsByGroupId.isNotEmpty()) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) {
-                        itemsIndexed(allParticipantsByGroupId) { index, participant ->
-                            ParticipantContributions(
-                                modifier = Modifier.focusRequester(
-                                    membersRequesters.getOrNull(index) ?: FocusRequester.Default
-                                ),
-                                participant = participant,
-                                index = index,
-                                totalAmountPaid = totalAmountPaid,
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        if (index < membersRequesters.size - 1) {
-                                            membersRequesters.getOrNull(index + 1)?.requestFocus()
-                                        }
-                                    },
-                                    onDone = {
-                                        membersRequesters.getOrNull(index)?.freeFocus()
+                    itemsIndexed(allParticipantsByGroupId) { index, participant ->
+                        ParticipantContributions(
+                            modifier = Modifier.focusRequester(
+                                membersRequesters.getOrNull(index) ?: FocusRequester.Default
+                            ),
+                            participant = participant,
+                            index = index,
+                            totalAmountPaid = totalAmountPaid,
+                            keyboardActions = KeyboardActions(
+                                onNext = {
+                                    if (index < membersRequesters.size - 1) {
+                                        membersRequesters.getOrNull(index + 1)?.requestFocus()
                                     }
-                                ),
-                                totalSelectedParticipants = allParticipantsByGroupId.filter { it.isSelected },
-                                updateParticipantAmount = {
-                                    viewModel.updateParticipantAmount(it, totalAmountPaid)
                                 },
-                                updateParticipantSelection = {
-                                    viewModel.updateParticipantSelection(
-                                        it.groupMemberId,
-                                        totalAmountPaid
-                                    )
-                                },
-                            )
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(60.dp))
-                        }
+                                onDone = {
+                                    membersRequesters.getOrNull(index)?.freeFocus()
+                                }
+                            ),
+                            totalSelectedParticipants = allParticipantsByGroupId.filter { it.isSelected },
+                            updateParticipantAmount = {
+                                viewModel.updateParticipantAmount(it, totalAmountPaid)
+                            },
+                            updateParticipantSelection = {
+                                viewModel.updateParticipantSelection(
+                                    it.groupMemberId,
+                                    totalAmountPaid
+                                )
+                            },
+                        )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(120.dp))
                     }
                 } else {
-                    EmptyScreen(text = "No group members found to make expense.")
+                    item {
+                        EmptyScreen(text = "No group members found to make expense.")
+                    }
                 }
             }
+
         }
     }
 }

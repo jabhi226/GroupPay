@@ -14,6 +14,7 @@ import com.example.grouppay.domain.GroupWithTotalExpense
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.ext.asFlow
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.Dispatchers
@@ -147,6 +148,19 @@ class GroupRepositoryImpl(
             return@withContext ArrayList<DomainExpenseMember>().apply {
                 addAll(group.participants.map { it.getExpenseMemberModel() })
             }
+        }
+    }
+
+    override fun getAllParticipantByGroupIdFlow(groupId: String): Flow<ArrayList<DomainExpenseMember>> = flow {
+        val group =
+            realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()?.asFlow()
+        group?.collect { realmResults ->
+            emit(
+                ArrayList<DomainExpenseMember>().apply {
+                    addAll(realmResults.obj?.participants?.map { it.getExpenseMemberModel() }
+                        ?: listOf())
+                }
+            )
         }
     }
 

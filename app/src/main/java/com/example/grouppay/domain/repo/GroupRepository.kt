@@ -21,6 +21,8 @@ interface GroupRepository {
 
     suspend fun getAllParticipantByGroupId(groupId: String): ArrayList<ExpenseMember>
 
+    fun getAllParticipantByGroupIdFlow(groupId: String): Flow<ArrayList<ExpenseMember>>
+
     suspend fun saveNewParticipantInTheGroup(groupId: String, participant: GroupMember): Boolean
 
     suspend fun upsertExpense(expense: Expense): Boolean
