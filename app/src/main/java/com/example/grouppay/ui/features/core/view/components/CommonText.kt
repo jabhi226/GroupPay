@@ -11,11 +11,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun CommonText(
     modifier: Modifier = Modifier,
-    text: String = "",
+    text: String = "Please add group members before making expense.",
     fontSize: TextUnit = 14.sp,
     fontStyle: FontStyle = FontStyle.Normal,
     fontWeight: FontWeight = FontWeight.W500,

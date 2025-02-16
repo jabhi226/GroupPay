@@ -1,0 +1,59 @@
+# GroupPay - Expense Manager App
+
+**GroupPay** is a sleek Android app designed to help you and your friends track, split, and settle group expenses. Whether you're traveling, dining, or sharing other costs, GroupPay automatically calculates the minimum number of transactions required to square off all debts.
+
+---
+
+## Features
+
+- **Track Expenses**: Add expenses with descriptions, amounts, and participants.
+- **Flexible Splitting**: Split expenses equally or by custom portions (amount or percentage).
+- **Optimized Settlements**: Automatically calculates the minimum number of transactions to settle all debts.
+- **Modern UI**: Built using Material 3 for an intuitive and dynamic design.
+
+---
+
+## Tools & Technologies
+
+This project leverages the following modern technologies:
+
+### 🛠️ **Tech Stack**
+<div align="center">
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjC97Z8BResg5dlPqczsRCFhP6zewWX0X0e7fVPG-G7PuUZwwZVsi9OPoqJYkgqT2h0FI95SsmWzVEgpt8b8HAqFiIxZ98TFtY4lE0b8UrtVJ2HrJebRwl6C9DslsQDl9KnBIrdHS6LtkY/s1600/jetpack+compose+icon_RGB.png" alt="Jetpack Compose" height="200" width="auto" />
+  <img src="https://symbols.getvecta.com/stencil_261/26_mongodb-realm.d203692b4c.svg" alt="RealmDB" height="200" width="auto" />
+  <img src="https://insert-koin.io/img/koin_new_logo.png" alt="Koin" height="200" width="auto" />
+  <img src="https://svgmix.com/uploads/5b99f5-material-ui.svg" alt="Material 3" height="180" width="auto" />
+</div>
+
+
+
+- **Jetpack Compose**: Declarative UI toolkit for building native Android UIs.
+- **RealmDB**: A local database that’s fast and easy to use.
+- **Koin**: Lightweight Dependency Injection (DI) framework.
+- **Material 3**: The latest design system by Google for a beautiful UI experience.
+
+---
+
+## Installation
+
+Follow these steps to get the project up and running:
+
+### Prerequisites
+- **Android Studio** (latest version)
+- **JDK 11+**
+
+### Steps
+
+1. **Clone the repository:**
+
+    ```bash
+    https://github.com/jabhi226/GroupPay.git
+    ```
+
+2. **Open the project** in Android Studio.
+
+3. **Sync Gradle** to fetch the dependencies.
+
+4. **Run the app** on an emulator or physical device.
+
+---
