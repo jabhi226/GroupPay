@@ -4,6 +4,7 @@ import com.example.grouppay.data.entities.Expense
 import com.example.grouppay.data.entities.Group
 import com.example.grouppay.data.entities.GroupMember
 import com.example.grouppay.data.mapper.getDataModel
+import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.domain.PendingPayments
 import com.example.grouppay.domain.ExpenseMember as DomainExpenseMember
 import com.example.grouppay.domain.Expense as DomainExpense
@@ -151,18 +152,19 @@ class GroupRepositoryImpl(
         }
     }
 
-    override fun getAllParticipantByGroupIdFlow(groupId: String): Flow<ArrayList<DomainExpenseMember>> = flow {
-        val group =
-            realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()?.asFlow()
-        group?.collect { realmResults ->
-            emit(
-                ArrayList<DomainExpenseMember>().apply {
-                    addAll(realmResults.obj?.participants?.map { it.getExpenseMemberModel() }
-                        ?: listOf())
-                }
-            )
+    override fun getAllParticipantByGroupIdFlow(groupId: String): Flow<ArrayList<DomainExpenseMember>> =
+        flow {
+            val group =
+                realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()?.asFlow()
+            group?.collect { realmResults ->
+                emit(
+                    ArrayList<DomainExpenseMember>().apply {
+                        addAll(realmResults.obj?.participants?.map { it.getExpenseMemberModel() }
+                            ?: listOf())
+                    }
+                )
+            }
         }
-    }
 
     override suspend fun saveNewGroup(group: String) {
         withContext(Dispatchers.IO) {
@@ -177,23 +179,25 @@ class GroupRepositoryImpl(
     override suspend fun saveNewParticipantInTheGroup(
         groupId: String,
         participant: DomainParticipant
-    ): Boolean {
+    ): DomainExpenseMember? {
         return withContext(Dispatchers.IO) {
-            return@withContext realm.write {
+            realm.write {
                 try {
                     val group =
                         realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()
-                    group ?: return@write false
+                            ?: return@write null
                     val managedParticipant = copyToRealm(participant.getDataModel())
-                    val latestGroup = findLatest(group) ?: return@write false
-                    return@write latestGroup.participants.add(managedParticipant)
+                    val latestGroup = findLatest(group) ?: return@write null
+                    latestGroup.participants.add(managedParticipant)
+                    return@write managedParticipant.getExpenseMemberModel()
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    return@write false
+                    return@write null
                 }
             }
         }
     }
+
 
     override suspend fun upsertExpense(expense: DomainExpense): Boolean {
         try {

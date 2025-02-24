@@ -2,6 +2,7 @@ package com.example.grouppay.ui.features.groups.view.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,11 +70,7 @@ fun ExpensesScreen(navController: NavController, group: Group) {
             FloatingActionButton(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-                    if (group.participants.isEmpty()) {
-                        context.showToast("Please add group members before making expense.")
-                    } else {
-                        navController.navigate("add_expense/${group.id}")
-                    }
+                    navController.navigate("add_expense/${group.id}")
                 }) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp),
@@ -131,43 +129,65 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        CommonText(
-                            textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            text = expense.label,
-                            fontSize = 20.sp,
-                        )
-                        CommonText(
-                            textColor = Color(0xFF85BB65),
-                            fontSize = 26.sp,
-                            text = "₹ ${expense.totalAmountPaid}"
-                        )
+                Row(
+                    modifier = Modifier.padding(start = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        tint = if (expense.label == "Square Off") {
+                            colorResource(R.color.amount_green)
+                        } else {
+                            colorResource(R.color.amount_red)
+                        },
+                        painter = painterResource(
+                            id =
+                            if (expense.label == "Square Off") {
+                                R.drawable.ic_squreoff
+                            } else {
+                                R.drawable.ic_shopping_basket
+                            }
+                        ),
+                        contentDescription = "",
+                    )
+                    Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            CommonText(
+                                textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                text = expense.label,
+                                fontSize = 20.sp,
+                            )
+                            CommonText(
+                                textColor = Color(0xFF85BB65),
+                                fontSize = 26.sp,
+                                text = "₹ ${expense.totalAmountPaid}"
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            CommonText(
+                                textColor = MaterialTheme.colorScheme.tertiary,
+                                fontSize = 18.sp,
+                                text = if (expense.paidBy == null) "Unpaid" else "Paid by: ${expense.paidBy?.name}"
+                            )
+
+                            CommonText(
+                                textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                fontStyle = FontStyle.Italic,
+                                text = "Date: ${expense.dateOfExpense.getDateInStringFormat()}",
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        CommonText(
-                            textColor = MaterialTheme.colorScheme.tertiary,
-                            fontSize = 18.sp,
-                            text = if (expense.paidBy == null) "Unpaid" else "Paid by: ${expense.paidBy?.name}"
-                        )
-
-                        CommonText(
-                            textColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            fontStyle = FontStyle.Italic,
-                            text = "Date: ${expense.dateOfExpense.getDateInStringFormat()}",
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
                 }
 
                 if (expense.remainingParticipants.count { it.amountBorrowedForExpense > 0.0 } > 0) {

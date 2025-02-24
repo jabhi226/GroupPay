@@ -25,7 +25,7 @@ class AddParticipantViewModel(
                 return@launch
             }
             val response = repository.saveNewParticipantInTheGroup(groupId, participant)
-            if (response) {
+            if (response != null) {
                 saveResponse.emit(UiEvents.ShowSuccess)
             } else {
                 saveResponse.emit(UiEvents.ShowError("Error adding group member ${participant.name}."))

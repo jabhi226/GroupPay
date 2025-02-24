@@ -125,7 +125,13 @@ class AddExpenseViewModel(
                 _uiEvents.send(UiEvents.ShowError("Can not found group."))
                 return@launch
             }
-            repository.saveNewParticipantInTheGroup(groupId, GroupMember(name = memberName))
+            val savedParticipant =
+                repository.saveNewParticipantInTheGroup(groupId, GroupMember(name = memberName))
+            if (savedParticipant == null) {
+                _uiEvents.send(UiEvents.ShowError("Can not found group."))
+                return@launch
+            }
+            updatePaidBy(savedParticipant)
         }
     }
 

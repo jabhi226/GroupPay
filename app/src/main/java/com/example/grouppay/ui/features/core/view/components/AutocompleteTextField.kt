@@ -5,13 +5,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -38,12 +42,15 @@ fun <T> AutocompleteTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     saveNewSuggestion: (String) -> Unit,
+    newSuggestionConfirmationMessage: String
 ) {
 
     var updatedText by remember { mutableStateOf("") }
     var filteredSuggestions by remember { mutableStateOf(listOf<T>()) }
     var showSuggestions by remember { mutableStateOf(false) }
     var showAddNew by remember { mutableStateOf(false) }
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(text) {
         updatedText = text
@@ -65,7 +72,9 @@ fun <T> AutocompleteTextField(
 
     Column {
         CommonOutlinedTextField(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.3F),
             text = updatedText,
             updateText = { input ->
                 updatedText = input
@@ -75,9 +84,14 @@ fun <T> AutocompleteTextField(
             keyboardActions = keyboardActions,
         )
 
-        if (showSuggestions && filteredSuggestions.isNotEmpty()) {
-            LazyColumn {
-                items(filteredSuggestions) { suggestion ->
+        if (showSuggestions) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 300.dp)
+                    .verticalScroll(scrollState)
+            ) {
+                filteredSuggestions.forEach { suggestion ->
                     SuggestionItem(
                         text = getSuggestionName(suggestion),
                         showAddNew = false
@@ -85,18 +99,49 @@ fun <T> AutocompleteTextField(
                         selectSuggestion(suggestion)
                     }
                 }
-            }
-        }
-        if (showAddNew) {
-            SuggestionItem(
-                text = updatedText,
-                showAddNew = true
-            ) {
-                showAddNew = false
-                saveNewSuggestion(updatedText)
+                if (showAddNew) {
+                    SuggestionItem(
+                        text = updatedText,
+                        showAddNew = true
+                    ) {
+                        showConfirmationDialog = true
+                    }
+                }
             }
         }
     }
+
+    if (showConfirmationDialog) {
+        CommonAlertDialog(
+            onDismissRequest = {
+                showConfirmationDialog = false
+            },
+            text = {
+                CommonText(
+                    text = newSuggestionConfirmationMessage
+                )
+            },
+            confirmButton = {
+                CommonButton(
+                    text = "Ok",
+                    onClick = {
+                        showConfirmationDialog = false
+                        showAddNew = false
+                        saveNewSuggestion(updatedText)
+                    }
+                )
+            },
+            dismissButton = {
+                CommonButton(
+                    text = "Cancel",
+                    onClick = {
+                        showConfirmationDialog = false
+                    }
+                )
+            }
+        )
+    }
+
 }
 
 

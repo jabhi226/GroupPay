@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.Group
+import com.example.grouppay.ui.features.core.view.components.CommonAlertDialog
 import com.example.grouppay.ui.features.core.view.components.CommonButton
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
@@ -126,7 +127,7 @@ fun SettlementItem(
             .fillMaxWidth()
             .padding(8.dp)
             .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = MaterialTheme.colorScheme.secondaryContainer,
                 shape = RoundedCornerShape(16.dp)
             )
             .height(IntrinsicSize.Min),
@@ -139,7 +140,7 @@ fun SettlementItem(
                 .fillMaxWidth(0.8f),
             text = "${participant.senderMember.name} will pay ₹ ${participant.amount.roundToTwoDecimal()} to ${participant.receiverMember.name}.",
             fontSize = 18.sp,
-            textColor = MaterialTheme.colorScheme.onPrimaryContainer
+            textColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
         if (isShowSquareOff) {
             Box(
@@ -147,7 +148,7 @@ fun SettlementItem(
                     .fillMaxSize()
                     .padding(8.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.inversePrimary,
+                        color = MaterialTheme.colorScheme.secondary,
                         shape = RoundedCornerShape(100.dp)
                     )
                     .clip(shape = RoundedCornerShape(100.dp))
@@ -160,12 +161,12 @@ fun SettlementItem(
                     modifier = Modifier.size(28.dp),
                     painter = painterResource(id = R.drawable.ic_settlement),
                     contentDescription = "squareoff",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             }
         }
         if (showConfirmationDialog) {
-            AlertDialog(
+            CommonAlertDialog(
                 onDismissRequest = {
                     showConfirmationDialog = false
                 },

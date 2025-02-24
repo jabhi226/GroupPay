@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -146,9 +147,9 @@ fun ParticipantItem(
                         fontSize = 18.sp,
                         text = "₹ ${participant.amountOwedFromGroup.roundToTwoDecimal()}",
                         textColor = if (participant.amountOwedFromGroup > 0.0) {
-                            Color(0xFF85BB65)
+                            colorResource(R.color.amount_green)
                         } else if (participant.amountOwedFromGroup < 0.0) {
-                            Color(0xFFFF5544)
+                            colorResource(R.color.amount_red)
                         } else {
                             MaterialTheme.colorScheme.inverseSurface
                         }

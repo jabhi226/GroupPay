@@ -13,6 +13,7 @@
     <color name="background_color">#CDC1FF</color>
     <color name="background_light_color">#F5EFFF</color>
     <color name="accent_color">#BF382A</color>
-
+    <color name="amount_green">#85BB65</color>
+    <color name="amount_red">#FF5544</color>
 
 </resources>
