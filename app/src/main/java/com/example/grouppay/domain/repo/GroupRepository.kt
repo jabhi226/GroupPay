@@ -13,9 +13,7 @@ interface GroupRepository {
 
     suspend fun saveNewGroup(group: String)
 
-    suspend fun getGroupInformation(objectId: String): Group
-
-    suspend fun getGroupInformationFlow(objectId: String): Flow<Group>
+    suspend fun getGroupInformation(objectId: String): Flow<Group>
 
     fun getAllParticipantByText(text: String): Flow<List<GroupMember>>
 
@@ -28,5 +26,7 @@ interface GroupRepository {
     suspend fun upsertExpense(expense: Expense): Boolean
 
     suspend fun getExpensesByGroupId(groupId: String): List<Expense>
+
+    suspend fun deleteGroupMember(groupMemberId: String, groupId: String): Boolean
 
 }

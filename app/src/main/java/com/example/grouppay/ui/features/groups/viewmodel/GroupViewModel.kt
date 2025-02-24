@@ -29,14 +29,16 @@ class GroupViewModel(
     val groupInfo = MutableStateFlow<Group?>(null)
     fun getGroupInformation(objectId: String) {
         viewModelScope.launch {
-            groupInfo.emit(repository.getGroupInformation(objectId))
+            repository.getGroupInformation(objectId).collectLatest {
+                groupInfo.emit(it)
+            }
         }
     }
 
     val groupInfoFlow = MutableStateFlow<Group?>(null)
     fun getGroupInformationFlow(objectId: String) {
         viewModelScope.launch {
-            repository.getGroupInformationFlow(objectId).collectLatest {
+            repository.getGroupInformation(objectId).collectLatest {
                 groupInfoFlow.emit(it)
             }
         }
@@ -47,13 +49,11 @@ class GroupViewModel(
 
     fun getSquareOffTransactions(groupId: String) {
         viewModelScope.launch {
-            squareOffTransactions.emit(
-                SquareOffUtils.getSquareOffTransaction(
-                    repository.getGroupInformation(
-                        groupId
-                    )
+            repository.getGroupInformation(groupId).collectLatest {
+                squareOffTransactions.emit(
+                    SquareOffUtils.getSquareOffTransaction(it)
                 )
-            )
+            }
         }
     }
 

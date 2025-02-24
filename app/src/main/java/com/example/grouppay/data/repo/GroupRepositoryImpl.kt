@@ -52,47 +52,7 @@ class GroupRepositoryImpl(
             }
     }
 
-    override suspend fun getGroupInformation(objectId: String): DomainGroup {
-        val participants = ArrayList<DomainParticipant>()
-//        val payers = hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
-        val grp = realm.query<Group>("_id=$0", ObjectId(objectId)).find().first()
-        participants.addAll(grp.participants.map { it.getDomainModel() })
-//        payers.putAll(grp.participants.map { Pair(it._id.toHexString(), arrayListOf()) })
-        val expenses = realm.query<Expense>("groupId = $0", grp._id.toHexString()).find()
-        expenses.forEach { expense ->
-            val paidBy = expense.paidBy ?: return@forEach
-            for (i in participants.indices) {
-                val p = participants[i]
-                if (p.id == paidBy.groupMemberId) {
-                    val amountOwed = paidBy.amountOwedForExpense
-                    println("==> amountOwed: ${paidBy.amountOwedForExpense} | $amountOwed")
-                    p.amountOwedFromGroup = (p.amountOwedFromGroup + amountOwed).roundToTwoDecimal()
-                } else {
-                    val participant =
-                        expense.remainingParticipants.find { it.groupMemberId == p.id } ?: continue
-                    val amountBorrowed = participant.amountBorrowedForExpense
-                    println("==> amountBorrowed: ${p.amountBorrowedFromGroup} | $amountBorrowed")
-                    p.amountBorrowedFromGroup =
-                        (p.amountBorrowedFromGroup + amountBorrowed).roundToTwoDecimal()
-                    p.pendingPaymentsMapping.add(
-                        PendingPayments(
-                            paidBy.groupMemberId,
-                            paidBy.name,
-                            amountBorrowed.roundToTwoDecimal()
-                        )
-                    )
-                }
-                participants[i] = p
-            }
-        }
-        return DomainGroup(
-            id = grp._id.toHexString(),
-            name = grp.name,
-            participants = participants
-        )
-    }
-
-    override suspend fun getGroupInformationFlow(objectId: String): Flow<DomainGroup> = flow {
+    override suspend fun getGroupInformation(objectId: String): Flow<DomainGroup> = flow {
         val participants = ArrayList<DomainParticipant>()
 //        val payers = hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
         val grp = realm.query<Group>("_id=$0", ObjectId(objectId)).find().first()
@@ -235,5 +195,25 @@ class GroupRepositoryImpl(
 
     override suspend fun getExpensesByGroupId(groupId: String): List<DomainExpense> {
         return realm.query<Expense>("groupId == $0", groupId).find().map { it.getDomainExpense() }
+    }
+
+    override suspend fun deleteGroupMember(groupMemberId: String, groupId: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            realm.write {
+                try {
+                    val group =
+                        realm.query<Group>("_id == $0", org.mongodb.kbson.BsonObjectId(groupId))
+                            .find().firstOrNull()
+                            ?: return@write false
+                    val latestGroup = findLatest(group) ?: return@write false
+                    val isRemoved =
+                        latestGroup.participants.removeIf { it._id.toHexString() == groupMemberId }
+                    return@write isRemoved
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return@write false
+                }
+            }
+        }
     }
 }
