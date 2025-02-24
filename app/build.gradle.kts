@@ -83,5 +83,8 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.accompanist.pager.indicators)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.coil.compose)
+
 
 }

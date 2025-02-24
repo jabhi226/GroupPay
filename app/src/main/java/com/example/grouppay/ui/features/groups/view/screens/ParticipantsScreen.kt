@@ -2,6 +2,7 @@ package com.example.grouppay.ui.features.groups.view.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,8 +95,10 @@ fun ParticipantsScreen(
                         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 2.dp),
                         userScrollEnabled = true
                     ) {
-                        items(groupInfo?.participants ?: listOf()) {
-                            ParticipantItem(participant = it)
+                        items(groupInfo?.participants ?: listOf()) { groupMember ->
+                            ParticipantItem(participant = groupMember) {
+                                navController.navigate("add_participant/${group.id}/${it}")
+                            }
                         }
                         item { Spacer(modifier = Modifier.padding(40.dp)) }
                     }
@@ -110,12 +113,16 @@ fun ParticipantsScreen(
 @Composable
 fun ParticipantItem(
     modifier: Modifier = Modifier,
-    participant: GroupMember = Testing.getParticipent()
+    participant: GroupMember = Testing.getParticipent(),
+    onGroupMemberClicked: (String) -> Unit = {}
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable {
+                onGroupMemberClicked(participant.id)
+            }
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
                 shape = RoundedCornerShape(16.dp)

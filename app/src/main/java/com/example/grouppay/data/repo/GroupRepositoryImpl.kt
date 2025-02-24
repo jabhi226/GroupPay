@@ -4,11 +4,10 @@ import com.example.grouppay.data.entities.Expense
 import com.example.grouppay.data.entities.Group
 import com.example.grouppay.data.entities.GroupMember
 import com.example.grouppay.data.mapper.getDataModel
-import com.example.grouppay.domain.ExpenseMember
 import com.example.grouppay.domain.PendingPayments
 import com.example.grouppay.domain.ExpenseMember as DomainExpenseMember
 import com.example.grouppay.domain.Expense as DomainExpense
-import com.example.grouppay.domain.GroupMember as DomainParticipant
+import com.example.grouppay.domain.GroupMember as DomainGroupMember
 import com.example.grouppay.domain.Group as DomainGroup
 import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.domain.GroupWithTotalExpense
@@ -53,7 +52,7 @@ class GroupRepositoryImpl(
     }
 
     override suspend fun getGroupInformation(objectId: String): Flow<DomainGroup> = flow {
-        val participants = ArrayList<DomainParticipant>()
+        val participants = ArrayList<DomainGroupMember>()
 //        val payers = hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
         val grp = realm.query<Group>("_id=$0", ObjectId(objectId)).find().first()
         participants.addAll(grp.participants.map { it.getDomainModel() })
@@ -93,7 +92,7 @@ class GroupRepositoryImpl(
         )
     }
 
-    override fun getAllParticipantByText(text: String): Flow<List<DomainParticipant>> {
+    override fun getAllParticipantByText(text: String): Flow<List<DomainGroupMember>> {
         return realm.query<GroupMember>("name CONTAINS $0", text).asFlow().map { realmList ->
             realmList.list.map {
                 it.getDomainModel()
@@ -138,7 +137,7 @@ class GroupRepositoryImpl(
 
     override suspend fun saveNewParticipantInTheGroup(
         groupId: String,
-        participant: DomainParticipant
+        participant: DomainGroupMember
     ): DomainExpenseMember? {
         return withContext(Dispatchers.IO) {
             realm.write {
@@ -215,5 +214,20 @@ class GroupRepositoryImpl(
                 }
             }
         }
+    }
+
+    override suspend fun getParticipantDetails(
+        participantId: String?
+    ): DomainGroupMember? {
+        println("===> $participantId")
+        val groupMembers = realm.query<GroupMember>(
+            "_id=$0",
+            ObjectId(participantId ?: return null)
+        )
+            .find()
+        if (groupMembers.isEmpty()) {
+            return null
+        }
+        return groupMembers.first().getDomainModel()
     }
 }

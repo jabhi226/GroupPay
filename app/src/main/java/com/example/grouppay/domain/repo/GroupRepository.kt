@@ -29,4 +29,6 @@ interface GroupRepository {
 
     suspend fun deleteGroupMember(groupMemberId: String, groupId: String): Boolean
 
+    suspend fun getParticipantDetails(participantId: String?): GroupMember?
+
 }
