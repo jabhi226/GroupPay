@@ -35,10 +35,10 @@ class AddParticipantViewModel(
         }
     }
 
-    fun getParticipantDetails(participantId: String?) {
+    fun getParticipantDetails(participantId: String?, groupId: String?) {
         viewModelScope.launch {
             if (participantId == null) return@launch
-            repository.getParticipantDetails(participantId)?.also {
+            repository.getParticipantDetails(participantId, groupId)?.also {
                 groupMember.emit(it)
             }
         }

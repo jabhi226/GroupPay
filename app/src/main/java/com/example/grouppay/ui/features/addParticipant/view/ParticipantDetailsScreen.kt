@@ -15,20 +15,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.rememberAsyncImagePainter
@@ -62,8 +63,11 @@ import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextF
 import com.example.grouppay.ui.features.utils.showToast
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ParticipantDetailsScreen(
     navController: NavController = rememberNavController(),
@@ -76,8 +80,8 @@ fun ParticipantDetailsScreen(
     val state by viewModel.uiEvents.collectAsState(null)
     val context = LocalContext.current
 
-    LaunchedEffect(participantId) {
-        viewModel.getParticipantDetails(participantId)
+    LaunchedEffect(participantId, groupId) {
+        viewModel.getParticipantDetails(participantId, groupId)
     }
 
     LaunchedEffect(state) {
@@ -97,13 +101,134 @@ fun ParticipantDetailsScreen(
     }
 
     GroupPayTheme {
+        DetailsScreen(
+            groupMember = groupMember,
+            updateGroupMemberName = {
+                viewModel.updateGroupMemberName(it)
+            }
+        ) {
+            viewModel.saveNewParticipantInTheGroup(groupId, groupMember)
+        }
+    }
+
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun DetailsScreen(
+    modifier: Modifier = Modifier,
+    groupMember: GroupMember? = Testing.getParticipent(),
+    updateGroupMemberName: (String) -> Unit = {},
+    onFabClicked: () -> Unit = {}
+) {
+
+    val context = LocalContext.current
+    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
+    var isBottomSheetVisible by remember { mutableStateOf(false) }
+    var photoUri by remember { mutableStateOf<Uri?>(null) }
+
+    val sheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    )
+
+    LaunchedEffect(isBottomSheetVisible) {
+        if (isBottomSheetVisible) {
+            sheetState.show()
+        } else {
+            sheetState.hide()
+        }
+    }
+
+    LaunchedEffect(sheetState.currentValue) {
+        if (sheetState.currentValue == ModalBottomSheetValue.Hidden && isBottomSheetVisible) {
+            isBottomSheetVisible = false
+        }
+    }
+
+    val openGalleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            profileImageUri = uri
+        }
+    )
+
+    val openCameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success: Boolean ->
+            profileImageUri = if (success) {
+                photoUri
+            } else {
+                null
+            }
+        }
+    )
+
+    fun openCamera() {
+        photoUri = createImageUri(context)
+        photoUri?.let {
+            openCameraLauncher.launch(it)
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted: Boolean ->
+            if (isGranted) {
+                openCamera()
+            } else {
+                context.showToast("Camera permission denied")
+            }
+        }
+    )
+
+    fun checkAndOpenCameraPermission() {
+        when {
+            ContextCompat.checkSelfPermission(
+                context, Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                openCamera()
+            }
+
+            else -> {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
+    }
+
+    ModalBottomSheetLayout(
+        sheetState = sheetState,
+        sheetContent = {
+            Column(modifier = Modifier.padding(16.dp)) {
+                CommonButton(
+                    text = "Select Profile Image from Gallery",
+                    onClick = {
+                        openGalleryLauncher.launch("image/*")
+                        isBottomSheetVisible = false
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                CommonButton(
+                    text = "Capture Profile Image with Camera",
+                    onClick = {
+                        checkAndOpenCameraPermission()
+                        isBottomSheetVisible = false
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    ) {
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 40.dp),
                     onClick = {
-                        viewModel.saveNewParticipantInTheGroup(groupId, groupMember)
+                        onFabClicked()
                     }) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp),
@@ -133,175 +258,112 @@ fun ParticipantDetailsScreen(
                 })
             }
         ) { innerPadding ->
-            DetailsScreen(modifier = Modifier.padding(innerPadding)) {
-                viewModel.updateGroupMemberName(it)
-            }
-        }
-    }
+            Column(
+                modifier = modifier.padding(innerPadding),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.3F)
+                        .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    ConstraintLayout(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    ) {
 
+                        val profile = createRef()
+                        val profileEdit = createRef()
 
-}
+                        Image(
+                            painter = if (profileImageUri == null) {
+                                painterResource(R.drawable.ic_add_user)
+                            } else {
+                                rememberAsyncImagePainter(model = profileImageUri)
+                            },
+                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .padding(top = 40.dp)
+                                .clip(RoundedCornerShape(100.dp))
+                                .size(200.dp)
+                                .background(color = MaterialTheme.colorScheme.primary)
+                                .constrainAs(ref = profile, constrainBlock = {
+                                    bottom.linkTo(parent.bottom)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                })
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
-@Composable
-fun DetailsScreen(
-    modifier: Modifier = Modifier,
-    groupMember: GroupMember = Testing.getParticipent(),
-    updateGroupMemberName: (String) -> Unit = {}
-) {
-
-    val context = LocalContext.current
-    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
-    var isBottomSheetVisible by remember { mutableStateOf(false) }
-
-    // For opening Gallery (Scoped Storage)
-    val openGalleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri: Uri? ->
-            profileImageUri = uri
-        }
-    )
-
-    // For opening Camera (Scoped Storage)
-    val openCameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = { success: Boolean ->
-            if (success) {
-                context.showToast("Image Captured!")
-            }
-        }
-    )
-
-    // Show the bottom sheet when button is clicked
-    val scaffoldState = rememberBottomSheetScaffoldState()
-
-    if (isBottomSheetVisible) {
-        BottomSheetScaffold(
-            scaffoldState = scaffoldState,
-            sheetContent = {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    // Button to open Gallery
-                    CommonButton(
-                        text = "Select Profile Image from Gallery",
-                        onClick = {
-                            openGalleryLauncher.launch("image/*")
-                            isBottomSheetVisible = false // Close bottom sheet
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                        )
+                        Image(
+                            painter = painterResource(R.drawable.ic_edit),
+                            contentDescription = "",
+                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(100.dp))
+                                .clickable {
+                                    isBottomSheetVisible = true
+                                }
+                                .background(color = MaterialTheme.colorScheme.primary)
+                                .size(48.dp)
+                                .padding(8.dp)
+                                .constrainAs(ref = profileEdit, constrainBlock = {
+                                    bottom.linkTo(profile.bottom)
+                                    end.linkTo(profile.end)
+                                }),
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.2F)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.secondaryContainer,
+                                    Color.Transparent
+                                ),
+                                tileMode = TileMode.Repeated
+                            )
+                        ),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    DetailBox(
+                        title = "Expenses",
+                        value = groupMember?.amountBorrowedFromGroup.toString()
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Button to open Camera
-                    CommonButton(
-                        text = "Capture Profile Image with Camera",
-                        onClick = {
-                            val photoUri = createImageUri(context)
-                            // Launch camera intent to take a picture
-                            openCameraLauncher.launch(photoUri)
-                            isBottomSheetVisible = false // Close bottom sheet
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                    DetailBox(
+                        title = "Payments",
+                        value = groupMember?.amountOwedFromGroup.toString()
                     )
                 }
-            },
-            sheetPeekHeight = 0.dp // Hide the bottom sheet peek
-        ) {}
-    }
-
-    Column(
-        modifier = modifier,
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.3F)
-                .background(color = MaterialTheme.colorScheme.secondaryContainer)
-        ) {
-            ConstraintLayout(
-                modifier = Modifier
-                    .align(Alignment.Center)
-            ) {
-
-                val profile = createRef()
-                val profileEdit = createRef()
-
-                Image(
-                    painter = if (profileImageUri == null) {
-                        painterResource(R.drawable.ic_add_user)
-                    } else {
-                        rememberAsyncImagePainter(model = profileImageUri)
-                    },
-                    contentDescription = "",
-                    modifier = Modifier
-                        .padding(top = 40.dp)
-                        .clip(RoundedCornerShape(100.dp))
-                        .size(200.dp)
-                        .background(color = MaterialTheme.colorScheme.secondary)
-                        .constrainAs(ref = profile, constrainBlock = {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        })
-
-                )
-                Image(
-                    painter = painterResource(R.drawable.ic_edit),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100.dp))
-                        .background(color = MaterialTheme.colorScheme.secondary)
-                        .size(48.dp)
-                        .padding(8.dp)
-                        .constrainAs(ref = profileEdit, constrainBlock = {
-                            bottom.linkTo(profile.bottom)
-                            end.linkTo(profile.end)
-                        })
-                        .clickable {
-                            isBottomSheetVisible = true
-                        },
+                CommonOutlinedTextField(
+                    modifier = Modifier.padding(16.dp),
+                    text = groupMember?.name ?: "",
+                    hint = "Group member name",
+                    updateText = {
+                        updateGroupMemberName(it)
+                    }
                 )
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.2F)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.secondaryContainer,
-                            Color.Transparent
-                        ),
-                        tileMode = TileMode.Repeated
-                    )
-                ),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            DetailBox()
-            DetailBox()
-        }
-        CommonOutlinedTextField(
-            modifier = Modifier.padding(16.dp),
-            text = groupMember.name,
-            hint = "Group member name",
-            updateText = {
-                updateGroupMemberName(it)
-            }
-        )
     }
 }
 
 @Composable
-fun DetailBox(modifier: Modifier = Modifier) {
+fun DetailBox(
+    modifier: Modifier = Modifier,
+    title: String = "Balance",
+    value: String = "123"
+) {
     Box(
         modifier = modifier
             .padding(8.dp)
-            .size(120.dp)
+            .size(160.dp)
             .background(
-                color = MaterialTheme.colorScheme.tertiaryContainer,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(8.dp)
             ),
     ) {
@@ -313,9 +375,9 @@ fun DetailBox(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CommonText(text = "Balance", fontSize = 22.sp)
+            CommonText(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(16.dp))
-            CommonText(text = "123", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            CommonText(text = "₹$value", fontSize = 22.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -326,7 +388,7 @@ fun createImageUri(context: Context): Uri {
     val contentValues = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, "profile_image_${System.currentTimeMillis()}.jpg")
         put(MediaStore.Images.Media.MIME_TYPE, "image/*")
-        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/ProfileImages") // Scoped directory
+        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/GroupPay/ProfileImages")
     }
 
     // Insert into the MediaStore to create the URI

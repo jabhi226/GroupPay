@@ -1,5 +1,7 @@
 package com.example.grouppay.domain
 
+import com.example.grouppay.ui.features.utils.roundToTwoDecimal
+
 data class GroupMember(
     var id: String = "",
     var name: String,
@@ -14,6 +16,10 @@ data class GroupMember(
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun getAmountToBePaid(): Double {
+        return pendingPaymentsMapping.sumOf { it.amountToBePaid }.roundToTwoDecimal()
     }
 
 }

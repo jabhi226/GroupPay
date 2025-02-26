@@ -1,6 +1,8 @@
 package com.example.grouppay.ui
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.grouppay.ui.features.groups.view.screens.AllGroupsScreen
@@ -30,14 +32,12 @@ fun GroupPayApp() {
 
         composable("add_groups") { AddGroupScreen(navController) }
 
+        composable("add_participant/{group_id}") { navBackStackEntry ->
+            NavigateToPatientDetailsPage(navBackStackEntry, navController)
+        }
+
         composable("add_participant/{group_id}/{participant_id}") { navBackStackEntry ->
-            val groupId = navBackStackEntry.arguments?.getString("group_id")
-            val participantId = navBackStackEntry.arguments?.getString("participant_id")
-            ParticipantDetailsScreen(
-                navController = navController,
-                groupId = groupId,
-                participantId = participantId
-            )
+            NavigateToPatientDetailsPage(navBackStackEntry, navController)
         }
 
         composable("add_expense/{group_id}") { navBackStackEntry ->
@@ -48,4 +48,19 @@ fun GroupPayApp() {
             )
         }
     }
+
+}
+
+@Composable
+fun NavigateToPatientDetailsPage(
+    navBackStackEntry: NavBackStackEntry,
+    navController: NavHostController
+) {
+    val groupId = navBackStackEntry.arguments?.getString("group_id")
+    val participantId = navBackStackEntry.arguments?.getString("participant_id")
+    ParticipantDetailsScreen(
+        navController = navController,
+        groupId = groupId,
+        participantId = participantId
+    )
 }

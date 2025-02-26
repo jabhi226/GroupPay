@@ -64,13 +64,11 @@ class GroupRepositoryImpl(
                 val p = participants[i]
                 if (p.id == paidBy.groupMemberId) {
                     val amountOwed = paidBy.amountOwedForExpense
-                    println("==> amountOwed: ${paidBy.amountOwedForExpense} | $amountOwed")
                     p.amountOwedFromGroup += amountOwed
                 } else {
                     val participant =
                         expense.remainingParticipants.find { it.groupMemberId == p.id } ?: continue
                     val amountBorrowed = participant.amountBorrowedForExpense
-                    println("==> amountBorrowed: ${p.amountBorrowedFromGroup} | $amountBorrowed")
                     p.amountBorrowedFromGroup += amountBorrowed
                     p.pendingPaymentsMapping.add(
                         PendingPayments(
@@ -217,9 +215,9 @@ class GroupRepositoryImpl(
     }
 
     override suspend fun getParticipantDetails(
-        participantId: String?
+        participantId: String?,
+        groupId: String?
     ): DomainGroupMember? {
-        println("===> $participantId")
         val groupMembers = realm.query<GroupMember>(
             "_id=$0",
             ObjectId(participantId ?: return null)
@@ -228,6 +226,22 @@ class GroupRepositoryImpl(
         if (groupMembers.isEmpty()) {
             return null
         }
-        return groupMembers.first().getDomainModel()
+
+        val groupMember = groupMembers.first().getDomainModel()
+        val expenses = realm.query<Expense>("groupId = $0", groupId).find()
+        var amountOwed = 0.0
+        var amountBorrowed = 0.0
+        expenses.forEach { expense ->
+            val paidBy = expense.paidBy ?: return@forEach
+            if (groupMember.id == paidBy.groupMemberId) {
+                amountOwed = paidBy.amountOwedForExpense
+            } else {
+                amountBorrowed = expense.totalAmountPaid
+            }
+        }
+        return groupMember.copy(
+            amountOwedFromGroup = amountOwed,
+            amountBorrowedFromGroup = amountBorrowed
+        )
     }
 }

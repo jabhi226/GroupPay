@@ -15,9 +15,7 @@ object SquareOffUtils {
         val toBeReceivedValues = mutableMapOf<GroupMember, Double>()
 
         group.participants.map { groupMember ->
-            val amountToBePaid =
-                groupMember.pendingPaymentsMapping.sumOf { it.amountToBePaid }.roundToTwoDecimal()
-            toBePaidValues[groupMember] = amountToBePaid
+            toBePaidValues[groupMember] = groupMember.getAmountToBePaid()
         }
 
         toBePaidValues.forEach { groupMember ->
