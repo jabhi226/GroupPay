@@ -7,6 +7,8 @@ data class GroupMember(
     var name: String,
     var amountBorrowedFromGroup: Double = 0.0,
     var amountOwedFromGroup: Double = 0.0,
+    var amountReturnedToOwner: Double = 0.0,
+    var amountReceivedFromBorrower: Double = 0.0,
     var isSelected: Boolean = true,
     val pendingPaymentsMapping: ArrayList<PendingPayments> = arrayListOf()
 ) {

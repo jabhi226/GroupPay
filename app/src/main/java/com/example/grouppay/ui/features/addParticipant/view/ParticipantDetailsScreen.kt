@@ -318,7 +318,6 @@ fun DetailsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.2F)
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
@@ -337,6 +336,20 @@ fun DetailsScreen(
                     DetailBox(
                         title = "Payments",
                         value = groupMember?.amountOwedFromGroup.toString()
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    DetailBox(
+                        title = "Returned",
+                        value = groupMember?.amountReturnedToOwner.toString()
+                    )
+                    DetailBox(
+                        title = "Received",
+                        value = groupMember?.amountReceivedFromBorrower.toString()
                     )
                 }
                 CommonOutlinedTextField(
@@ -361,7 +374,7 @@ fun DetailBox(
     Box(
         modifier = modifier
             .padding(8.dp)
-            .size(160.dp)
+            .size(width = 160.dp, height = 120.dp)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(8.dp)

@@ -52,10 +52,10 @@ fun ParticipantsScreen(
 ) {
 
     val viewModel: GroupViewModel = koinViewModel()
-    val groupInfo by viewModel.groupInfoFlow.collectAsState()
+    val groupInfo by viewModel.groupInfo.collectAsState()
 
     LaunchedEffect(group.id) {
-        viewModel.getGroupInformationFlow(group.id)
+        viewModel.getGroupInformation(group.id)
     }
 
     GroupPayTheme {
@@ -135,14 +135,18 @@ fun ParticipantItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             CommonText(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(0.5F),
                 text = participant.name,
                 fontSize = 22.sp,
                 textColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
-            Row {
+            Row(modifier = Modifier.weight(1F), horizontalArrangement = Arrangement.End) {
                 Column(
-                    modifier = Modifier.padding(vertical = 16.dp),
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .padding(end = 16.dp),
                     horizontalAlignment = Alignment.End
                 ) {
                     CommonText(
@@ -163,7 +167,9 @@ fun ParticipantItem(
                     )
                 }
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .padding(end = 16.dp),
                     horizontalAlignment = Alignment.End
                 ) {
                     CommonText(
@@ -175,15 +181,82 @@ fun ParticipantItem(
                         fontSize = 18.sp,
                         text = "₹ ${participant.amountBorrowedFromGroup.roundToTwoDecimal()}",
                         textColor = if (participant.amountBorrowedFromGroup > 0.0) {
-                            Color(0xFFFF5544)
+                            colorResource(R.color.amount_red)
                         } else if (participant.amountBorrowedFromGroup < 0.0) {
-                            Color(0xFF85BB65)
+                            colorResource(R.color.amount_green)
                         } else {
                             MaterialTheme.colorScheme.inverseSurface
                         }
                     )
                 }
+                /* todo @abhi
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .padding(end = 16.dp),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    CommonText(
+                        text = "Returned",
+                        textColor = MaterialTheme.colorScheme.outline
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    CommonText(
+                        fontSize = 18.sp,
+                        text = "₹ ${participant.amountReturnedToOwner.roundToTwoDecimal()}",
+                        textColor = MaterialTheme.colorScheme.inverseSurface
+                    )
+                }
+                Column(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    CommonText(
+                        text = "Recived",
+                        textColor = MaterialTheme.colorScheme.outline
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    CommonText(
+                        fontSize = 18.sp,
+                        text = "₹ ${participant.amountReceivedFromBorrower.roundToTwoDecimal()}",
+                        textColor = MaterialTheme.colorScheme.inverseSurface
+                    )
+                }
+                 */
+//                AmountItem(title = "Paid", amount = participant.amountOwedFromGroup)
+//                AmountItem(title = "Borrowed", amount = participant.amountBorrowedFromGroup)
+//                AmountItem(title = "Returned", amount = participant.amountReturnedToOwner)
+
             }
         }
+    }
+}
+
+@Composable
+fun AmountItem(
+    modifier: Modifier = Modifier,
+    title: String = "Borrowed",
+    amount: Double
+) {
+    Column(
+        modifier = modifier.padding(16.dp),
+        horizontalAlignment = Alignment.End
+    ) {
+        CommonText(
+            text = title,
+            textColor = MaterialTheme.colorScheme.outline
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        CommonText(
+            fontSize = 18.sp,
+            text = "₹ ${amount.roundToTwoDecimal()}",
+            textColor = if (amount > 0.0) {
+                Color(0xFFFF5544)
+            } else if (amount < 0.0) {
+                Color(0xFF85BB65)
+            } else {
+                MaterialTheme.colorScheme.inverseSurface
+            }
+        )
     }
 }

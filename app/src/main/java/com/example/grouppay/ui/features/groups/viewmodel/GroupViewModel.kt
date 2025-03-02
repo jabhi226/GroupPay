@@ -35,15 +35,6 @@ class GroupViewModel(
         }
     }
 
-    val groupInfoFlow = MutableStateFlow<Group?>(null)
-    fun getGroupInformationFlow(objectId: String) {
-        viewModelScope.launch {
-            repository.getGroupInformation(objectId).collectLatest {
-                groupInfoFlow.emit(it)
-            }
-        }
-    }
-
     val squareOffTransactions =
         MutableStateFlow<List<SquareOffTransactionModel>>(listOf())
 
@@ -75,7 +66,8 @@ class GroupViewModel(
                             )
                         )
                     ),
-                    groupId = groupId
+                    groupId = groupId,
+                    isSquareOff = true
                 )
             )
             if (isSaved) {

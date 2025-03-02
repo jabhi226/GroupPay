@@ -40,8 +40,10 @@ object Testing {
 
     fun getParticipent(): GroupMember {
         return GroupMember(
-            name = "Test",
-            amountOwedFromGroup = 0.0,
+            name = "Test TestTes tTes tTe stTest Test ",
+            amountOwedFromGroup = 34.3,
+            amountBorrowedFromGroup = 123.2,
+            amountReturnedToOwner = 0.0,
             id = ""
         )
     }

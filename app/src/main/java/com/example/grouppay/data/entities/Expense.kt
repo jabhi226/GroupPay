@@ -16,6 +16,7 @@ class Expense : RealmObject {
     var dateOfExpense: Long = System.currentTimeMillis()
     var remainingParticipants: RealmList<ExpenseMember> = realmListOf()
     var groupId: String = ""
+    var isSquareOff: Boolean = false
 
     fun getDomainExpense(): DomainExpense {
         return DomainExpense(

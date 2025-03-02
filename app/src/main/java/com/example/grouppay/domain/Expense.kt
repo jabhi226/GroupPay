@@ -7,5 +7,6 @@ data class Expense(
     var totalAmountPaid: Double = 0.0,
     var dateOfExpense: Long = System.currentTimeMillis(),
     var remainingParticipants: List<ExpenseMember>,
-    var groupId: String
+    var groupId: String,
+    val isSquareOff: Boolean = false
 )

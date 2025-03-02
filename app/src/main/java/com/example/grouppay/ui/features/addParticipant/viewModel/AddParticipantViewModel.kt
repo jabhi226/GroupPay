@@ -13,7 +13,7 @@ class AddParticipantViewModel(
     private val repository: GroupRepository
 ) : ViewModel() {
 
-    val groupMember: MutableStateFlow<GroupMember?> = MutableStateFlow(null)
+    val groupMember: MutableStateFlow<GroupMember> = MutableStateFlow(GroupMember(name = ""))
     val uiEvents: MutableSharedFlow<UiEvents?> = MutableSharedFlow()
 
     fun saveNewParticipantInTheGroup(groupId: String?, participant: GroupMember?) {
@@ -46,7 +46,7 @@ class AddParticipantViewModel(
 
     fun updateGroupMemberName(name: String) {
         groupMember.update {
-            it?.copy(name = name)
+            it.copy(name = name)
         }
     }
 

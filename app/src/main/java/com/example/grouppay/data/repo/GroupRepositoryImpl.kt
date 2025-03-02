@@ -1,6 +1,7 @@
 package com.example.grouppay.data.repo
 
 import com.example.grouppay.data.entities.Expense
+import com.example.grouppay.data.entities.ExpenseMember
 import com.example.grouppay.data.entities.Group
 import com.example.grouppay.data.entities.GroupMember
 import com.example.grouppay.data.mapper.getDataModel
@@ -45,7 +46,7 @@ class GroupRepositoryImpl(
                             expense1.remainingParticipants.sumOf {
                                 it.amountBorrowedForExpense
                             }
-                        }
+                        }.roundToTwoDecimal()
                     )
                 }
             }
@@ -63,13 +64,21 @@ class GroupRepositoryImpl(
             for (i in participants.indices) {
                 val p = participants[i]
                 if (p.id == paidBy.groupMemberId) {
-                    val amountOwed = paidBy.amountOwedForExpense
-                    p.amountOwedFromGroup += amountOwed
+                    if (!expense.isSquareOff) {
+                        p.amountOwedFromGroup += paidBy.amountOwedForExpense
+                    } else {
+                        p.amountReturnedToOwner = paidBy.amountOwedForExpense
+                    }
                 } else {
                     val participant =
-                        expense.remainingParticipants.find { it.groupMemberId == p.id } ?: continue
+                        expense.remainingParticipants.find { it.groupMemberId == p.id }
+                            ?: ExpenseMember()
                     val amountBorrowed = participant.amountBorrowedForExpense
-                    p.amountBorrowedFromGroup += amountBorrowed
+                    if (!expense.isSquareOff) {
+                        p.amountBorrowedFromGroup += amountBorrowed
+                    } else {
+                        p.amountReceivedFromBorrower = amountBorrowed
+                    }
                     p.pendingPaymentsMapping.add(
                         PendingPayments(
                             paidBy.groupMemberId,
@@ -78,6 +87,24 @@ class GroupRepositoryImpl(
                         )
                     )
                 }
+
+
+                /*
+
+                val participant =
+                    expense.remainingParticipants.find { !expense.isSquareOff && it.groupMemberId == p.id }
+                        ?: ExpenseMember()
+
+                val returnedParticipant =
+                    expense.remainingParticipants.firstOrNull {
+                        println("=====> ${expense.paidBy?.name} | ${it.name} | ${it.amountBorrowedForExpense} | ${it.amountBorrowedForExpense > 0.0 && expense.isSquareOff}")
+                        it.groupMemberId == p.id && expense.isSquareOff
+                    }
+                returnedParticipant?.let {
+                    p.amountReturnedToOwner = paidBy.amountOwedForExpense
+                }
+                 */
+
                 participants[i] = p
             }
         }
@@ -143,7 +170,8 @@ class GroupRepositoryImpl(
                     val group =
                         realm.query<Group>("_id == $0", ObjectId(groupId)).find().firstOrNull()
                             ?: return@write null
-                    val managedParticipant = copyToRealm(participant.getDataModel())
+                    val managedParticipant =
+                        copyToRealm(participant.getDataModel(), updatePolicy = UpdatePolicy.ALL)
                     val latestGroup = findLatest(group) ?: return@write null
                     latestGroup.participants.add(managedParticipant)
                     return@write managedParticipant.getExpenseMemberModel()
@@ -231,17 +259,35 @@ class GroupRepositoryImpl(
         val expenses = realm.query<Expense>("groupId = $0", groupId).find()
         var amountOwed = 0.0
         var amountBorrowed = 0.0
+        var amountReturned = 0.0
+        var amountReceived = 0.0
         expenses.forEach { expense ->
             val paidBy = expense.paidBy ?: return@forEach
             if (groupMember.id == paidBy.groupMemberId) {
-                amountOwed = paidBy.amountOwedForExpense
+                if (expense.isSquareOff) {
+                    amountReturned += paidBy.amountOwedForExpense
+                } else {
+                    amountOwed += paidBy.amountOwedForExpense
+                }
             } else {
-                amountBorrowed = expense.totalAmountPaid
+                val paidTo = expense.remainingParticipants.firstOrNull {
+                    it.groupMemberId == groupMember.id
+                }
+                paidTo?.let {
+                    if (expense.isSquareOff) {
+                        amountReceived += expense.totalAmountPaid
+                    } else {
+                        println("==> ${paidTo.getDomainModel()}")
+                        amountBorrowed += it.amountBorrowedForExpense
+                    }
+                }
             }
         }
         return groupMember.copy(
             amountOwedFromGroup = amountOwed,
-            amountBorrowedFromGroup = amountBorrowed
+            amountBorrowedFromGroup = amountBorrowed,
+            amountReturnedToOwner = amountReturned,
+            amountReceivedFromBorrower = amountReceived
         )
     }
 }

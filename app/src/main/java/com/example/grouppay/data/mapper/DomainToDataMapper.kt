@@ -39,6 +39,7 @@ fun DomainExpense.getDataModel(): Expense {
         dateOfExpense = this@getDataModel.dateOfExpense
         remainingParticipants =
             this@getDataModel.remainingParticipants.map { it.getDataModel() }.toRealmList()
+        isSquareOff = this@getDataModel.isSquareOff
     }
 }
 
