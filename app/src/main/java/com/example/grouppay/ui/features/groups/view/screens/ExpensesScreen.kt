@@ -144,7 +144,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                             if (expense.label == "Square Off") {
                                 R.drawable.ic_squreoff
                             } else {
-                                R.drawable.ic_shopping_basket
+                                R.drawable.ic_payments
                             }
                         ),
                         contentDescription = "",

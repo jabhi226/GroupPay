@@ -9,8 +9,8 @@ data class GroupMember(
     var amountOwedFromGroup: Double = 0.0,
     var amountReturnedToOwner: Double = 0.0,
     var amountReceivedFromBorrower: Double = 0.0,
-    var isSelected: Boolean = true,
-    val pendingPaymentsMapping: ArrayList<PendingPayments> = arrayListOf()
+    val pendingPaymentsMapping: ArrayList<PendingPayments> = arrayListOf(),
+    var profilePictureUriPath: String? = null
 ) {
     fun setAmountBorrowedFromGroup(rsText: String) {
         try {

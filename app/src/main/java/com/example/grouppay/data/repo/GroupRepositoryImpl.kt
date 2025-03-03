@@ -54,12 +54,11 @@ class GroupRepositoryImpl(
 
     override suspend fun getGroupInformation(objectId: String): Flow<DomainGroup> = flow {
         val participants = ArrayList<DomainGroupMember>()
-//        val payers = hashMapOf<String, ArrayList<Pair<String, Double>>>()// payerId, [{toBePaid, Amount},{toBePaid, Amount}]
         val grp = realm.query<Group>("_id=$0", ObjectId(objectId)).find().first()
         participants.addAll(grp.participants.map { it.getDomainModel() })
-//        payers.putAll(grp.participants.map { Pair(it._id.toHexString(), arrayListOf()) })
         val expenses = realm.query<Expense>("groupId = $0", grp._id.toHexString()).find()
         expenses.forEach { expense ->
+            println("==> ${expense.isSquareOff}")
             val paidBy = expense.paidBy ?: return@forEach
             for (i in participants.indices) {
                 val p = participants[i]
@@ -70,14 +69,17 @@ class GroupRepositoryImpl(
                         p.amountReturnedToOwner = paidBy.amountOwedForExpense
                     }
                 } else {
+                    var amountBorrowed = 0.0
                     val participant =
                         expense.remainingParticipants.find { it.groupMemberId == p.id }
-                            ?: ExpenseMember()
-                    val amountBorrowed = participant.amountBorrowedForExpense
-                    if (!expense.isSquareOff) {
-                        p.amountBorrowedFromGroup += amountBorrowed
-                    } else {
-                        p.amountReceivedFromBorrower = amountBorrowed
+                    participant?.let {
+                        println("==> ${p.name} | ${p.amountBorrowedFromGroup} | ${it.amountBorrowedForExpense}")
+                        amountBorrowed = participant.amountBorrowedForExpense
+                        if (!expense.isSquareOff) {
+                            p.amountBorrowedFromGroup += amountBorrowed
+                        } else {
+                            p.amountReceivedFromBorrower = amountBorrowed
+                        }
                     }
                     p.pendingPaymentsMapping.add(
                         PendingPayments(
@@ -173,7 +175,18 @@ class GroupRepositoryImpl(
                     val managedParticipant =
                         copyToRealm(participant.getDataModel(), updatePolicy = UpdatePolicy.ALL)
                     val latestGroup = findLatest(group) ?: return@write null
-                    latestGroup.participants.add(managedParticipant)
+                    var isMemberExist = false
+                    for (index in latestGroup.participants.indices) {
+                        println("==> ${latestGroup.participants[index]._id.toHexString()} | ${managedParticipant._id.toHexString()} | ${latestGroup.participants[index]._id == managedParticipant._id}")
+                        if (latestGroup.participants[index]._id == managedParticipant._id) {
+                            latestGroup.participants[index] = managedParticipant
+                            isMemberExist = true
+                            break
+                        }
+                    }
+                    if (!isMemberExist) {
+                        latestGroup.participants.add(managedParticipant)
+                    }
                     return@write managedParticipant.getExpenseMemberModel()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -277,7 +290,6 @@ class GroupRepositoryImpl(
                     if (expense.isSquareOff) {
                         amountReceived += expense.totalAmountPaid
                     } else {
-                        println("==> ${paidTo.getDomainModel()}")
                         amountBorrowed += it.amountBorrowedForExpense
                     }
                 }

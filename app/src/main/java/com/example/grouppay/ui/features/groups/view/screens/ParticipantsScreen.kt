@@ -137,9 +137,9 @@ fun ParticipantItem(
             CommonText(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxWidth(0.5F),
+                    .fillMaxWidth(0.33F),
                 text = participant.name,
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 textColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Row(modifier = Modifier.weight(1F), horizontalArrangement = Arrangement.End) {
@@ -155,7 +155,7 @@ fun ParticipantItem(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     CommonText(
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         text = "₹ ${participant.amountOwedFromGroup.roundToTwoDecimal()}",
                         textColor = if (participant.amountOwedFromGroup > 0.0) {
                             colorResource(R.color.amount_green)
@@ -178,7 +178,7 @@ fun ParticipantItem(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     CommonText(
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         text = "₹ ${participant.amountBorrowedFromGroup.roundToTwoDecimal()}",
                         textColor = if (participant.amountBorrowedFromGroup > 0.0) {
                             colorResource(R.color.amount_red)

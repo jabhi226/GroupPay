@@ -107,7 +107,10 @@ fun ParticipantDetailsScreen(
                 viewModel.updateGroupMemberName(it)
             }
         ) {
-            viewModel.saveNewParticipantInTheGroup(groupId, groupMember)
+            viewModel.saveNewParticipantInTheGroup(
+                groupId,
+                groupMember?.copy(profilePictureUriPath = it?.path)
+            )
         }
     }
 
@@ -121,7 +124,7 @@ fun DetailsScreen(
     modifier: Modifier = Modifier,
     groupMember: GroupMember? = Testing.getParticipent(),
     updateGroupMemberName: (String) -> Unit = {},
-    onFabClicked: () -> Unit = {}
+    onFabClicked: (Uri?) -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -228,7 +231,7 @@ fun DetailsScreen(
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 40.dp),
                     onClick = {
-                        onFabClicked()
+                        onFabClicked(profileImageUri)
                     }) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp),

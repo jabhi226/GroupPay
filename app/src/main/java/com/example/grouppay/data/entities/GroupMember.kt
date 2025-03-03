@@ -13,6 +13,7 @@ class GroupMember : RealmObject {
     var name: String = ""
     var amountBorrowedFromGroup: Double = 0.0
     var amountOwedFromGroup: Double = 0.0
+    var profilePictureUriPath: String? = null
 
     fun setAmountBorrowedFromGroup(rsText: String) {
         try {
@@ -27,7 +28,8 @@ class GroupMember : RealmObject {
             id = _id.toHexString(),
             name = name,
             amountBorrowedFromGroup = amountBorrowedFromGroup,
-            amountOwedFromGroup = amountOwedFromGroup
+            amountOwedFromGroup = amountOwedFromGroup,
+            profilePictureUriPath = profilePictureUriPath
         )
     }
 
