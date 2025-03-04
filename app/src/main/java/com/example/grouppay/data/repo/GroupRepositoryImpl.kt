@@ -64,7 +64,7 @@ class GroupRepositoryImpl(
                 val p = participants[i]
                 if (p.id == paidBy.groupMemberId) {
                     if (!expense.isSquareOff) {
-                        p.amountOwedFromGroup += paidBy.amountOwedForExpense
+                        p.amountOwedFromGroup = paidBy.amountOwedForExpense
                     } else {
                         p.amountReturnedToOwner = paidBy.amountOwedForExpense
                     }
@@ -74,7 +74,7 @@ class GroupRepositoryImpl(
                         expense.remainingParticipants.find { it.groupMemberId == p.id }
                     participant?.let {
                         println("==> ${p.name} | ${p.amountBorrowedFromGroup} | ${it.amountBorrowedForExpense}")
-                        amountBorrowed = participant.amountBorrowedForExpense
+                        amountBorrowed = it.amountBorrowedForExpense
                         if (!expense.isSquareOff) {
                             p.amountBorrowedFromGroup += amountBorrowed
                         } else {
@@ -89,23 +89,6 @@ class GroupRepositoryImpl(
                         )
                     )
                 }
-
-
-                /*
-
-                val participant =
-                    expense.remainingParticipants.find { !expense.isSquareOff && it.groupMemberId == p.id }
-                        ?: ExpenseMember()
-
-                val returnedParticipant =
-                    expense.remainingParticipants.firstOrNull {
-                        println("=====> ${expense.paidBy?.name} | ${it.name} | ${it.amountBorrowedForExpense} | ${it.amountBorrowedForExpense > 0.0 && expense.isSquareOff}")
-                        it.groupMemberId == p.id && expense.isSquareOff
-                    }
-                returnedParticipant?.let {
-                    p.amountReturnedToOwner = paidBy.amountOwedForExpense
-                }
-                 */
 
                 participants[i] = p
             }
@@ -258,14 +241,13 @@ class GroupRepositoryImpl(
     override suspend fun getParticipantDetails(
         participantId: String?,
         groupId: String?
-    ): DomainGroupMember? {
+    ): Flow<DomainGroupMember?> = flow {
         val groupMembers = realm.query<GroupMember>(
             "_id=$0",
-            ObjectId(participantId ?: return null)
-        )
-            .find()
+            ObjectId(participantId ?: return@flow)
+        ).find()
         if (groupMembers.isEmpty()) {
-            return null
+            return@flow
         }
 
         val groupMember = groupMembers.first().getDomainModel()
@@ -281,6 +263,12 @@ class GroupRepositoryImpl(
                     amountReturned += paidBy.amountOwedForExpense
                 } else {
                     amountOwed += paidBy.amountOwedForExpense
+                    for (it in expense.remainingParticipants) {
+                        if (it.groupMemberId == groupMember.id) {
+                            amountBorrowed += it.amountBorrowedForExpense
+                            break
+                        }
+                    }
                 }
             } else {
                 val paidTo = expense.remainingParticipants.firstOrNull {
@@ -295,11 +283,13 @@ class GroupRepositoryImpl(
                 }
             }
         }
-        return groupMember.copy(
-            amountOwedFromGroup = amountOwed,
-            amountBorrowedFromGroup = amountBorrowed,
-            amountReturnedToOwner = amountReturned,
-            amountReceivedFromBorrower = amountReceived
+        emit(
+            groupMember.copy(
+                amountOwedFromGroup = amountOwed.roundToTwoDecimal(),
+                amountBorrowedFromGroup = amountBorrowed.roundToTwoDecimal(),
+                amountReturnedToOwner = amountReturned.roundToTwoDecimal(),
+                amountReceivedFromBorrower = amountReceived.roundToTwoDecimal()
+            )
         )
     }
 }

@@ -22,6 +22,7 @@ fun DomainParticipant.getDataModel(): GroupMember {
         name = this@getDataModel.name
         amountBorrowedFromGroup = this@getDataModel.amountBorrowedFromGroup
         amountOwedFromGroup = this@getDataModel.amountOwedFromGroup
+        profilePictureUriPath = this@getDataModel.profilePictureUriPath
     }
 }
 

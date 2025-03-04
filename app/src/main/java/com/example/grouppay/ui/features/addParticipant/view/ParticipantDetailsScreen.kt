@@ -52,7 +52,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil3.compose.rememberAsyncImagePainter
 import com.example.grouppay.R
 import com.example.grouppay.domain.GroupMember
 import com.example.grouppay.ui.Testing
@@ -67,6 +66,8 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import coil3.compose.AsyncImage
 
 @Composable
 fun ParticipantDetailsScreen(
@@ -105,11 +106,14 @@ fun ParticipantDetailsScreen(
             groupMember = groupMember,
             updateGroupMemberName = {
                 viewModel.updateGroupMemberName(it)
+            },
+            updateGroupMemberProfileUri = {
+                viewModel.updateGroupMemberProfileUri(it)
             }
         ) {
             viewModel.saveNewParticipantInTheGroup(
                 groupId,
-                groupMember?.copy(profilePictureUriPath = it?.path)
+                groupMember
             )
         }
     }
@@ -124,7 +128,8 @@ fun DetailsScreen(
     modifier: Modifier = Modifier,
     groupMember: GroupMember? = Testing.getParticipent(),
     updateGroupMemberName: (String) -> Unit = {},
-    onFabClicked: (Uri?) -> Unit = {}
+    updateGroupMemberProfileUri: (String) -> Unit = {},
+    onFabClicked: () -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -135,6 +140,16 @@ fun DetailsScreen(
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
+
+    LaunchedEffect(groupMember?.profilePictureUriPath) {
+        println("===> ${groupMember?.profilePictureUriPath}")
+        profileImageUri = groupMember?.profilePictureUriPath?.let {
+            Uri.parse(
+                it
+            )
+        }
+        println("===> $profileImageUri")
+    }
 
     LaunchedEffect(isBottomSheetVisible) {
         if (isBottomSheetVisible) {
@@ -154,6 +169,9 @@ fun DetailsScreen(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
             profileImageUri = uri
+            uri?.let {
+                updateGroupMemberProfileUri(it.toString())
+            }
         }
     )
 
@@ -161,6 +179,9 @@ fun DetailsScreen(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success: Boolean ->
             profileImageUri = if (success) {
+                photoUri?.let {
+                    updateGroupMemberProfileUri(it.toString())
+                }
                 photoUri
             } else {
                 null
@@ -223,6 +244,8 @@ fun DetailsScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Spacer(modifier = Modifier.height(40.dp))
             }
         }
     ) {
@@ -231,7 +254,7 @@ fun DetailsScreen(
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 40.dp),
                     onClick = {
-                        onFabClicked(profileImageUri)
+                        onFabClicked()
                     }) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp),
@@ -278,27 +301,41 @@ fun DetailsScreen(
                         val profile = createRef()
                         val profileEdit = createRef()
 
-                        Image(
-                            painter = if (profileImageUri == null) {
-                                painterResource(R.drawable.ic_add_user)
-                            } else {
-                                rememberAsyncImagePainter(model = profileImageUri)
-                            },
-                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary),
-                            contentDescription = "",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .padding(top = 40.dp)
-                                .clip(RoundedCornerShape(100.dp))
-                                .size(200.dp)
-                                .background(color = MaterialTheme.colorScheme.primary)
-                                .constrainAs(ref = profile, constrainBlock = {
-                                    bottom.linkTo(parent.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                })
+                        if (profileImageUri == null) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_add_user),
+                                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary),
+                                contentDescription = "",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .padding(top = 40.dp)
+                                    .clip(RoundedCornerShape(100.dp))
+                                    .size(200.dp)
+                                    .background(color = MaterialTheme.colorScheme.primary)
+                                    .constrainAs(ref = profile, constrainBlock = {
+                                        bottom.linkTo(parent.bottom)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                    })
 
-                        )
+                            )
+                        } else {
+                            AsyncImage(
+                                model = profileImageUri,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(top = 40.dp)
+                                    .clip(RoundedCornerShape(100.dp))
+                                    .size(200.dp)
+                                    .constrainAs(ref = profile, constrainBlock = {
+                                        bottom.linkTo(parent.bottom)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                    }),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+
                         Image(
                             painter = painterResource(R.drawable.ic_edit),
                             contentDescription = "",
@@ -334,11 +371,17 @@ fun DetailsScreen(
                 ) {
                     DetailBox(
                         title = "Expenses",
-                        value = groupMember?.amountBorrowedFromGroup.toString()
+                        value = groupMember?.amountBorrowedFromGroup.toString(),
+                        valueColorResourceId = groupMember?.amountBorrowedFromGroup.getColorOrBlack(
+                            R.color.amount_red
+                        )
                     )
                     DetailBox(
                         title = "Payments",
-                        value = groupMember?.amountOwedFromGroup.toString()
+                        value = groupMember?.amountOwedFromGroup.toString(),
+                        valueColorResourceId = groupMember?.amountOwedFromGroup.getColorOrBlack(
+                            R.color.amount_green
+                        )
                     )
                 }
                 Row(
@@ -348,11 +391,17 @@ fun DetailsScreen(
                 ) {
                     DetailBox(
                         title = "Returned",
-                        value = groupMember?.amountReturnedToOwner.toString()
+                        value = groupMember?.amountReturnedToOwner.toString(),
+                        valueColorResourceId = groupMember?.amountReturnedToOwner.getColorOrBlack(
+                            R.color.amount_green
+                        )
                     )
                     DetailBox(
                         title = "Received",
-                        value = groupMember?.amountReceivedFromBorrower.toString()
+                        value = groupMember?.amountReceivedFromBorrower.toString(),
+                        valueColorResourceId = groupMember?.amountReceivedFromBorrower.getColorOrBlack(
+                            R.color.amount_red
+                        )
                     )
                 }
                 CommonOutlinedTextField(
@@ -366,13 +415,24 @@ fun DetailsScreen(
             }
         }
     }
+
+}
+
+@Composable
+fun Double?.getColorOrBlack(color: Int): Color {
+    return if (this != 0.0) {
+        colorResource(id = color)
+    } else {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    }
 }
 
 @Composable
 fun DetailBox(
     modifier: Modifier = Modifier,
     title: String = "Balance",
-    value: String = "123"
+    value: String = "123",
+    valueColorResourceId: Color
 ) {
     Box(
         modifier = modifier
@@ -391,9 +451,19 @@ fun DetailBox(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CommonText(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            CommonText(
+                text = title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            CommonText(text = "₹$value", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            CommonText(
+                text = "₹$value",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                textColor = valueColorResourceId
+            )
         }
     }
 }

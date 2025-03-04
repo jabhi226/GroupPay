@@ -6,6 +6,7 @@ import com.example.grouppay.domain.repo.GroupRepository
 import com.example.grouppay.domain.GroupMember
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,7 @@ class AddParticipantViewModel(
                 uiEvents.emit(UiEvents.ShowError("Please enter group member name"))
                 return@launch
             }
+            println("==> ${participant.name} | ${groupMember.value.name} | ${participant.profilePictureUriPath} | ${groupMember.value.profilePictureUriPath}")
             val response = repository.saveNewParticipantInTheGroup(groupId, participant)
             if (response != null) {
                 uiEvents.emit(UiEvents.ShowSuccess)
@@ -38,8 +40,10 @@ class AddParticipantViewModel(
     fun getParticipantDetails(participantId: String?, groupId: String?) {
         viewModelScope.launch {
             if (participantId == null) return@launch
-            repository.getParticipantDetails(participantId, groupId)?.also {
-                groupMember.emit(it)
+            repository.getParticipantDetails(participantId, groupId).collectLatest { grp ->
+                grp?.let {
+                    groupMember.emit(it)
+                }
             }
         }
     }
@@ -47,6 +51,12 @@ class AddParticipantViewModel(
     fun updateGroupMemberName(name: String) {
         groupMember.update {
             it.copy(name = name)
+        }
+    }
+
+    fun updateGroupMemberProfileUri(uri: String) {
+        groupMember.update {
+            it.copy(profilePictureUriPath = uri)
         }
     }
 
