@@ -53,7 +53,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.R
-import com.example.grouppay.domain.GroupMember
+import com.example.grouppay.domain.entities.GroupMember
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantViewModel
 import com.example.grouppay.ui.features.core.view.components.CommonButton

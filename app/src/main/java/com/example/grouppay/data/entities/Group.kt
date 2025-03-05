@@ -1,6 +1,6 @@
 package com.example.grouppay.data.entities
 
-import com.example.grouppay.domain.Group as DomainGroup
+import com.example.grouppay.domain.entities.Group as DomainGroup
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject

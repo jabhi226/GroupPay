@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grouppay.R
-import com.example.grouppay.domain.Expense
+import com.example.grouppay.domain.entities.Expense
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 

@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.R
-import com.example.grouppay.domain.Group
-import com.example.grouppay.domain.GroupMember
+import com.example.grouppay.domain.entities.Group
+import com.example.grouppay.domain.entities.GroupMember
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen

@@ -2,7 +2,6 @@ package com.example.grouppay.ui.features.groups.view.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,15 +41,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.R
-import com.example.grouppay.domain.Expense
-import com.example.grouppay.domain.Group
+import com.example.grouppay.domain.entities.Expense
+import com.example.grouppay.domain.entities.Group
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.features.utils.getDateInStringFormat
 import com.example.grouppay.ui.features.utils.getInitials
-import com.example.grouppay.ui.features.utils.showToast
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

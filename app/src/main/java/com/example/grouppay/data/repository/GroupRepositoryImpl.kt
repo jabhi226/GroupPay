@@ -1,17 +1,16 @@
-package com.example.grouppay.data.repo
+package com.example.grouppay.data.repository
 
 import com.example.grouppay.data.entities.Expense
-import com.example.grouppay.data.entities.ExpenseMember
 import com.example.grouppay.data.entities.Group
 import com.example.grouppay.data.entities.GroupMember
 import com.example.grouppay.data.mapper.getDataModel
-import com.example.grouppay.domain.PendingPayments
-import com.example.grouppay.domain.ExpenseMember as DomainExpenseMember
-import com.example.grouppay.domain.Expense as DomainExpense
-import com.example.grouppay.domain.GroupMember as DomainGroupMember
-import com.example.grouppay.domain.Group as DomainGroup
-import com.example.grouppay.domain.repo.GroupRepository
-import com.example.grouppay.domain.GroupWithTotalExpense
+import com.example.grouppay.domain.entities.PendingPayments
+import com.example.grouppay.domain.entities.ExpenseMember as DomainExpenseMember
+import com.example.grouppay.domain.entities.Expense as DomainExpense
+import com.example.grouppay.domain.entities.GroupMember as DomainGroupMember
+import com.example.grouppay.domain.entities.Group as DomainGroup
+import com.example.grouppay.domain.repository.GroupRepository
+import com.example.grouppay.domain.entities.GroupWithTotalExpense
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId.Companion.invoke
-import org.mongodb.kbson.ObjectId
 
 class GroupRepositoryImpl(
     private val realm: Realm

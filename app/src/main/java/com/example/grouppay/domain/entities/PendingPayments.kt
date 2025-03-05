@@ -1,4 +1,4 @@
-package com.example.grouppay.domain
+package com.example.grouppay.domain.entities
 
 data class PendingPayments(
     val originalPayerId: String,

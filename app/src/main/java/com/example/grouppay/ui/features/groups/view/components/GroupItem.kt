@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
-import com.example.grouppay.domain.GroupWithTotalExpense
+import com.example.grouppay.domain.entities.GroupWithTotalExpense
 
 @Preview
 @Composable

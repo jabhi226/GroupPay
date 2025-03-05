@@ -2,10 +2,10 @@ package com.example.grouppay.ui.features.addExpense.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.grouppay.domain.Expense
-import com.example.grouppay.domain.ExpenseMember
-import com.example.grouppay.domain.GroupMember
-import com.example.grouppay.domain.repo.GroupRepository
+import com.example.grouppay.domain.entities.Expense
+import com.example.grouppay.domain.entities.ExpenseMember
+import com.example.grouppay.domain.entities.GroupMember
+import com.example.grouppay.domain.repository.GroupRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow

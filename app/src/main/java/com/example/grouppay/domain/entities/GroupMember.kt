@@ -1,4 +1,4 @@
-package com.example.grouppay.domain
+package com.example.grouppay.domain.entities
 
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 

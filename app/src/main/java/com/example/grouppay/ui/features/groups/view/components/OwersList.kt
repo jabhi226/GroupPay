@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.grouppay.domain.GroupMember
+import com.example.grouppay.domain.entities.GroupMember
 
 @Composable
 fun OwersList(modifier: Modifier = Modifier, users: List<GroupMember>) {

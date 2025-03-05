@@ -1,9 +1,9 @@
 package com.example.grouppay.ui
 
-import com.example.grouppay.domain.Expense
-import com.example.grouppay.domain.ExpenseMember
-import com.example.grouppay.domain.GroupMember
-import com.example.grouppay.domain.GroupWithTotalExpense
+import com.example.grouppay.domain.entities.Expense
+import com.example.grouppay.domain.entities.ExpenseMember
+import com.example.grouppay.domain.entities.GroupMember
+import com.example.grouppay.domain.entities.GroupWithTotalExpense
 
 object Testing {
 

@@ -1,9 +1,8 @@
 package com.example.grouppay
 
-import com.example.grouppay.domain.ExpenseMember
-import com.example.grouppay.domain.GroupMember
-import com.example.grouppay.domain.PendingPayments
-import com.example.grouppay.ui.Testing
+import com.example.grouppay.domain.entities.ExpenseMember
+import com.example.grouppay.domain.entities.GroupMember
+import com.example.grouppay.domain.entities.PendingPayments
 import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
 import org.junit.Test
 

@@ -2,7 +2,7 @@ package com.example.grouppay.ui.features.addGroup.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.grouppay.domain.repo.GroupRepository
+import com.example.grouppay.domain.repository.GroupRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 

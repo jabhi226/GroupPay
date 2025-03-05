@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.R
-import com.example.grouppay.domain.Group
+import com.example.grouppay.domain.entities.Group
 import com.example.grouppay.ui.features.core.view.components.CommonAlertDialog
 import com.example.grouppay.ui.features.core.view.components.CommonButton
 import com.example.grouppay.ui.features.core.view.components.CommonText

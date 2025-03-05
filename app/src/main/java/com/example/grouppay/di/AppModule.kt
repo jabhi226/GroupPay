@@ -4,8 +4,8 @@ import com.example.grouppay.data.entities.Expense
 import com.example.grouppay.data.entities.ExpenseMember
 import com.example.grouppay.data.entities.Group
 import com.example.grouppay.data.entities.GroupMember
-import com.example.grouppay.domain.repo.GroupRepository
-import com.example.grouppay.data.repo.GroupRepositoryImpl
+import com.example.grouppay.domain.repository.GroupRepository
+import com.example.grouppay.data.repository.GroupRepositoryImpl
 import com.example.grouppay.ui.features.addExpense.viewmodel.AddExpenseViewModel
 import com.example.grouppay.ui.features.addGroup.viewModel.AddGroupViewModel
 import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantViewModel
@@ -34,7 +34,7 @@ val appModule = module {
         Realm.open(config)
     }
 
-    single<GroupRepository> {
+    factory<GroupRepository> {
         GroupRepositoryImpl(get())
     }
 

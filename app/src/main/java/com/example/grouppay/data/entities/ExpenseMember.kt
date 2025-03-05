@@ -1,6 +1,6 @@
 package com.example.grouppay.data.entities
 
-import com.example.grouppay.domain.ExpenseMember
+import com.example.grouppay.domain.entities.ExpenseMember
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId

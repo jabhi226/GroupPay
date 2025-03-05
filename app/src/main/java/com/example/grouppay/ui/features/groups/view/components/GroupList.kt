@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.grouppay.ui.Testing.getGroupWithTotalExpenses
-import com.example.grouppay.domain.GroupWithTotalExpense
+import com.example.grouppay.domain.entities.GroupWithTotalExpense
 
 @Preview(showSystemUi = true)
 @Composable

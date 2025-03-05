@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.R
-import com.example.grouppay.domain.ExpenseMember
+import com.example.grouppay.domain.entities.ExpenseMember
 import com.example.grouppay.ui.features.addExpense.viewmodel.AddExpenseViewModel
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField

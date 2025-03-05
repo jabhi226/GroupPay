@@ -1,7 +1,7 @@
 package com.example.grouppay.data.entities
 
-import com.example.grouppay.domain.GroupMember as DomainParticipant
-import com.example.grouppay.domain.ExpenseMember as DomainExpenseMember
+import com.example.grouppay.domain.entities.GroupMember as DomainParticipant
+import com.example.grouppay.domain.entities.ExpenseMember as DomainExpenseMember
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId

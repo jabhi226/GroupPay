@@ -6,7 +6,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
-import com.example.grouppay.domain.Group
+import com.example.grouppay.domain.entities.Group
 import com.example.grouppay.ui.features.groups.view.screens.ExpensesScreen
 import com.example.grouppay.ui.features.groups.view.screens.ParticipantsScreen
 import com.example.grouppay.ui.features.groups.view.screens.SettlementScreen

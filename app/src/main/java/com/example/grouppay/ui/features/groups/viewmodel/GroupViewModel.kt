@@ -2,11 +2,11 @@ package com.example.grouppay.ui.features.groups.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.grouppay.domain.Expense
-import com.example.grouppay.domain.ExpenseMember
-import com.example.grouppay.domain.Group
-import com.example.grouppay.domain.GroupMember
-import com.example.grouppay.domain.repo.GroupRepository
+import com.example.grouppay.domain.entities.Expense
+import com.example.grouppay.domain.entities.ExpenseMember
+import com.example.grouppay.domain.entities.Group
+import com.example.grouppay.domain.entities.GroupMember
+import com.example.grouppay.domain.repository.GroupRepository
 import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
 import com.example.grouppay.ui.features.groups.utils.SquareOffUtils
 import kotlinx.coroutines.flow.MutableStateFlow

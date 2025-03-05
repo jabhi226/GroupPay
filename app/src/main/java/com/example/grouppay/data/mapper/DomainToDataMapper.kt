@@ -1,15 +1,14 @@
 package com.example.grouppay.data.mapper
 
-import com.example.grouppay.domain.GroupMember as DomainParticipant
+import com.example.grouppay.domain.entities.GroupMember as DomainParticipant
 import com.example.grouppay.data.entities.GroupMember
-import com.example.grouppay.domain.Expense as DomainExpense
+import com.example.grouppay.domain.entities.Expense as DomainExpense
 import com.example.grouppay.data.entities.Expense
-import com.example.grouppay.domain.Group as DomainGroup
+import com.example.grouppay.domain.entities.Group as DomainGroup
 import com.example.grouppay.data.entities.Group
-import com.example.grouppay.domain.ExpenseMember as DomainExpenseMember
+import com.example.grouppay.domain.entities.ExpenseMember as DomainExpenseMember
 import com.example.grouppay.data.entities.ExpenseMember
 import io.realm.kotlin.ext.toRealmList
-import org.mongodb.kbson.ObjectId
 
 
 fun DomainParticipant.getDataModel(): GroupMember {

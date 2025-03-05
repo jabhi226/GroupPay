@@ -1,9 +1,8 @@
 package com.example.grouppay.ui.features.groups.utils
 
-import com.example.grouppay.domain.Group
-import com.example.grouppay.domain.GroupMember
+import com.example.grouppay.domain.entities.Group
+import com.example.grouppay.domain.entities.GroupMember
 import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
-import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 
 object SquareOffUtils {
