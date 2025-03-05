@@ -9,6 +9,7 @@ import com.example.grouppay.data.entities.Group
 import com.example.grouppay.domain.entities.ExpenseMember as DomainExpenseMember
 import com.example.grouppay.data.entities.ExpenseMember
 import io.realm.kotlin.ext.toRealmList
+import org.mongodb.kbson.ObjectId
 
 
 fun DomainParticipant.getDataModel(): GroupMember {
