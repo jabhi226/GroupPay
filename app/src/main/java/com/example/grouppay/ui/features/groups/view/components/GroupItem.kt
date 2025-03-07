@@ -41,15 +41,15 @@ fun GroupItem(
             CommonText(
                 modifier = Modifier,
                 text = group.groupName,
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.W600,
                 textColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Spacer(modifier = Modifier.height(16.dp))
             CommonText(
                 modifier = Modifier,
-                text = "Total Amount Spend ₹${group.totalAmountSpent}",
-                fontSize = 22.sp,
+                text = "Total Amount Spend: ₹${group.totalAmountSpent}",
+                fontSize = 20.sp,
                 fontWeight = FontWeight.W500,
                 textColor = MaterialTheme.colorScheme.primary
             )
@@ -57,7 +57,7 @@ fun GroupItem(
             CommonText(
                 modifier = Modifier,
                 text = "Total Members: ${group.totalMembers}",
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.W500,
                 fontStyle = FontStyle.Italic,
                 textColor = MaterialTheme.colorScheme.tertiary

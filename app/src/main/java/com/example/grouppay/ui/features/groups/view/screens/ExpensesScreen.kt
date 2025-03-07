@@ -31,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -131,22 +132,36 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                     modifier = Modifier.padding(start = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        tint = if (expense.label == "Square Off") {
-                            colorResource(R.color.amount_green)
-                        } else {
-                            colorResource(R.color.amount_red)
-                        },
-                        painter = painterResource(
-                            id =
-                            if (expense.label == "Square Off") {
-                                R.drawable.ic_squreoff
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = if (expense.label == "Square Off") {
+                                    colorResource(R.color.amount_green_transparent)
+                                } else {
+                                    colorResource(R.color.amount_red_transparent)
+                                },
+                                shape = RoundedCornerShape(200.dp)
+                            )
+                            .padding(4.dp)
+                    ) {
+                        Icon(
+                            modifier = Modifier.scale(0.8F),
+                            tint = if (expense.label == "Square Off") {
+                                colorResource(R.color.amount_green)
                             } else {
-                                R.drawable.ic_payments
-                            }
-                        ),
-                        contentDescription = "",
-                    )
+                                colorResource(R.color.amount_red)
+                            },
+                            painter = painterResource(
+                                id =
+                                if (expense.label == "Square Off") {
+                                    R.drawable.ic_squreoff
+                                } else {
+                                    R.drawable.ic_payments
+                                }
+                            ),
+                            contentDescription = "",
+                        )
+                    }
                     Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -156,11 +171,11 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                             CommonText(
                                 textColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                 text = expense.label,
-                                fontSize = 20.sp,
+                                fontSize = 18.sp,
                             )
                             CommonText(
                                 textColor = Color(0xFF85BB65),
-                                fontSize = 26.sp,
+                                fontSize = 24.sp,
                                 text = "₹ ${expense.totalAmountPaid.roundToTwoDecimal()}"
                             )
                         }
@@ -173,7 +188,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                         ) {
                             CommonText(
                                 textColor = MaterialTheme.colorScheme.tertiary,
-                                fontSize = 18.sp,
+                                fontSize = 16.sp,
                                 text = if (expense.paidBy == null) "Unpaid" else "Paid by: ${expense.paidBy?.name}"
                             )
 

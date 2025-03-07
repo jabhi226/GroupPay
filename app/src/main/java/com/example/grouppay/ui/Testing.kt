@@ -65,7 +65,7 @@ object Testing {
 
     fun getExpense(): Expense {
         return Expense(
-            label = "Lunch",
+            label = "Square Off",
             paidBy = groupExpenseMembers()[0],
             id = "",
             dateOfExpense = System.currentTimeMillis(),
