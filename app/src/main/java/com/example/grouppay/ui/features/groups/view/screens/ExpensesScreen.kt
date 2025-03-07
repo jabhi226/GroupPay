@@ -49,6 +49,7 @@ import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.features.utils.getDateInStringFormat
 import com.example.grouppay.ui.features.utils.getInitials
+import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -160,7 +161,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.g
                             CommonText(
                                 textColor = Color(0xFF85BB65),
                                 fontSize = 26.sp,
-                                text = "₹ ${expense.totalAmountPaid}"
+                                text = "₹ ${expense.totalAmountPaid.roundToTwoDecimal()}"
                             )
                         }
 

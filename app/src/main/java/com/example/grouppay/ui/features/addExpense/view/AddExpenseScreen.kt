@@ -160,7 +160,6 @@ fun AddExpenseScreen(
                         updateText = {
                             expenseName = it
                         },
-                        maxCharacterLength = 6,
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Sentences,
                             imeAction = ImeAction.Next

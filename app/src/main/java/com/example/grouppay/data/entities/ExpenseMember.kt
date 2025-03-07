@@ -1,6 +1,7 @@
 package com.example.grouppay.data.entities
 
 import com.example.grouppay.domain.entities.ExpenseMember
+import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
@@ -21,8 +22,8 @@ class ExpenseMember : RealmObject {
             groupExpenseId = groupExpenseId,
             groupMemberId = groupMemberId,
             name = name,
-            amountBorrowedForExpense = amountBorrowedForExpense,
-            amountOwedForExpense = amountOwedForExpense
+            amountBorrowedForExpense = amountBorrowedForExpense.roundToTwoDecimal(),
+            amountOwedForExpense = amountOwedForExpense.roundToTwoDecimal()
         )
     }
 

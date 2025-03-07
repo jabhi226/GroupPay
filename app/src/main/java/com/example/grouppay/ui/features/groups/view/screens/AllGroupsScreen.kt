@@ -124,7 +124,7 @@ fun GroupItem(group: GroupWithTotalExpense = Testing.groupWithTotalExpense()) {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
 
                 Image(
-                    painter = painterResource(R.mipmap.ic_test_group),
+                    painter = painterResource(R.mipmap.icons8_split_money_1),
                     contentDescription = "Group Image",
                     alpha = 0.5F,
                     modifier = Modifier

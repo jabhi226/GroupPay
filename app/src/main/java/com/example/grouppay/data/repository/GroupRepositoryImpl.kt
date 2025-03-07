@@ -214,7 +214,7 @@ class GroupRepositoryImpl(
     }
 
     override suspend fun getExpensesByGroupId(groupId: String): List<DomainExpense> {
-        return realm.query<Expense>("groupId == $0", groupId).find().map { it.getDomainExpense() }
+        return realm.query<Expense>("groupId == $0", groupId).find().reversed().map { it.getDomainExpense() }
     }
 
     override suspend fun deleteGroupMember(groupMemberId: String, groupId: String): Boolean {
