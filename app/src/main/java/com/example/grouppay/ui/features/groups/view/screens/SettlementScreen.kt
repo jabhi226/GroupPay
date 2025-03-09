@@ -41,6 +41,7 @@ import com.example.grouppay.ui.features.core.view.components.CommonButton
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
+import com.example.grouppay.ui.features.groups.viewmodel.ExpensesViewModel
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import com.example.grouppay.ui.theme.GroupPayTheme
@@ -53,7 +54,7 @@ fun SettlementScreen(
     group: Group
 ) {
 
-    val viewModel: GroupViewModel = koinViewModel()
+    val viewModel: ExpensesViewModel = koinViewModel()
     val squareOffTransaction by viewModel.squareOffTransactions.collectAsState()
     var isShowSquareOff by remember { mutableStateOf(false) }
 

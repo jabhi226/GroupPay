@@ -46,6 +46,7 @@ import com.example.grouppay.domain.entities.Group
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
+import com.example.grouppay.ui.features.groups.viewmodel.ExpensesViewModel
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.features.utils.getDateInStringFormat
 import com.example.grouppay.ui.features.utils.getInitials
@@ -55,7 +56,7 @@ import org.koin.androidx.compose.koinViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ExpensesScreen(navController: NavController, group: Group) {
-    val viewModel: GroupViewModel = koinViewModel()
+    val viewModel: ExpensesViewModel = koinViewModel()
     val expenses by viewModel.expenses.collectAsState()
     val context = LocalContext.current
 

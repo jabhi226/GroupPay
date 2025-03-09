@@ -125,7 +125,7 @@ fun AddExpenseScreen(
             FloatingActionButton(
                 modifier = Modifier.padding(bottom = 40.dp),
                 onClick = {
-                    viewModel.saveExpense(totalAmountPaid, expenseName)
+                    viewModel.saveExpense(expenseName)
                 }) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp),

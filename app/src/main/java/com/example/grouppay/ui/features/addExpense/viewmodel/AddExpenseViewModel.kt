@@ -5,14 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.grouppay.domain.entities.Expense
 import com.example.grouppay.domain.entities.ExpenseMember
 import com.example.grouppay.domain.entities.GroupMember
-import com.example.grouppay.domain.repository.GroupRepository
+import com.example.grouppay.domain.repository.ExpenseRepository
+import com.example.grouppay.domain.repository.MembersRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class AddExpenseViewModel(
-    private val repository: GroupRepository
+    private val expenseRepository: ExpenseRepository,
+    private val membersRepository: MembersRepository
 ) : ViewModel() {
 
     val allParticipantsByGroupId = MutableStateFlow<List<ExpenseMember>>(listOf())
@@ -26,7 +28,7 @@ class AddExpenseViewModel(
         viewModelScope.launch {
             this@AddExpenseViewModel.groupId = groupId
             groupId ?: return@launch
-            repository.getAllParticipantByGroupIdFlow(groupId).collect {
+            membersRepository.getAllMembersByGroupId(groupId).collect {
                 allParticipantsByGroupId.emit(it)
             }
         }
@@ -81,7 +83,7 @@ class AddExpenseViewModel(
         }
     }
 
-    fun saveExpense(totalAmountPaid: String, expenseName: String) {
+    fun saveExpense(expenseName: String) {
         viewModelScope.launch {
             val gId = groupId
             if (gId == null) {
@@ -98,13 +100,14 @@ class AddExpenseViewModel(
                 _uiEvents.send(UiEvents.ShowError("Select at lease one member for the split"))
                 return@launch
             }
-            val response = repository.upsertExpense(
+            val totalAmountPaid = allParticipantsByGroupId.value.sumOf { it.amountBorrowedForExpense }
+            val response = expenseRepository.upsertExpense(
                 Expense(
                     label = expenseName,
                     paidBy = paidBy.value.copy(
-                        amountOwedForExpense = (totalAmountPaid.toDoubleOrNull() ?: 0.0)
+                        amountOwedForExpense = totalAmountPaid
                     ),
-                    totalAmountPaid = allParticipantsByGroupId.value.sumOf { it.amountBorrowedForExpense },
+                    totalAmountPaid = totalAmountPaid,
                     remainingParticipants = allParticipantsByGroupId.value,
                     groupId = gId
                 )
@@ -126,7 +129,7 @@ class AddExpenseViewModel(
                 return@launch
             }
             val savedParticipant =
-                repository.saveNewParticipantInTheGroup(groupId, GroupMember(name = memberName))
+                membersRepository.saveNewMemberInTheGroup(groupId, GroupMember(name = memberName))
             if (savedParticipant == null) {
                 _uiEvents.send(UiEvents.ShowError("Can not found group."))
                 return@launch

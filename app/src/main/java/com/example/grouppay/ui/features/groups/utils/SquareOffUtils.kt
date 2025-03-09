@@ -8,18 +8,18 @@ import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 object SquareOffUtils {
 
 
-    fun getSquareOffTransaction(group: Group): List<SquareOffTransactionModel> {
+    fun getSquareOffTransaction(groupMembers: List<GroupMember>): List<SquareOffTransactionModel> {
         val squreOffValues = mutableMapOf<GroupMember, Double>()
         val toBePaidValues = mutableMapOf<GroupMember, Double>()
         val toBeReceivedValues = mutableMapOf<GroupMember, Double>()
 
-        group.participants.map { groupMember ->
+        groupMembers.map { groupMember ->
             toBePaidValues[groupMember] = groupMember.getAmountToBePaid()
         }
 
         toBePaidValues.forEach { groupMember ->
             val amountToReceive =
-                group.participants
+                groupMembers
                     .filterNot { it.id == groupMember.key.id }
                     .sumOf { member ->
                         member.pendingPaymentsMapping

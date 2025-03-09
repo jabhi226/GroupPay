@@ -48,7 +48,7 @@ fun GroupItem(
             Spacer(modifier = Modifier.height(16.dp))
             CommonText(
                 modifier = Modifier,
-                text = "Total Amount Spend ₹${group.totalAmountSpent}",
+                text = "Total Amount Spend: ₹${group.totalAmountSpent}",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.W500,
                 textColor = MaterialTheme.colorScheme.primary
