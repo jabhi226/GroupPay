@@ -15,5 +15,7 @@
     <color name="accent_color">#BF382A</color>
     <color name="amount_green">#85BB65</color>
     <color name="amount_red">#FF5544</color>
+    <color name="amount_green_transparent">#2085BB65</color>
+    <color name="amount_red_transparent">#20FF5544</color>
 
 </resources>
