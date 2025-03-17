@@ -1,17 +1,17 @@
-package com.example.grouppay.ui.features.addParticipant.viewModel
+package com.example.grouppay.ui.features.participantDetails.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.grouppay.domain.repository.GroupRepository
 import com.example.grouppay.domain.entities.GroupMember
+import com.example.grouppay.domain.repository.MembersRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AddParticipantViewModel(
-    private val repository: GroupRepository
+class ParticipantDetailsViewModel(
+    private val repository: MembersRepository
 ) : ViewModel() {
 
     val groupMember: MutableStateFlow<GroupMember> = MutableStateFlow(GroupMember(name = ""))
@@ -28,7 +28,7 @@ class AddParticipantViewModel(
                 return@launch
             }
             println("==> ${participant.name} | ${groupMember.value.name} | ${participant.profilePictureUriPath} | ${groupMember.value.profilePictureUriPath}")
-            val response = repository.saveNewParticipantInTheGroup(groupId, participant)
+            val response = repository.saveNewMemberInTheGroup(groupId, participant)
             if (response != null) {
                 uiEvents.emit(UiEvents.ShowSuccess)
             } else {
@@ -40,7 +40,7 @@ class AddParticipantViewModel(
     fun getParticipantDetails(participantId: String?, groupId: String?) {
         viewModelScope.launch {
             if (participantId == null) return@launch
-            repository.getParticipantDetails(participantId, groupId).collectLatest { grp ->
+            repository.getMemberDetails(participantId, groupId).collectLatest { grp ->
                 grp?.let {
                     groupMember.emit(it)
                 }

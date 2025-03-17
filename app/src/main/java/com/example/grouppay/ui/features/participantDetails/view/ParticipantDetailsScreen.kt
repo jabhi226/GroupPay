@@ -1,4 +1,4 @@
-package com.example.grouppay.ui.features.addParticipant.view
+package com.example.grouppay.ui.features.participantDetails.view
 
 import android.content.ContentValues
 import android.content.Context
@@ -55,7 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.entities.GroupMember
 import com.example.grouppay.ui.Testing
-import com.example.grouppay.ui.features.addParticipant.viewModel.AddParticipantViewModel
+import com.example.grouppay.ui.features.participantDetails.viewModel.ParticipantDetailsViewModel
 import com.example.grouppay.ui.features.core.view.components.CommonButton
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
@@ -76,7 +76,7 @@ fun ParticipantDetailsScreen(
     participantId: String?
 ) {
 
-    val viewModel: AddParticipantViewModel = koinViewModel()
+    val viewModel: ParticipantDetailsViewModel = koinViewModel()
     val groupMember by viewModel.groupMember.collectAsState(null)
     val state by viewModel.uiEvents.collectAsState(null)
     val context = LocalContext.current
@@ -87,13 +87,13 @@ fun ParticipantDetailsScreen(
 
     LaunchedEffect(state) {
         when (state) {
-            AddParticipantViewModel.UiEvents.ShowSuccess -> {
+            ParticipantDetailsViewModel.UiEvents.ShowSuccess -> {
                 context.showToast("Group member ${groupMember?.name} added.")
                 navController.navigateUp()
             }
 
-            is AddParticipantViewModel.UiEvents.ShowError -> {
-                context.showToast((state as AddParticipantViewModel.UiEvents.ShowError).errorMessage)
+            is ParticipantDetailsViewModel.UiEvents.ShowError -> {
+                context.showToast((state as ParticipantDetailsViewModel.UiEvents.ShowError).errorMessage)
             }
 
             null -> {}

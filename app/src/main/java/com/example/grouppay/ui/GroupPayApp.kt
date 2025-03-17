@@ -9,7 +9,7 @@ import com.example.grouppay.ui.features.groups.view.screens.AllGroupsScreen
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.ui.features.addExpense.view.AddExpenseScreen
 import com.example.grouppay.ui.features.addGroup.view.AddGroupScreen
-import com.example.grouppay.ui.features.addParticipant.view.ParticipantDetailsScreen
+import com.example.grouppay.ui.features.participantDetails.view.ParticipantDetailsScreen
 import com.example.grouppay.ui.features.groups.view.screens.GroupDetailsScreen
 import com.example.grouppay.domain.entities.GroupWithTotalExpense
 import com.google.gson.Gson
