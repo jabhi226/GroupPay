@@ -1,6 +1,4 @@
-package com.example.grouppay.ui.features.groups.model
-
-import com.example.grouppay.domain.entities.GroupMember
+package com.example.grouppay.domain.entities
 
 data class SquareOffTransactionModel(
     val senderMember: GroupMember,

@@ -14,6 +14,7 @@ import io.realm.kotlin.ext.query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
@@ -36,7 +37,6 @@ class MemberRepositoryImpl(
                     val latestGroup = findLatest(group) ?: return@write null
                     var isMemberExist = false
                     for (index in latestGroup.participants.indices) {
-                        println("==> ${latestGroup.participants[index]._id.toHexString()} | ${managedParticipant._id.toHexString()} | ${latestGroup.participants[index]._id == managedParticipant._id}")
                         if (latestGroup.participants[index]._id == managedParticipant._id) {
                             latestGroup.participants[index] = managedParticipant
                             isMemberExist = true
@@ -91,7 +91,6 @@ class MemberRepositoryImpl(
                     }
                     paidTo?.let {
                         if (expense.isSquareOff) {
-                            println("====> expense.totalAmountPaid ${expense.totalAmountPaid}")
                             amountReceived += expense.totalAmountPaid
                         } else {
                             amountBorrowed += it.amountBorrowedForExpense
@@ -107,7 +106,7 @@ class MemberRepositoryImpl(
                     amountReceivedFromBorrower = amountReceived.roundToTwoDecimal()
                 )
             )
-        }
+        }.flowOn(Dispatchers.IO)
 
     override fun getAllMembersByGroupId(groupId: String): Flow<ArrayList<ExpenseMember>> = flow {
         val group =
@@ -120,7 +119,7 @@ class MemberRepositoryImpl(
                 }
             )
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun deleteGroupMember(groupMemberId: String, groupId: String): Boolean {
         return withContext(Dispatchers.IO) {
@@ -144,10 +143,12 @@ class MemberRepositoryImpl(
 
     override fun getAllParticipantByText(text: String): Flow<List<GroupMember>> {
         return realm.query<com.example.grouppay.data.entities.GroupMember>("name CONTAINS $0", text)
-            .asFlow().map { realmList ->
-            realmList.list.map {
-                it.getDomainModel()
+            .asFlow()
+            .map { realmList ->
+                realmList.list.map {
+                    it.getDomainModel()
+                }
             }
-        }
+            .flowOn(Dispatchers.IO)
     }
 }

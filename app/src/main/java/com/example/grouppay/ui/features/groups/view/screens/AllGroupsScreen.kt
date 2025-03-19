@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,10 +36,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.R
-import com.example.grouppay.domain.entities.GroupWithTotalExpense
+import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
+import com.example.grouppay.ui.features.core.view.components.Loading
 import com.example.grouppay.ui.features.groups.view.components.GroupList
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.theme.GroupPayTheme
@@ -53,7 +55,11 @@ fun AllGroupsScreen(
 ) {
 
     val viewModel: GroupViewModel = koinViewModel()
-    val groups by viewModel.groupList.collectAsState(initial = emptyList())
+    val groupListUiState by viewModel.groupListUiState.collectAsState(initial = AllGroupsScreenUiState.Loading)
+
+    LaunchedEffect(Unit) {
+        viewModel.getGroupList()
+    }
 
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
@@ -87,18 +93,26 @@ fun AllGroupsScreen(
                 )
             })
         }) { innerPadding ->
-            if (groups.isEmpty()) {
-                EmptyScreen(
-                    text = "No groups are created."
-                )
-            } else {
-                GroupList(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    groups = groups
-                ) {
-                    navController.navigate("group_details/${Gson().toJson(it)}")
+            when (groupListUiState) {
+                is AllGroupsScreenUiState.Error -> {
+                    EmptyScreen(
+                        text = "No groups are created."
+                    )
+                }
+
+                is AllGroupsScreenUiState.GroupList -> {
+                    GroupList(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        groups = (groupListUiState as AllGroupsScreenUiState.GroupList).groupList
+                    ) {
+                        navController.navigate("group_details/${Gson().toJson(it)}")
+                    }
+                }
+
+                AllGroupsScreenUiState.Loading -> {
+                    Loading()
                 }
             }
         }
@@ -130,14 +144,14 @@ fun GroupItem(group: GroupWithTotalExpense = Testing.groupWithTotalExpense()) {
                     modifier = Modifier
                         .background(
                             Brush.horizontalGradient(
-                                colors = listOf(Color.Black, Color.Transparent, ),
+                                colors = listOf(Color.Black, Color.Transparent),
                                 startX = 0F,
                                 endX = 200F
                             )
                         )
                         .background(
                             Brush.horizontalGradient(
-                                colors = listOf(Color.Transparent, Color.Black, ),
+                                colors = listOf(Color.Transparent, Color.Black),
                                 startX = 0F,
                                 endX = 20F
                             )
@@ -184,4 +198,10 @@ fun GroupItem(group: GroupWithTotalExpense = Testing.groupWithTotalExpense()) {
     }
 
 
+}
+
+sealed class AllGroupsScreenUiState {
+    data object Loading : AllGroupsScreenUiState()
+    data class Error(val message: String) : AllGroupsScreenUiState()
+    data class GroupList(val groupList: List<GroupWithTotalExpense>) : AllGroupsScreenUiState()
 }

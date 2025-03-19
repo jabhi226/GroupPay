@@ -3,7 +3,7 @@ package com.example.grouppay.ui
 import com.example.grouppay.domain.entities.Expense
 import com.example.grouppay.domain.entities.ExpenseMember
 import com.example.grouppay.domain.entities.GroupMember
-import com.example.grouppay.domain.entities.GroupWithTotalExpense
+import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 
 object Testing {
 

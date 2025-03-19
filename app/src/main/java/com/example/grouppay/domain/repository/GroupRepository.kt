@@ -1,13 +1,12 @@
 package com.example.grouppay.domain.repository
 
-import com.example.grouppay.domain.entities.ExpenseMember
+import com.example.grouppay.domain.entities.Expense
 import com.example.grouppay.domain.entities.Group
-import com.example.grouppay.domain.entities.GroupWithTotalExpense
 import kotlinx.coroutines.flow.Flow
 
 interface GroupRepository {
 
-    fun getGroupList(): Flow<List<GroupWithTotalExpense>>
+    fun getGroupListWithExpenses(): Flow<List<Pair<Group, List<Expense>>>>
 
     suspend fun saveNewGroup(group: String)
 

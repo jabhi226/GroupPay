@@ -27,7 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.domain.entities.Group
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.groups.view.components.TabItem
-import com.example.grouppay.domain.entities.GroupWithTotalExpense
+import com.example.grouppay.ui.features.groups.model.GroupWithTotalExpense
 import com.example.grouppay.ui.theme.GroupPayTheme
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi

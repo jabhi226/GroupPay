@@ -40,9 +40,9 @@ import com.example.grouppay.ui.features.core.view.components.CommonAlertDialog
 import com.example.grouppay.ui.features.core.view.components.CommonButton
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
-import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
-import com.example.grouppay.ui.features.groups.viewmodel.ExpensesViewModel
-import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
+import com.example.grouppay.domain.entities.SquareOffTransactionModel
+import com.example.grouppay.ui.features.core.view.components.Loading
+import com.example.grouppay.ui.features.groups.viewmodel.SquareOffViewModel
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import com.example.grouppay.ui.theme.GroupPayTheme
 import org.koin.androidx.compose.koinViewModel
@@ -54,7 +54,7 @@ fun SettlementScreen(
     group: Group
 ) {
 
-    val viewModel: ExpensesViewModel = koinViewModel()
+    val viewModel: SquareOffViewModel = koinViewModel()
     val squareOffTransaction by viewModel.squareOffTransactions.collectAsState()
     var isShowSquareOff by remember { mutableStateOf(false) }
 
@@ -65,7 +65,7 @@ fun SettlementScreen(
     GroupPayTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
-                if (squareOffTransaction.isNotEmpty()) {
+                if (squareOffTransaction is SettlementScreenUiState.SettlementList) {
                     FloatingActionButton(
                         onClick = {
                             isShowSquareOff = !isShowSquareOff
@@ -90,19 +90,29 @@ fun SettlementScreen(
                     }
                 }
             }) { _ ->
-            if (squareOffTransaction.isEmpty()) {
-                EmptyScreen(text = "All transactions are squared off.")
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 2.dp),
-                    userScrollEnabled = true
-                ) {
-                    items(squareOffTransaction) { participant ->
-                        SettlementItem(
-                            participant = participant,
-                            isShowSquareOff = isShowSquareOff
-                        ) {
-                            viewModel.squareOffTransaction(participant, group.id)
+
+            when (squareOffTransaction) {
+
+                is SettlementScreenUiState.Error -> {
+                    EmptyScreen(text = (squareOffTransaction as SettlementScreenUiState.Error).error)
+                }
+
+                SettlementScreenUiState.Loading -> {
+                    Loading()
+                }
+
+                is SettlementScreenUiState.SettlementList -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 2.dp),
+                        userScrollEnabled = true
+                    ) {
+                        items((squareOffTransaction as SettlementScreenUiState.SettlementList).list) { participant ->
+                            SettlementItem(
+                                participant = participant,
+                                isShowSquareOff = isShowSquareOff
+                            ) {
+                                viewModel.squareOffTransaction(participant, group.id)
+                            }
                         }
                     }
                 }
@@ -196,4 +206,10 @@ fun SettlementItem(
         }
     }
 
+}
+
+sealed class SettlementScreenUiState {
+    data object Loading : SettlementScreenUiState()
+    data class Error(val error: String) : SettlementScreenUiState()
+    data class SettlementList(val list: List<SquareOffTransactionModel>) : SettlementScreenUiState()
 }

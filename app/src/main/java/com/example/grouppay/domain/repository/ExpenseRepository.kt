@@ -1,7 +1,7 @@
 package com.example.grouppay.domain.repository
 
 import com.example.grouppay.domain.entities.Expense
-import com.example.grouppay.domain.entities.GroupMember
+import com.example.grouppay.domain.entities.SquareOffTransactionModel
 import kotlinx.coroutines.flow.Flow
 
 interface ExpenseRepository {
@@ -10,7 +10,7 @@ interface ExpenseRepository {
 
     suspend fun getExpensesByGroupId(groupId: String): List<Expense>
 
-    fun getSquareOffTransactions(objectId: String): Flow<ArrayList<GroupMember>>
+    fun getSquareOffTransactions(objectId: String): Flow<List<SquareOffTransactionModel>>
 
 
 }

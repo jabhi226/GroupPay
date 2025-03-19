@@ -15,6 +15,7 @@ import com.example.grouppay.ui.features.addGroup.viewModel.AddGroupViewModel
 import com.example.grouppay.ui.features.groups.viewmodel.ExpensesViewModel
 import com.example.grouppay.ui.features.participantDetails.viewModel.ParticipantDetailsViewModel
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
+import com.example.grouppay.ui.features.groups.viewmodel.SquareOffViewModel
 import org.koin.dsl.module
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
@@ -65,5 +66,8 @@ val appModule = module {
     }
     viewModel {
         ExpensesViewModel(get())
+    }
+    viewModel {
+        SquareOffViewModel(get())
     }
 }
