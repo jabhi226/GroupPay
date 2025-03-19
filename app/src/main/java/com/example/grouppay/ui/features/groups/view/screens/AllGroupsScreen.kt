@@ -36,7 +36,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.entities.GroupWithTotalExpense
-import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.view.components.GroupList
@@ -106,9 +105,8 @@ fun AllGroupsScreen(
 }
 
 
-@Preview
 @Composable
-fun GroupItem(group: GroupWithTotalExpense = Testing.groupWithTotalExpense()) {
+fun GroupItem(group: GroupWithTotalExpense) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

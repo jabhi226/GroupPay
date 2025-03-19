@@ -44,7 +44,6 @@ import androidx.navigation.NavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.entities.Expense
 import com.example.grouppay.domain.entities.Group
-import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
 import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.viewmodel.ExpensesViewModel
@@ -114,9 +113,8 @@ fun ExpensesScreen(navController: NavController, group: Group) {
     }
 }
 
-@Preview
 @Composable
-fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.getExpense()) {
+fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense) {
     Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
 
         Surface(
