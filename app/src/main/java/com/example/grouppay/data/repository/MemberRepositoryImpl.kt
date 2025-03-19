@@ -6,7 +6,6 @@ import com.example.grouppay.data.mapper.getDataModel
 import com.example.grouppay.domain.entities.ExpenseMember
 import com.example.grouppay.domain.entities.GroupMember
 import com.example.grouppay.domain.repository.MembersRepository
-import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.asFlow
@@ -100,10 +99,10 @@ class MemberRepositoryImpl(
             }
             emit(
                 groupMember.copy(
-                    amountOwedFromGroup = amountOwed.roundToTwoDecimal(),
-                    amountBorrowedFromGroup = amountBorrowed.roundToTwoDecimal(),
-                    amountReturnedToOwner = amountReturned.roundToTwoDecimal(),
-                    amountReceivedFromBorrower = amountReceived.roundToTwoDecimal()
+                    amountOwedFromGroup = amountOwed,
+                    amountBorrowedFromGroup = amountBorrowed,
+                    amountReturnedToOwner = amountReturned,
+                    amountReceivedFromBorrower = amountReceived
                 )
             )
         }.flowOn(Dispatchers.IO)

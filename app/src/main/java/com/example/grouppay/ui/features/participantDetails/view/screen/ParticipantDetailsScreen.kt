@@ -1,4 +1,4 @@
-package com.example.grouppay.ui.features.participantDetails.view
+package com.example.grouppay.ui.features.participantDetails.view.screen
 
 import android.content.ContentValues
 import android.content.Context
@@ -45,7 +45,6 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -67,6 +66,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import coil3.compose.AsyncImage
+import com.example.grouppay.ui.features.participantDetails.view.component.DetailItem
+import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 
 @Composable
 fun ParticipantDetailsScreen(
@@ -92,7 +93,7 @@ fun ParticipantDetailsScreen(
             }
 
             is ParticipantDetailsViewModel.UiEvents.ShowError -> {
-                context.showToast((state as ParticipantDetailsViewModel.UiEvents.ShowError).errorMessage)
+                context.showToast((state as? ParticipantDetailsViewModel.UiEvents.ShowError)?.errorMessage ?: "Something went wrong")
             }
 
             null -> {}
@@ -367,16 +368,16 @@ fun DetailsScreen(
                         ),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    DetailBox(
+                    DetailItem(
                         title = "Expenses",
-                        value = groupMember?.amountBorrowedFromGroup.toString(),
+                        value = groupMember?.amountBorrowedFromGroup?.roundToTwoDecimal().toString(),
                         valueColorResourceId = groupMember?.amountBorrowedFromGroup.getColorOrBlack(
                             R.color.amount_red
                         )
                     )
-                    DetailBox(
+                    DetailItem(
                         title = "Payments",
-                        value = groupMember?.amountOwedFromGroup.toString(),
+                        value = groupMember?.amountOwedFromGroup?.roundToTwoDecimal().toString(),
                         valueColorResourceId = groupMember?.amountOwedFromGroup.getColorOrBlack(
                             R.color.amount_green
                         )
@@ -387,16 +388,16 @@ fun DetailsScreen(
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    DetailBox(
+                    DetailItem(
                         title = "Returned",
-                        value = groupMember?.amountReturnedToOwner.toString(),
+                        value = groupMember?.amountReturnedToOwner?.roundToTwoDecimal().toString(),
                         valueColorResourceId = groupMember?.amountReturnedToOwner.getColorOrBlack(
                             R.color.amount_green
                         )
                     )
-                    DetailBox(
+                    DetailItem(
                         title = "Received",
-                        value = groupMember?.amountReceivedFromBorrower.toString(),
+                        value = groupMember?.amountReceivedFromBorrower?.roundToTwoDecimal().toString(),
                         valueColorResourceId = groupMember?.amountReceivedFromBorrower.getColorOrBlack(
                             R.color.amount_red
                         )
@@ -422,47 +423,6 @@ fun Double?.getColorOrBlack(color: Int): Color {
         colorResource(id = color)
     } else {
         MaterialTheme.colorScheme.onPrimaryContainer
-    }
-}
-
-@Composable
-fun DetailBox(
-    modifier: Modifier = Modifier,
-    title: String = "Balance",
-    value: String = "123",
-    valueColorResourceId: Color
-) {
-    Box(
-        modifier = modifier
-            .padding(8.dp)
-            .size(width = 160.dp, height = 120.dp)
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(8.dp)
-            ),
-    ) {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CommonText(
-                text = title,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                textColor = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            CommonText(
-                text = "₹$value",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                textColor = valueColorResourceId
-            )
-        }
     }
 }
 

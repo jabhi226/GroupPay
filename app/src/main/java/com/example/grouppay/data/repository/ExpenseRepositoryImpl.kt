@@ -7,7 +7,6 @@ import com.example.grouppay.domain.entities.GroupMember
 import com.example.grouppay.domain.entities.PendingPayments
 import com.example.grouppay.domain.entities.SquareOffTransactionModel
 import com.example.grouppay.domain.repository.ExpenseRepository
-import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
@@ -106,7 +105,7 @@ class ExpenseRepositoryImpl(
                             PendingPayments(
                                 paidBy.groupMemberId,
                                 paidBy.name,
-                                amountBorrowed.roundToTwoDecimal()
+                                amountBorrowed
                             )
                         )
                     }
@@ -135,7 +134,7 @@ class ExpenseRepositoryImpl(
                         member.pendingPaymentsMapping
                             .filter { it.originalPayerId == groupMember.key.id }
                             .sumOf { it.amountToBePaid }
-                    }.roundToTwoDecimal()
+                    }
             toBeReceivedValues[groupMember.key] = amountToReceive
             squreOffValues[groupMember.key] =
                 amountToReceive - (toBePaidValues[groupMember.key] ?: 0.0)

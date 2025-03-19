@@ -1,4 +1,4 @@
-package com.example.grouppay.ui.features.addGroup.view
+package com.example.grouppay.ui.features.addGroup.view.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

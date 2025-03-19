@@ -7,7 +7,6 @@ import com.example.grouppay.domain.entities.GroupMember as DomainGroupMember
 import com.example.grouppay.domain.entities.Group as DomainGroup
 import com.example.grouppay.domain.entities.Expense as DomainExpense
 import com.example.grouppay.domain.repository.GroupRepository
-import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
@@ -68,7 +67,7 @@ class GroupRepositoryImpl(
                         PendingPayments(
                             paidBy.groupMemberId,
                             paidBy.name,
-                            amountBorrowed.roundToTwoDecimal()
+                            amountBorrowed
                         )
                     )
                 }

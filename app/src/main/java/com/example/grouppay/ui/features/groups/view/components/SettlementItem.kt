@@ -26,10 +26,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grouppay.R
+import com.example.grouppay.domain.entities.SquareOffTransactionModel
 import com.example.grouppay.ui.features.core.view.components.CommonAlertDialog
 import com.example.grouppay.ui.features.core.view.components.CommonButton
 import com.example.grouppay.ui.features.core.view.components.CommonText
-import com.example.grouppay.ui.features.groups.model.SquareOffTransactionModel
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 
 

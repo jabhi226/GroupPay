@@ -1,4 +1,4 @@
-package com.example.grouppay.ui.features.core.screen
+package com.example.grouppay.ui.features.core.view.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
