@@ -36,9 +36,8 @@ import androidx.navigation.NavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.entities.Group
 import com.example.grouppay.domain.entities.GroupMember
-import com.example.grouppay.ui.Testing
+import com.example.grouppay.ui.features.core.screen.EmptyScreen
 import com.example.grouppay.ui.features.core.view.components.CommonText
-import com.example.grouppay.ui.features.core.view.components.EmptyScreen
 import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
 import com.example.grouppay.ui.theme.GroupPayTheme
@@ -109,11 +108,10 @@ fun ParticipantsScreen(
 }
 
 
-@Preview
 @Composable
 fun ParticipantItem(
     modifier: Modifier = Modifier,
-    participant: GroupMember = Testing.getParticipent(),
+    participant: GroupMember,
     onGroupMemberClicked: (String) -> Unit = {}
 ) {
     Box(

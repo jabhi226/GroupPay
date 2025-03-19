@@ -37,18 +37,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.entities.Expense
 import com.example.grouppay.domain.entities.Group
-import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.core.view.components.CommonText
-import com.example.grouppay.ui.features.core.view.components.EmptyScreen
+import com.example.grouppay.ui.features.core.screen.EmptyScreen
 import com.example.grouppay.ui.features.groups.viewmodel.ExpensesViewModel
-import com.example.grouppay.ui.features.groups.viewmodel.GroupViewModel
 import com.example.grouppay.ui.features.utils.getDateInStringFormat
 import com.example.grouppay.ui.features.utils.getInitials
 import com.example.grouppay.ui.features.utils.roundToTwoDecimal
@@ -114,9 +111,8 @@ fun ExpensesScreen(navController: NavController, group: Group) {
     }
 }
 
-@Preview
 @Composable
-fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense = Testing.getExpense()) {
+fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense) {
     Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
 
         Surface(

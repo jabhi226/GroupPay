@@ -54,7 +54,7 @@ import com.example.grouppay.ui.features.addExpense.viewmodel.AddExpenseViewModel
 import com.example.grouppay.ui.features.core.view.components.AutocompleteTextField
 import com.example.grouppay.ui.features.core.view.components.CommonOutlinedTextField
 import com.example.grouppay.ui.features.core.view.components.CommonText
-import com.example.grouppay.ui.features.core.view.components.EmptyScreen
+import com.example.grouppay.ui.features.core.screen.EmptyScreen
 import com.example.grouppay.ui.features.utils.formatToTwoDecimalPlaces
 import com.example.grouppay.ui.features.utils.showToast
 import com.example.grouppay.ui.theme.GroupPayTheme

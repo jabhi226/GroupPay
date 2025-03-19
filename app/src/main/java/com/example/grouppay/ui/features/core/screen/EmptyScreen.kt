@@ -1,4 +1,4 @@
-package com.example.grouppay.ui.features.core.view.components
+package com.example.grouppay.ui.features.core.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.grouppay.ui.features.core.view.components.CommonText
 
 @Composable
 fun EmptyScreen(modifier: Modifier = Modifier, text: String) {

@@ -54,7 +54,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.grouppay.R
 import com.example.grouppay.domain.entities.GroupMember
-import com.example.grouppay.ui.Testing
 import com.example.grouppay.ui.features.participantDetails.viewModel.ParticipantDetailsViewModel
 import com.example.grouppay.ui.features.core.view.components.CommonButton
 import com.example.grouppay.ui.features.core.view.components.CommonText
@@ -122,11 +121,10 @@ fun ParticipantDetailsScreen(
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun DetailsScreen(
     modifier: Modifier = Modifier,
-    groupMember: GroupMember? = Testing.getParticipent(),
+    groupMember: GroupMember?,
     updateGroupMemberName: (String) -> Unit = {},
     updateGroupMemberProfileUri: (String) -> Unit = {},
     onFabClicked: () -> Unit = {}
