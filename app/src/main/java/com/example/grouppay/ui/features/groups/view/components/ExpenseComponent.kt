@@ -107,7 +107,7 @@ fun ExpenseComponent(modifier: Modifier = Modifier, expense: Expense) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.Bottom,
+                            verticalAlignment = Alignment.Top,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             CommonText(
