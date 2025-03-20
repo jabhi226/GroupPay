@@ -34,6 +34,33 @@ This project leverages the following modern technologies:
 
 ---
 
+### Screenshots:
+
+<div align="center">
+  <img src="screenshots/screenshot_1.png" alt="Screen 1" width="150" style="margin: 10px;" />
+  <img src="screenshots/screenshot_2.png" alt="Screen 2" width="150" style="margin: 10px;" />
+  <img src="screenshots/screenshot_3.png" alt="Screen 3" width="150" style="margin: 10px;" />
+  <img src="screenshots/screenshot_4.png" alt="Screen 4" width="150" style="margin: 10px;" />
+  <img src="screenshots/screenshot_5.png" alt="Screen 5" width="150" style="margin: 10px;" />
+  <img src="screenshots/screenshot_6.png" alt="Screen 6" width="150" style="margin: 10px;" />
+</div>
+
+### Screenshots Description:
+
+- **Screenshot 1** (Add Expense Screen): This screen allows you to add the details of your expense, such as the expense name, the person who paid, the total amount spent, and the members to whom it will be split. You can choose to split the amount equally or in custom portions, either as fixed amounts or percentages.
+
+- **Screenshot 2** (All Expenses Screen): This screen displays all the expenses made within a particular group, helping you track the overall expenses for better financial management.
+
+- **Screenshot 3** (Group Members Screen): Here, you'll see a list of all the members of a specific group. It provides a quick overview of the people involved in the shared expenses.
+
+- **Screenshot 4** (Balance Square-Off Screen): This screen calculates the minimum transactions required to settle all outstanding debts within the group. It shows who owes what and helps you square off the balances efficiently.
+
+- **Screenshot 5** (All Expenses Screen with Square-Off Transactions): This screen displays both normal and squared-off transactions, marked with different icons for easy identification.
+
+- **Screenshot 6** (Group Member Detail Screen): In this screen, you can add or update a group member's information. It also shows the total expenses paid by the member, the amount squared off, and the money received from other group members.
+
+---
+
 ## Installation
 
 Follow these steps to get the project up and running:
