@@ -37,12 +37,14 @@ This project leverages the following modern technologies:
 ### Screenshots:
 
 <div align="center">
-  <img src="screenshots/screenshot_1.png" alt="Screen 1" width="150" style="margin: 10px;" />
-  <img src="screenshots/screenshot_2.png" alt="Screen 2" width="150" style="margin: 10px;" />
-  <img src="screenshots/screenshot_3.png" alt="Screen 3" width="150" style="margin: 10px;" />
-  <img src="screenshots/screenshot_4.png" alt="Screen 4" width="150" style="margin: 10px;" />
-  <img src="screenshots/screenshot_5.png" alt="Screen 5" width="150" style="margin: 10px;" />
-  <img src="screenshots/screenshot_6.png" alt="Screen 6" width="150" style="margin: 10px;" />
+  <img src="screenshots/screenshot_1.png" alt="Screen 1" width="250" style="margin: 20px;" />
+  <img src="screenshots/screenshot_2.png" alt="Screen 2" width="250" style="margin: 20px;" />
+  <img src="screenshots/screenshot_3.png" alt="Screen 3" width="250" style="margin: 20px;" />
+</div>
+<div align="center">
+  <img src="screenshots/screenshot_4.png" alt="Screen 4" width="250" style="margin: 20px;" />
+  <img src="screenshots/screenshot_5.png" alt="Screen 5" width="250" style="margin: 20px;" />
+  <img src="screenshots/screenshot_6.png" alt="Screen 6" width="250" style="margin: 20px;" />
 </div>
 
 ### Screenshots Description:
