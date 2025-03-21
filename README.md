@@ -1,4 +1,4 @@
-# GroupPay - Expense Manager App
+# GroupPay - Group Expense Manager App
 
 **GroupPay** is a sleek Android app designed to help you and your friends track, split, and settle group expenses. Whether you're traveling, dining, or sharing other costs, GroupPay automatically calculates the minimum number of transactions required to square off all debts.
 
